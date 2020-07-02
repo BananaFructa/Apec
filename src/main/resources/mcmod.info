@@ -1,0 +1,16 @@
+[
+{
+  "modid": "apec",
+  "name": "Apec",
+  "description": "A mod the changes the game's gui for a better experience in hypixel skyblock.",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "",
+  "updateUrl": "",
+  "authorList": ["BananaFructa"],
+  "credits": "Yes",
+  "logoFile": "apecLogo.png",
+  "screenshots": [],
+  "dependencies": []
+}
+]
