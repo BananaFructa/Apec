@@ -27,6 +27,7 @@ import java.util.ArrayList;
 
 /**
  * The scoreboard and the auction bar has been disabled, all of their data is being processed and displayed in a different manner
+ * This is a copy of the origianl GuiIngame.class file but modified
  */
 
 public class ApecGuiIngame extends GuiIngame {
