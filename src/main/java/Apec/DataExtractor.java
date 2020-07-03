@@ -29,7 +29,7 @@ public class DataExtractor {
 
     private int lastHp = 1, lastBaseHp = 1;
     private int lastMn = 1, lastBaseMn = 1;
-    private int lastDefence = 1;
+    private int lastDefence = 0;
 
 
     /** Thanks for this very cool

@@ -21,6 +21,7 @@ import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.util.*;
 
 import org.lwjgl.util.vector.Vector2f;
+import scala.xml.MalformedAttributeException;
 
 import java.util.ArrayList;
 
@@ -308,6 +309,7 @@ public class ApecGuiIngame extends GuiIngame {
         Vector2f HPBarPos = new Vector2f(sr.getScaledWidth() - 190, 15);
         Vector2f MPBarPos = new Vector2f(sr.getScaledWidth() - 190, 34);
         Vector2f XPBarPos = new Vector2f(sr.getScaledWidth() - 190, 53);
+        Vector2f ARBarPos = new Vector2f(sr.getScaledWidth() - 190, 72);
         Vector2f DFBarPos = new Vector2f(480, sr.getScaledHeight() - 14); // This puts in on the black bottom bar
         int SkillTitleHeight = 40;
         Vector2f SkillBarPos = new Vector2f((int)(sr.getScaledWidth() / 2 - 91), sr.getScaledHeight() - 30);
@@ -321,6 +323,13 @@ public class ApecGuiIngame extends GuiIngame {
         this.drawTexturedModalRect((int) HPBarPos.x, (int) HPBarPos.y, 0, 5, (int) (((float) PStats.Hp / (float) PStats.BaseHp) * 182f), 5);
         this.drawTexturedModalRect((int) MPBarPos.x, (int) MPBarPos.y, 0, 15, (int) (((float) PStats.Mp / (float) PStats.BaseMp) * 182f), 5);
         this.drawTexturedModalRect((int) XPBarPos.x, (int) XPBarPos.y, 0, 35, (int) (this.mc.thePlayer.experience * 182f), 5);
+
+        if (mc.thePlayer.isInsideOfMaterial(Material.water)) {
+            float airPrec = mc.thePlayer.getAir() / 300f;
+            if (airPrec < 0) airPrec = 0;
+            this.drawTexturedModalRect((int) ARBarPos.x, (int) ARBarPos.y, 0, 40, 182, 5);
+            this.drawTexturedModalRect((int) ARBarPos.x, (int) ARBarPos.y, 0, 45, (int)(182f * airPrec), 5);
+        }
 
         if (PStats.SkillIsShown) {
             this.drawTexturedModalRect((int) SkillBarPos.x, (int) SkillBarPos.y, 0, 20, 182, 5);
@@ -336,6 +345,13 @@ public class ApecGuiIngame extends GuiIngame {
         drawThiccBorderString(XPString, (int) XPBarPos.x + 112 + 70 - mc.fontRendererObj.getStringWidth(XPString), (int) XPBarPos.y - 10, 0x80ff20);
         String DFString = "\u00a7a"+PStats.Defence + " Defence";
         drawThiccBorderString(DFString, (int) DFBarPos.x , (int) DFBarPos.y, 0xffffff);
+
+        if (mc.thePlayer.isInsideOfMaterial(Material.water)) {
+            float airPrec = (mc.thePlayer.getAir() / 300f) * 100;
+            if (airPrec < 0) airPrec = 0;
+            String ARString = (int) airPrec + "% Air";
+            drawThiccBorderString(ARString, (int) ARBarPos.x + 112 + 70 - mc.fontRendererObj.getStringWidth(ARString), (int) ARBarPos.y - 10, 0x8ba6b2);
+        }
 
     }
 
@@ -444,38 +460,6 @@ public class ApecGuiIngame extends GuiIngame {
 
             this.playerHealth = i;
             this.rand.setSeed((long)(this.updateCounter * 312871));
-            IAttributeInstance iattributeinstance = entityplayer.getEntityAttribute(SharedMonsterAttributes.maxHealth);
-            int j1 = p_180477_1_.getScaledWidth() / 2 + 91;
-            int k1 = p_180477_1_.getScaledHeight() - 39;
-            float f = (float)iattributeinstance.getAttributeValue();
-            float f1 = entityplayer.getAbsorptionAmount();
-            int l1 = MathHelper.ceiling_float_int((f + f1) / 2.0F / 10.0F);
-            int i2 = Math.max(10 - (l1 - 2), 3);
-            int j2 = k1 - (l1 - 1) * i2 - 10;
-
-
-            this.mc.mcProfiler.endStartSection("air");
-
-            if (entityplayer.isInsideOfMaterial(Material.water))
-            {
-                int l6 = this.mc.thePlayer.getAir();
-                int k7 = MathHelper.ceiling_double_int((double)(l6 - 2) * 10.0D / 300.0D);
-                int i8 = MathHelper.ceiling_double_int((double)l6 * 10.0D / 300.0D) - k7;
-
-                for (int l8 = 0; l8 < k7 + i8; ++l8)
-                {
-                    if (l8 < k7)
-                    {
-                        this.drawTexturedModalRect(j1 - l8 * 8 - 9, j2, 16, 18, 9, 9);
-                    }
-                    else
-                    {
-                        this.drawTexturedModalRect(j1 - l8 * 8 - 9, j2, 25, 18, 9, 9);
-                    }
-                }
-            }
-
-            this.mc.mcProfiler.endSection();
         }
     }
 
