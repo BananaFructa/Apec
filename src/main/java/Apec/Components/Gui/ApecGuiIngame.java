@@ -1,9 +1,6 @@
 package Apec.Components.Gui;
 
-import Apec.ApecMain;
-import Apec.ApecUtils;
-import Apec.DataExtractor;
-import Apec.InventorySubtractor;
+import Apec.*;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.*;
@@ -20,24 +17,27 @@ import net.minecraft.scoreboard.ScorePlayerTeam;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.util.*;
 
+import org.apache.commons.lang3.reflect.FieldUtils;
 import org.lwjgl.util.vector.Vector2f;
 import scala.xml.MalformedAttributeException;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 
 
 /**
  * The scoreboard and the auction bar has been disabled, all of their data is being processed and displayed in a different manner
- * This is a copy of the origianl GuiIngame.class file but modified
  */
 
 public class ApecGuiIngame extends GuiIngame {
 
-    public boolean alreadyShowedError = false;
+    GUIModifier gUIModifier;
 
 
     public ApecGuiIngame  (Minecraft mc) {
         super(mc);
+        Object comp = ApecMain.Instance.getComponent(ComponentId.GUI_MODIFIER);
+        if (comp != null) gUIModifier = (GUIModifier) comp;
     }
 
     public void renderGameOverlay(float partialTicks)
@@ -238,9 +238,9 @@ public class ApecGuiIngame extends GuiIngame {
         GlStateManager.disableLighting();
         GlStateManager.enableAlpha();
 
-        renderSkyblockScoreBoardStats(scaledresolution);
-        renderSkyblockPlayerStats(scaledresolution);
-        drawInventorySubtractions();
+        if ( gUIModifier != null)  gUIModifier.onRender(scaledresolution);
+        IChatComponent b = null;
+        if (b!=null) mc.thePlayer.addChatMessage(b);
 
     }
 
@@ -276,117 +276,8 @@ public class ApecGuiIngame extends GuiIngame {
         }
     }
 
-    protected void renderSkyblockScoreBoardStats(ScaledResolution sr) {
-        drawRect(0, sr.getScaledHeight() - 20, sr.getScaledWidth(), sr.getScaledHeight(), 0xca0a0a0a);
-        try {
-            Vector2f GuiPursePos = new Vector2f(20, sr.getScaledHeight() - 14);
-            Vector2f GuiZonePos = new Vector2f(180, sr.getScaledHeight() - 14);
-            Vector2f GuiDatePos = new Vector2f(320, sr.getScaledHeight() - 14);
-
-            Vector2f ExtraScoreInfo = new Vector2f(5,85);
-
-            DataExtractor.ScoreBoardData SBData = ApecMain.Instance.dataExtractor.ProcessScoreBoardData();
-            mc.fontRendererObj.drawString(SBData.Purse, (int) GuiPursePos.x, (int) GuiPursePos.y, 0xffffff, false);
-            mc.fontRendererObj.drawString(SBData.Zone, (int) GuiZonePos.x, (int) GuiZonePos.y, 0xffffff, false);
-            mc.fontRendererObj.drawString(SBData.Date, (int) GuiDatePos.x, (int) GuiDatePos.y, 0xffffff, false);
-            mc.fontRendererObj.drawString(SBData.Hour, (int) GuiDatePos.x + mc.fontRendererObj.getStringWidth(SBData.Date) + 3, (int) GuiDatePos.y, 0xffffff, false);
-
-            if (!SBData.ExtraInfo.isEmpty()) {
-                for (int i = 0;i < SBData.ExtraInfo.size();i++) {
-                    drawThiccBorderString(SBData.ExtraInfo.get(i), (int) ExtraScoreInfo.x, (int) ExtraScoreInfo.y + i * 11, 0x0ffffff);
-                }
-            }
-
-            alreadyShowedError = false;
-        } catch (Exception err) {
-            if (!alreadyShowedError) {
-                alreadyShowedError = true;
-                mc.thePlayer.addChatMessage(new ChatComponentText("[\u00A72Apec\u00A7f] There was an error processing scoreboard or action bar data!"));
-            }
-        }
-    }
-
-    protected void renderSkyblockPlayerStats(ScaledResolution sr) {
-        Vector2f HPBarPos = new Vector2f(sr.getScaledWidth() - 190, 15);
-        Vector2f MPBarPos = new Vector2f(sr.getScaledWidth() - 190, 34);
-        Vector2f XPBarPos = new Vector2f(sr.getScaledWidth() - 190, 53);
-        Vector2f ARBarPos = new Vector2f(sr.getScaledWidth() - 190, 72);
-        Vector2f DFBarPos = new Vector2f(480, sr.getScaledHeight() - 14); // This puts in on the black bottom bar
-        int SkillTitleHeight = 40;
-        Vector2f SkillBarPos = new Vector2f((int)(sr.getScaledWidth() / 2 - 91), sr.getScaledHeight() - 30);
-        GlStateManager.color(1f, 1f, 1f, 1f);
-        GlStateManager.enableBlend();
-        DataExtractor.PlayerStats PStats = ApecMain.Instance.dataExtractor.ProcessPlayerStats();
-        mc.renderEngine.bindTexture(new ResourceLocation(ApecMain.modId, "gui/statBars.png"));
-        this.drawTexturedModalRect((int) HPBarPos.x, (int) HPBarPos.y, 0, 0, 182, 5);
-        this.drawTexturedModalRect((int) MPBarPos.x, (int) MPBarPos.y, 0, 10, 182, 5);
-        this.drawTexturedModalRect((int) XPBarPos.x, (int) XPBarPos.y, 0, 30, 182, 5);
-        this.drawTexturedModalRect((int) HPBarPos.x, (int) HPBarPos.y, 0, 5, (int) (((float) PStats.Hp / (float) PStats.BaseHp) * 182f), 5);
-        this.drawTexturedModalRect((int) MPBarPos.x, (int) MPBarPos.y, 0, 15, (int) (((float) PStats.Mp / (float) PStats.BaseMp) * 182f), 5);
-        this.drawTexturedModalRect((int) XPBarPos.x, (int) XPBarPos.y, 0, 35, (int) (this.mc.thePlayer.experience * 182f), 5);
-
-        if (mc.thePlayer.isInsideOfMaterial(Material.water)) {
-            float airPrec = mc.thePlayer.getAir() / 300f;
-            if (airPrec < 0) airPrec = 0;
-            this.drawTexturedModalRect((int) ARBarPos.x, (int) ARBarPos.y, 0, 40, 182, 5);
-            this.drawTexturedModalRect((int) ARBarPos.x, (int) ARBarPos.y, 0, 45, (int)(182f * airPrec), 5);
-        }
-
-        if (PStats.SkillIsShown) {
-            this.drawTexturedModalRect((int) SkillBarPos.x, (int) SkillBarPos.y, 0, 20, 182, 5);
-            this.drawTexturedModalRect((int) SkillBarPos.x, (int) SkillBarPos.y, 0, 25, (int) (((float) PStats.SkillExp / (float) PStats.BaseSkillExp) * 182f), 5);
-            drawThiccBorderString(PStats.SkillInfo, sr.getScaledWidth() / 2 - mc.fontRendererObj.getStringWidth(PStats.SkillInfo) / 2, sr.getScaledHeight() - SkillTitleHeight, 0x4ca7a8);
-        }
-
-        String HPString = PStats.Hp + "/" + PStats.BaseHp + " HP";
-        drawThiccBorderString(HPString, (int) HPBarPos.x + 112 + 70 - mc.fontRendererObj.getStringWidth(HPString), (int) HPBarPos.y - 10, 0xd10808);
-        String MPString = PStats.Mp + "/" + PStats.BaseMp + " MP";
-        drawThiccBorderString(MPString, (int) MPBarPos.x + 112 + 70 - mc.fontRendererObj.getStringWidth(MPString), (int) MPBarPos.y - 10, 0x1139bd);
-        String XPString = "Lvl " + this.mc.thePlayer.experienceLevel + " XP";
-        drawThiccBorderString(XPString, (int) XPBarPos.x + 112 + 70 - mc.fontRendererObj.getStringWidth(XPString), (int) XPBarPos.y - 10, 0x80ff20);
-        String DFString = "\u00a7a"+PStats.Defence + " Defence";
-        drawThiccBorderString(DFString, (int) DFBarPos.x , (int) DFBarPos.y, 0xffffff);
-
-        if (mc.thePlayer.isInsideOfMaterial(Material.water)) {
-            float airPrec = (mc.thePlayer.getAir() / 300f) * 100;
-            if (airPrec < 0) airPrec = 0;
-            String ARString = (int) airPrec + "% Air";
-            drawThiccBorderString(ARString, (int) ARBarPos.x + 112 + 70 - mc.fontRendererObj.getStringWidth(ARString), (int) ARBarPos.y - 10, 0x8ba6b2);
-        }
-
-    }
-
-    protected void drawInventorySubtractions() {
-        Vector2f subtrListPos = new Vector2f(5, 5);
-        ArrayList<InventorySubtractor.SubtractionListElem> sles = ApecMain.Instance.inventorySubtractor.subtractionListElems;
-        if (!sles.isEmpty()) {
-            for (int i = sles.size() - 1; sles.size() > 7 ? i > sles.size()-8 : i > -1 ; i--) {
-                float alpha = 0xff;
-                if (sles.get(i).lifetme <= 50) alpha *= sles.get(i).lifetme / 50f;
-                int xToStart = 0;
-                if (sles.get(i).quant < 0) {
-                    drawThiccBorderString("-" + Math.abs(sles.get(i).quant), (int) subtrListPos.x, (int) subtrListPos.y + (sles.size() - 1 - i) * 11, 0xd10404 | ((int) alpha << 24));
-                    xToStart = mc.fontRendererObj.getStringWidth("-" + Math.abs(sles.get(i).quant));
-                } else {
-                    drawThiccBorderString("+" + Math.abs(sles.get(i).quant), (int) subtrListPos.x, (int) subtrListPos.y + (sles.size() - 1 - i) * 11, 0x0ccc39 | ((int) alpha << 24));
-                    xToStart = mc.fontRendererObj.getStringWidth("+" + Math.abs(sles.get(i).quant));
-                }
-                drawThiccBorderString( " " + sles.get(i).text, (int) subtrListPos.x + xToStart, (int) subtrListPos.y + (sles.size() - 1 - i) * 11, 0xffffff | ((int) alpha << 24));
-
-            }
-        }
-    }
-
-    public String getActionBarData() {
-        return this.recordPlaying;
-    }
-
-
     public void drawThiccBorderString(String s,int x,int y,int c) {
-        String noColorCodeS = s;
-        while (noColorCodeS.contains("\u00a7")) {
-            noColorCodeS = noColorCodeS.replace("\u00a7"+noColorCodeS.charAt(noColorCodeS.indexOf("\u00a7") + 1),"");
-        }
+        String noColorCodeS = ApecUtils.removeColorCodes(s);
         this.getFontRenderer().drawString(noColorCodeS, x + 1,y, 0);
         this.getFontRenderer().drawString(noColorCodeS, x - 1, y, 0);
         this.getFontRenderer().drawString(noColorCodeS, x, y + 1, 0);
