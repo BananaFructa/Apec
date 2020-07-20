@@ -1,0 +1,15 @@
+package Apec.Settings;
+
+public enum SettingID {
+
+    AUTO_ENABLE,
+    SHOW_WARNING,
+    SHOW_POTIONS_EFFECTS,
+    SHOW_DEBUG_MESSAGES,
+    OVERWRITE_GUI,
+    NPC_GUI,
+    INVENTORY_TRAFFIC,
+    HIDE_IN_F3,
+    SHOW_SKILL_XP
+
+}

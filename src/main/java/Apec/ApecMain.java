@@ -1,37 +1,30 @@
 package Apec;
 
-import Apec.Components.Gui.GUIModifier;
-import com.sun.jna.platform.unix.X11;
+import Apec.Components.Gui.ContainerGuis.AuctionHouseComponent;
+import Apec.Components.Gui.GuiIngame.GUIModifier;
+import Apec.Components.Gui.Menu.ApecMenu;
+import Apec.Settings.SettingID;
+import Apec.Settings.SettingsManager;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.event.ClickEvent;
+import net.minecraft.inventory.IInventory;
 import net.minecraft.util.ChatComponentText;
-import net.minecraftforge.common.ForgeHooks;
+import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.entity.player.PlayerDropsEvent;
-import net.minecraftforge.event.world.WorldEvent;
-import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent;
-import net.minecraftforge.fml.common.gameevent.PlayerEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent;
-import net.minecraftforge.fml.common.network.FMLNetworkEvent;
-import org.apache.http.impl.conn.IdleConnectionHandler;
+import org.apache.commons.lang3.reflect.FieldUtils;
 import org.lwjgl.input.Keyboard;
-import scala.collection.parallel.ParIterableLike;
 
-import javax.swing.*;
-import javax.swing.text.JTextComponent;
-import javax.xml.crypto.Data;
-import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Scanner;
 
 @Mod(modid = ApecMain.modId, version = ApecMain.version, name = ApecMain.name)
 public class ApecMain
@@ -44,19 +37,23 @@ public class ApecMain
 
     public static final String modId = "apec";
     public static final String name = "Apec";
-    public static final String version = "1.2";
+    public static final String version = "1.4";
 
     public static ApecMain Instance;
 
-    KeyBinding guiKey = new KeyBinding("Apec Gui", Keyboard.KEY_RCONTROL, "key.categories.misc");
+    KeyBinding guiKey = new KeyBinding("Apec Gui", Keyboard.KEY_RCONTROL, "Apec");
+    KeyBinding menuKey = new KeyBinding("Apec Settings Menu", Keyboard.KEY_M, "Apec");
 
     public DataExtractor dataExtractor = new DataExtractor();
     public InventorySubtractor inventorySubtractor = new InventorySubtractor();
+    public SettingsManager settingsManager = new SettingsManager();
 
-    String newestVersion = "";
+    public String newestVersion = "";
 
-    public List<Component> components = new ArrayList() {{
+    public List<Component> components = new ArrayList<Component>() {{
         add(new GUIModifier());
+        add(new ApecMenu());
+        add(new AuctionHouseComponent());
     }};
 
     @EventHandler
@@ -67,37 +64,54 @@ public class ApecMain
         MinecraftForge.EVENT_BUS.register(inventorySubtractor);
         MinecraftForge.EVENT_BUS.register(dataExtractor);
         ClientRegistry.registerKeyBinding(guiKey);
+        ClientRegistry.registerKeyBinding(menuKey);
+
+        for (Component component : components) {
+            MinecraftForge.EVENT_BUS.register(component);
+        }
 
         newestVersion = VersionChecker.getVersion();
 
+        this.settingsManager.LoadSettings();
+
     }
+
+     @SubscribeEvent
+     public void onGui (GuiOpenEvent event) {
+        if (this.settingsManager.getSettingState(SettingID.NPC_GUI)) {
+            if (getComponent(ComponentId.GUI_MODIFIER).getEnableState() && event.gui instanceof GuiChest) {
+                try {
+                    /** This is to ensure that there is not an Inner class of the GuiChes class forced by a mod , ughh ughh looking at you Skypixel */
+                    String upperFieldName = ApecUtils.unObfedFieldNames.get("upperChestInventory");
+                    String lowerFieldName = ApecUtils.unObfedFieldNames.get("lowerChestInventory");
+                    if (ApecUtils.isNameInFieldList(event.gui.getClass().getDeclaredFields(),upperFieldName) &&
+                        ApecUtils.isNameInFieldList(event.gui.getClass().getDeclaredFields(),lowerFieldName))
+                    {
+                        IInventory upper = (IInventory) FieldUtils.readDeclaredField(event.gui, upperFieldName, true);
+                        IInventory lower = (IInventory) FieldUtils.readDeclaredField(event.gui, lowerFieldName, true);
+                        ((AuctionHouseComponent) getComponent(ComponentId.AUCTION_HOUSE_MENU)).OpenTheGui(upper, lower, event);
+                    } else {
+                        IInventory upper = (IInventory) FieldUtils.readField(event.gui, upperFieldName, true);
+                        IInventory lower = (IInventory) FieldUtils.readField(event.gui, lowerFieldName, true);
+                        ((AuctionHouseComponent) getComponent(ComponentId.AUCTION_HOUSE_MENU)).OpenTheGui(upper, lower, event);
+                    }
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+     }
 
     @SubscribeEvent
     public void onKeyInput(InputEvent.KeyInputEvent event) {
         if (guiKey.isPressed()) {
-            components.get(0).Toggle(); // Dont worry propper keybinding will be real in 54 minutes
+            getComponent(ComponentId.GUI_MODIFIER).Toggle();
+        } else if (menuKey.isPressed()) {
+            getComponent(ComponentId.SETTINGS_MENU).Toggle();
         }
     }
 
-    private boolean notificationShown = false;
-
-    @SubscribeEvent
-    public void onTick(TickEvent.ClientTickEvent event) {
-        // TODO: make some better way of doing this
-        if (!notificationShown && Minecraft.getMinecraft().thePlayer != null && !ApecMain.version.equals(newestVersion)) {
-            ChatComponentText msg = new ChatComponentText("[\u00A72Apec\u00A7f] There is a new version of Apec available! Click on this message to go to the CurseForge page.");
-            msg.getChatStyle().setChatClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL,"https://www.curseforge.com/minecraft/mc-mods/apec"));
-            Minecraft.getMinecraft().thePlayer.addChatMessage(msg);
-            notificationShown = true;
-        }
-    }
-
-    @SubscribeEvent
-    public void onDisconnect(FMLNetworkEvent.ClientDisconnectionFromServerEvent event) {
-        notificationShown = false;
-    }
-
-    public Object getComponent(ComponentId componentId) {
+    public Component getComponent(ComponentId componentId) {
         for (Component component : components) {
             if (component.componentId == componentId) return component;
         }

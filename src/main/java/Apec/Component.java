@@ -1,5 +1,7 @@
 package Apec;
 
+import net.minecraftforge.common.MinecraftForge;
+
 import java.io.Console;
 
 public class Component {
@@ -10,6 +12,7 @@ public class Component {
 
     public Component(ComponentId componentId) {
         this.componentId = componentId;
+        MinecraftForge.EVENT_BUS.register(this);
     }
 
     public void Toggle() {
@@ -24,6 +27,10 @@ public class Component {
 
     protected void onDisable() {
 
+    }
+
+    public boolean getEnableState() {
+        return this.Enabled;
     }
 
 }

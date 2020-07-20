@@ -1,5 +1,6 @@
 package Apec;
 
+import Apec.Components.Gui.ContainerGuis.AuctionHouseGui;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiChat;
 import net.minecraft.client.gui.inventory.GuiChest;
@@ -39,7 +40,7 @@ public class InventorySubtractor {
 
         for (SubtractionListElem sle : elemtsToRemove) subtractionListElems.remove(sle);
 
-        if (mc.thePlayer != null && !(mc.currentScreen instanceof GuiChest)) {
+        if (mc.thePlayer != null && !(mc.currentScreen instanceof GuiChest || mc.currentScreen instanceof AuctionHouseGui)) {
 
             InventoryPlayer currentPlayerInv = mc.thePlayer.inventory;
 
@@ -96,10 +97,11 @@ public class InventorySubtractor {
     }
 
     private void addItemToHashMap(ItemStack is, HashMap<String ,Integer> hm) {
-        if (!hm.containsKey(is.getDisplayName()))
+        if (!hm.containsKey(is.getDisplayName())) {
             hm.put(is.getDisplayName(), is.stackSize);
-        else
-            hm.put(is.getDisplayName(), is.stackSize + hm.get(is.getDisplayName()));
+        } else {
+            int q = is.stackSize + hm.get(is.getDisplayName());
+        }
     }
 
     public class SubtractionListElem {
