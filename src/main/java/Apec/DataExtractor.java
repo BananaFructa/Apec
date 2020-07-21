@@ -38,6 +38,7 @@ public class DataExtractor {
     private final String woodRacingSymbol = "WOODS RACING";
     private final String dpsSymbol = "DPS";
     private final String secSymbol = "second";
+    private final String secretSymbol = "Secrets";
 
     private boolean alreadyShowedTabError = false;
     private boolean alreadyShowedScrErr = false;
@@ -47,6 +48,8 @@ public class DataExtractor {
     private int lastDefence = 0;
     private int baseAp = 0;
     private int lastAp = 1 , lastBaseAp = 1;
+
+    private String lastHour = "",lastDate = "",lastZone = "";
 
     private final String magmaBossName = "magma cube boss";
 
@@ -59,6 +62,7 @@ public class DataExtractor {
     private final String expireRecieveTradeRequest = "The /trade request from";
 
     private final String combatZoneName = "the catacombs";
+    private final String clearedName = "dungeon cleared";
 
     private boolean hasSentATradeRequest = false;
     private boolean hasRecievedATradeRequest = false;
@@ -154,45 +158,38 @@ public class DataExtractor {
      */
 
     private ScoreBoardData ProcessScoreBoardData() {
-        // TODO: Add support for redstone usage on the island
         try {
             ScoreBoardData scoreBoardData = new ScoreBoardData();
 
             int size = scoreBoardLines.size() - 1;
 
-            boolean isInTheCatacombs = false,firstLineHasBeenRemoved=false;
+            boolean isInTheCatacombs = false;
+            int catacombsIndex = -1;
+            int clearedIndex = -1;
 
-
-            isInTheCatacombs = !scoreBoardLines.get(size).contains("/") && !scoreBoardLines.get(size).contains(":");
-            firstLineHasBeenRemoved = isInTheCatacombs;
+            for (int i = 0;i < scoreBoardLines.size();i++){
+                if (ApecUtils.containedByCharSequence(scoreBoardLines.get(size-i).toLowerCase(),clearedName)) {
+                    clearedIndex = i;
+                    isInTheCatacombs = true;
+                }
+                if (ApecUtils.containedByCharSequence(scoreBoardLines.get(size-i).toLowerCase(),combatZoneName) && !scoreBoardLines.get(size-i).toLowerCase().contains("to")) {
+                    catacombsIndex = i;
+                    isInTheCatacombs = true;
+                }
+            }
 
             if (isInTheCatacombs) {
                 scoreBoardData.IRL_Date = "Data Unavailable";
                 scoreBoardData.Server = "Data Unavailable";
+                scoreBoardData.Purse = "Purse: \u00a76Data Unavailable";
             }
 
-            for (int i = 0; i < scoreBoardLines.size(); i++) {
-                String s;
-                if (isInTheCatacombs && firstLineHasBeenRemoved) {
-                    switch (i) {
-                        case 1:
-                            s = scoreBoardLines.get(size - i);
-                            scoreBoardData.Date = s;
-                            break;
-                        case 2:
-                            s = scoreBoardLines.get(size - i);
-                            scoreBoardData.Hour = s;
-                            break;
-                        case 3:
-                            s = scoreBoardLines.get(size - i);
-                            scoreBoardData.Zone = s;
-                            break;
-                        default:
-                            s = scoreBoardLines.get(size-i);
-                            ScoreBoardParserWhileInDungeons(scoreBoardData, s,i,scoreBoardLines);
-                            break;
-                    }
-                } else {
+            if (isInTheCatacombs) {
+                ScoreBoardParserWhileInDungeons(scoreBoardData,clearedIndex,catacombsIndex,scoreBoardLines);
+            } else {
+
+                for (int i = 0; i < scoreBoardLines.size(); i++) {
+                    String s;
                     switch (i) {
                         case 0:
                             s = scoreBoardLines.get(size - i);
@@ -213,27 +210,21 @@ public class DataExtractor {
                         case 4:
                             s = scoreBoardLines.get(size - i);
                             scoreBoardData.Zone = s;
-                            if (ApecUtils.containedByCharSequence(s.toLowerCase(),combatZoneName)) isInTheCatacombs = true;
                             break;
                         default:
                             s = scoreBoardLines.get(size - i);
-                            if (isInTheCatacombs) {
-                                ScoreBoardParserWhileInDungeons(scoreBoardData,s,i,scoreBoardLines);
-                            } else {
-                                ScoreboardParser(scoreBoardData, s, i, scoreBoardLines);
-                            }
+                            ScoreboardParser(scoreBoardData, s, i, scoreBoardLines);
                             break;
                     }
-                }
-
-                if (isInTheCatacombs) {
-                    scoreBoardData.Purse = "Purse: \u00a76Data Unavailable";
                 }
             }
 
             scoreBoardData.ExtraInfo.add(" ");
 
             alreadyShowedScrErr = false;
+            lastDate = scoreBoardData.Date;
+            lastZone = scoreBoardData.Zone;
+            lastHour = scoreBoardData.Hour;
             return scoreBoardData;
         } catch (Exception err) {
             ScoreBoardData noReponse = new ScoreBoardData();
@@ -247,6 +238,7 @@ public class DataExtractor {
                 ApecUtils.showMessage("[\u00A72Apec\u00A7f] There was an error processing scoreboard data!");
                 alreadyShowedScrErr = true;
             }
+            err.printStackTrace();
 
             return noReponse;
         }
@@ -339,13 +331,28 @@ public class DataExtractor {
 
     }
 
-    private void ScoreBoardParserWhileInDungeons(ScoreBoardData sd,String s,int idx,List<String> l) {
-        if (idx > 1) {
-            // Yea for some reason the test that shows the zone for The Catacombs has broken color coding
-            if (ApecUtils.containedByCharSequence(l.get(l.size() - 1 - idx + 2).toLowerCase(),combatZoneName) && !l.get(l.size() - 1 - idx + 2).toLowerCase().contains("[")) {
-                for (int i = idx; i < l.size() - 2; i++) {
-                    sd.ExtraInfo.add(l.get(l.size() - 1 - i));
-                }
+    private void ScoreBoardParserWhileInDungeons(ScoreBoardData sd,int clrearedIdx,int cIdx,List<String> l) {
+        if (cIdx != -1) {
+            sd.Hour = ApecUtils.removeFirstSpaces(l.get((l.size() - 1 - cIdx + 1)));
+            sd.Date = ApecUtils.removeFirstSpaces(l.get(l.size() - 1 - cIdx + 2));
+            sd.Zone = ApecUtils.removeFirstSpaces(l.get(l.size() - 1 - cIdx));
+        } else {
+            sd.Hour = lastHour;
+            sd.Zone = lastZone;
+            sd.Date = lastDate;
+        }
+        if (clrearedIdx != -1) {
+            List<String> ei = new ArrayList<String>();
+            for (int i = clrearedIdx; i < l.size() - 2; i++) {
+                ei.add(ApecUtils.removeFirstSpaces(l.get(l.size() - 1 - i)));
+            }
+            for (int i = clrearedIdx - 1; cIdx != -1 ? i > cIdx + 1 : i > -1; i--) {
+                ei.add(0, ApecUtils.removeFirstSpaces(l.get(l.size() - 1 - i)));
+            }
+            sd.ExtraInfo.addAll(ei);
+        } else if (cIdx != -1) {
+            for (int i = cIdx + 2;i < l.size() - 2;i++) {
+                sd.ExtraInfo.add(ApecUtils.removeFirstSpaces(l.get(l.size() - 1 - i)));
             }
         }
     }
@@ -487,6 +494,7 @@ public class DataExtractor {
         String woodRacing = segmentString(actionBarData,woodRacingSymbol,'\u00a7',' ',2,2,false);
         String dps = segmentString(actionBarData,dpsSymbol,'\u00a7',' ',1,1,false);
         String sec = segmentString(actionBarData,secSymbol,'\u00a7',' ',1,2,false);
+        String secrets = segmentString(actionBarData,secretSymbol,'\u00a7','\u00a7',1,1,false);
 
         if ((endRace != null || woodRacing != null || dps != null || sec != null) && !otherData.ExtraInfo.isEmpty()) otherData.ExtraInfo.add(" ");
 
@@ -494,6 +502,7 @@ public class DataExtractor {
         if (woodRacing != null) otherData.ExtraInfo.add(woodRacing);
         if (dps != null) otherData.ExtraInfo.add(dps);
         if (sec != null) otherData.ExtraInfo.add(sec);
+        if (secrets != null) otherData.ExtraInfo.add(secrets);
 
         if (ApecMain.Instance.settingsManager.getSettingState(SettingID.SHOW_POTIONS_EFFECTS)) {
 

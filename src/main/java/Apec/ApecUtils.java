@@ -95,6 +95,7 @@ public class ApecUtils {
     }
 
     public static String removeFirstSpaces(String s) {
+        if (s.equals("")) return s;
         int nonSpaceIdx = 0;
         for (int i = 0;s.charAt(i) == ' ';i++) {
             nonSpaceIdx = i+1;
