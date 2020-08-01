@@ -2,19 +2,22 @@ package Apec.Components.Gui.GuiIngame.GuiElements;
 
 import Apec.ApecUtils;
 import Apec.BossId;
+import Apec.Components.Gui.GuiIngame.GUIComponentID;
 import Apec.Components.Gui.GuiIngame.GUIModifier;
 import Apec.DataExtractor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiIngame;
 import net.minecraft.client.gui.ScaledResolution;
 
+/** This is not used for now */
+
 public class BossHealthBar extends GUIComponent {
 
     public BossHealthBar() {
-        super(GUIModifier.GUiComponentID.BOSS_HEALTH_BAR);
+        super(GUIComponentID.INVALID);
     }
 
-    public void drawTex(DataExtractor.PlayerStats ps, DataExtractor.ScoreBoardData sd, DataExtractor.OtherData od, ScaledResolution sr) {
+    public void drawTex(DataExtractor.PlayerStats ps, DataExtractor.ScoreBoardData sd, DataExtractor.OtherData od, ScaledResolution sr,boolean editingMode) {
         if (od.bossData.bossId != BossId.NONE && od.bossData.bossId != null) {
             GuiIngame gi = Minecraft.getMinecraft().ingameGUI;
 
@@ -33,7 +36,7 @@ public class BossHealthBar extends GUIComponent {
         }
     }
 
-    public void draw(DataExtractor.PlayerStats ps, DataExtractor.ScoreBoardData sd, DataExtractor.OtherData od,ScaledResolution sr) {
+    public void draw(DataExtractor.PlayerStats ps, DataExtractor.ScoreBoardData sd, DataExtractor.OtherData od,ScaledResolution sr,boolean editingMode) {
         if (od.bossData.bossId != BossId.NONE && od.bossData.bossId != null) {
             DataExtractor.BossData bossData = od.bossData;
 

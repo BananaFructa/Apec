@@ -1,16 +1,22 @@
 package Apec;
 
+import Apec.Commands.ApecGuiOpenCommand;
+import Apec.Commands.ApecMenuOpenCommand;
 import Apec.Components.Gui.ContainerGuis.AuctionHouseComponent;
 import Apec.Components.Gui.GuiIngame.GUIModifier;
 import Apec.Components.Gui.Menu.ApecMenu;
+import Apec.Components.Gui.Menu.CustomizationMenu.CustomizationGui;
 import Apec.Settings.SettingID;
 import Apec.Settings.SettingsManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.client.settings.KeyBinding;
+import net.minecraft.command.CommandException;
+import net.minecraft.command.ICommandSender;
 import net.minecraft.event.ClickEvent;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.util.ChatComponentText;
+import net.minecraftforge.client.ClientCommandHandler;
 import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
@@ -30,6 +36,7 @@ import java.util.List;
 public class ApecMain
 {
 
+
     /**
      * Don't read that -> You lost
      */
@@ -37,7 +44,7 @@ public class ApecMain
 
     public static final String modId = "apec"; 
     public static final String name = "Apec";
-    public static final String version = "1.4.2";
+    public static final String version = "1.5";
 
     public static ApecMain Instance;
 
@@ -69,6 +76,9 @@ public class ApecMain
         for (Component component : components) {
             MinecraftForge.EVENT_BUS.register(component);
         }
+
+        ClientCommandHandler.instance.registerCommand(new ApecMenuOpenCommand() { });
+        ClientCommandHandler.instance.registerCommand(new ApecGuiOpenCommand() { });
 
         newestVersion = VersionChecker.getVersion();
 

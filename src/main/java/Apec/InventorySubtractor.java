@@ -25,8 +25,6 @@ public class InventorySubtractor {
     private InventoryPlayer lastPlayerInv = new InventoryPlayer(null);
     private ItemStack lastItemStack;
 
-    private final int elemLifetime = 200;
-
     public ArrayList<SubtractionListElem> subtractionListElems = new ArrayList<SubtractionListElem>();
 
     @SubscribeEvent
@@ -62,7 +60,8 @@ public class InventorySubtractor {
 
             for (String k : lastHashMap.keySet()) {
                 if (currentHashMap.containsKey(k)) {
-                    if (!currentHashMap.get(k).equals(lastHashMap.get(k))) {
+                    if (currentHashMap.get(k).intValue() != lastHashMap.get(k).intValue()) {
+                        System.out.println("A");
                         addToList(new SubtractionListElem(k,currentHashMap.get(k) - lastHashMap.get(k)));
                     }
                 } else {
@@ -89,7 +88,6 @@ public class InventorySubtractor {
         for (SubtractionListElem _sle : subtractionListElems) {
             if (_sle.text.equals(sle.text)) {
                 _sle.quant += sle.quant;
-                _sle.lifetme = elemLifetime;
                 return;
             }
         }
@@ -100,17 +98,7 @@ public class InventorySubtractor {
         if (!hm.containsKey(is.getDisplayName())) {
             hm.put(is.getDisplayName(), is.stackSize);
         } else {
-            int q = is.stackSize + hm.get(is.getDisplayName());
-        }
-    }
-
-    public class SubtractionListElem {
-        public String text;
-        public int quant;
-        public int lifetme = elemLifetime;
-        public SubtractionListElem(String s,int q) {
-            this.text = s;
-            this.quant = q;
+            hm.put(is.getDisplayName(), is.stackSize + hm.get(is.getDisplayName()));
         }
     }
 }

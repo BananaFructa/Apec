@@ -3,6 +3,8 @@ package Apec.Components.Gui.GuiIngame;
 import Apec.ApecMain;
 import Apec.ApecUtils;
 import Apec.ComponentId;
+import Apec.Components.Gui.GuiIngame.GuiElements.GUIComponent;
+import Apec.Settings.SettingID;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.*;
 import net.minecraft.client.renderer.GlStateManager;
@@ -18,6 +20,7 @@ import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.MathHelper;
 import org.apache.commons.lang3.reflect.FieldUtils;
+import org.lwjgl.util.vector.Vector2f;
 
 import java.util.List;
 
@@ -219,7 +222,6 @@ public class ApecGuiIngameVanilla extends GuiIngame {
 
             scoreobjective1 = scoreboard.getObjectiveInDisplaySlot(0);
 
-
             if (!this.mc.gameSettings.keyBindPlayerList.isKeyDown() || this.mc.isIntegratedServerRunning() && this.mc.thePlayer.sendQueue.getPlayerInfoMap().size() <= 1 && scoreobjective1 == null)
             {
                 this.overlayPlayerList.updatePlayerList(false);
@@ -242,13 +244,16 @@ public class ApecGuiIngameVanilla extends GuiIngame {
         {
             if (this.mc.getRenderViewEntity() instanceof EntityPlayer)
             {
+                GUIComponent guiComponent = ((GUIModifier)ApecMain.Instance.getComponent(ComponentId.GUI_MODIFIER)).getGuiComponent(GUIComponentID.HOT_BAR);
+                Vector2f pos = ApecUtils.addVec(guiComponent.getAnchorPointPosition(sr),guiComponent.getDelta_position());
+
                 GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
                 this.mc.getTextureManager().bindTexture(widgetsTexPath);
                 EntityPlayer entityplayer = (EntityPlayer)this.mc.getRenderViewEntity();
                 float f = this.zLevel;
                 this.zLevel = -90.0F;
-                this.drawTexturedModalRect(sr.getScaledWidth()-183, sr.getScaledHeight() - 43, 0, 0, 182, 22);
-                this.drawTexturedModalRect(sr.getScaledWidth()-183- 1 + entityplayer.inventory.currentItem * 20, sr.getScaledHeight() - 43 - 1, 0, 22, 24, 22);
+                this.drawTexturedModalRect(pos.x, pos.y, 0, 0, 182, 22);
+                this.drawTexturedModalRect(pos.x- 1 + entityplayer.inventory.currentItem * 20, pos.y - 1, 0, 22, 24, 22);
 
                 GlStateManager.enableBlend();
                 GlStateManager.enableRescaleNormal();
@@ -259,8 +264,8 @@ public class ApecGuiIngameVanilla extends GuiIngame {
 
                 for (int j = 0; j < 9; ++j)
                 {
-                    int k = sr.getScaledWidth() - 182 + j * 20 + 2;
-                    int l = sr.getScaledHeight() - 37 - 3;
+                    int k = (int)pos.x + 1 + j * 20 + 2;
+                    int l = (int)pos.y + 3;
                     this.renderHotbarItem(j, k, l, partialTicks, entityplayer);
                 }
 
@@ -284,8 +289,20 @@ public class ApecGuiIngameVanilla extends GuiIngame {
                     s = EnumChatFormatting.ITALIC + s;
                 }
 
-                int i = p_181551_1_.getScaledWidth() - 182;
-                int j = p_181551_1_.getScaledHeight() - 53;
+                GUIComponent guiComponent = ((GUIModifier)ApecMain.Instance.getComponent(ComponentId.GUI_MODIFIER)).getGuiComponent(GUIComponentID.HOT_BAR);
+                Vector2f pos = ApecUtils.addVec(guiComponent.getAnchorPointPosition(p_181551_1_),guiComponent.getDelta_position());
+                Vector2f delta = guiComponent.getDelta_position();
+
+                int i,j;
+                if (!ApecMain.Instance.settingsManager.getSettingState(SettingID.ITEM_HIGHLIGHT_TEXT)) {
+                    i = (int) pos.x + 1;
+                    j = (int) pos.y - 10;
+                } else {
+                    i = ((p_181551_1_.getScaledWidth() - this.getFontRenderer().getStringWidth(s)) / 2) - (183 - 91) + p_181551_1_.getScaledWidth()/2;
+                    j = p_181551_1_.getScaledHeight() - 59 - (43 - 35);
+                    i += delta.x;
+                    j += delta.y;
+                }
 
                 int k = (int)((float)this.remainingHighlightTicks * 256.0F / 10.0F);
 
@@ -345,6 +362,10 @@ public class ApecGuiIngameVanilla extends GuiIngame {
             for (int i = messages.size() - 1;i > -1;i--) {
                 this.persistantChatGUI.printChatMessage(messages.get(i).getChatComponent());
             }
+        }
+
+        public void setChatSentMessages(List<String> messages) throws IllegalAccessException {
+            FieldUtils.writeDeclaredField(this.persistantChatGUI,ApecUtils.unObfedFieldNames.get("sentMessages"),messages,true);
         }
 
 }

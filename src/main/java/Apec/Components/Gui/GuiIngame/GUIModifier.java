@@ -2,6 +2,7 @@ package Apec.Components.Gui.GuiIngame;
 
 import Apec.*;
 import Apec.Components.Gui.GuiIngame.GuiElements.*;
+import Apec.Components.Gui.Menu.CustomizationMenu.CustomizationGui;
 import Apec.Settings.SettingID;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.*;
@@ -14,41 +15,36 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.lwjgl.Sys;
+import org.lwjgl.util.vector.Vector2f;
 
+import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.text.Format;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 
 public class GUIModifier extends Component {
 
-    public enum GUiComponentID {
-        STAT_BARS,
-        SKILL_BARS,
-        BOTTOM_BAR,
-        INV_SUBTRACT,
-        EXTRA_SCR_INF,
-        BOSS_HEALTH_BAR,
-        EVENT_DISPLAY
-    }
-
     private  Minecraft mc = Minecraft.getMinecraft();
 
-    private List<GUiComponentID> compenetsToBlockInF3 = new ArrayList<GUiComponentID>() {{
-        add(GUiComponentID.STAT_BARS);
-        add(GUiComponentID.INV_SUBTRACT);
-        add(GUiComponentID.EXTRA_SCR_INF);
-        add(GUiComponentID.EVENT_DISPLAY);
+    private List<GUIComponentID> compenetsToBlockInF3 = new ArrayList<GUIComponentID>() {{
+
     }};
 
-    ArrayList<GUIComponent> GUIComponents = new ArrayList<GUIComponent>() {{
-        add(new StatusBars()); // The bars that display the hp, mana, and and air
+    public ArrayList<GUIComponent> GUIComponents = new ArrayList<GUIComponent>() {{
+        add(new HpBar());
+        add(new MnBar());
+        add(new XpBar());
+        add(new AirBar());
         add(new SkillBar()); // The bar that shows the skill progression
         add(new InventoryTraffic()); // The thing that shows the inventory traffic
         add(new InfoBox()); // The block box with the things that used to be in the scoreboard
         add(new ExtraInfo()); // The other things that used to be in the scoreboard
         //add(new BossHealthBar());
+        add(new HotBar());
         add(new EventLister());
     }};
 
@@ -77,7 +73,14 @@ public class GUIModifier extends Component {
         }
     }
 
-    private boolean shouldBlockF3(GUiComponentID gUiComponentID) {
+    public GUIComponent getGuiComponent(GUIComponentID guiComponentID) {
+        for (GUIComponent component : GUIComponents) {
+            if (component.gUiComponentID == guiComponentID) return component;
+        }
+        return null;
+    }
+
+    private boolean shouldBlockF3(GUIComponentID gUiComponentID) {
         return ApecMain.Instance.settingsManager.getSettingState(SettingID.HIDE_IN_F3) && mc.gameSettings.showDebugInfo && this.compenetsToBlockInF3.contains(gUiComponentID);
     }
 
@@ -92,11 +95,11 @@ public class GUIModifier extends Component {
             GlStateManager.enableBlend();
             for (GUIComponent component : GUIComponents) {
                 if (shouldBlockF3(component.gUiComponentID)) continue;
-                component.drawTex(ps, sd, od, sr);
+                component.drawTex(ps, sd, od, sr,mc.currentScreen instanceof CustomizationGui);
             }
             for (GUIComponent component : GUIComponents) {
                 if (shouldBlockF3(component.gUiComponentID)) continue;
-                component.draw(ps, sd, od, sr);
+                component.draw(ps, sd, od, sr,mc.currentScreen instanceof CustomizationGui);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -113,9 +116,11 @@ public class GUIModifier extends Component {
         IChatComponent header = null,footer = null;
         GuiNewChat guiNewChat = null;
         List<ChatLine> chatLines = null;
+        List<String> sentMessages = null;
         try {
             guiNewChat = (GuiNewChat) FieldUtils.readField((GuiIngame)this.mc.ingameGUI, ApecUtils.unObfedFieldNames.get("persistantChatGUI"), true);
             chatLines = (List<ChatLine>)FieldUtils.readDeclaredField(guiNewChat,ApecUtils.unObfedFieldNames.get("chatMessages"),true);
+            sentMessages = guiNewChat.getSentMessages();
             header = (IChatComponent) FieldUtils.readField(this.mc.ingameGUI.getTabList(), ApecUtils.unObfedFieldNames.get("header"), true);
             footer = (IChatComponent) FieldUtils.readField(this.mc.ingameGUI.getTabList(), ApecUtils.unObfedFieldNames.get("footer"), true);
         } catch (Exception e) {
@@ -140,6 +145,11 @@ public class GUIModifier extends Component {
                if (modeV) ((ApecGuiIngameVanilla) mc.ingameGUI).setChatData(chatLines);
                else ((ApecGuiIngameForge) mc.ingameGUI).setChatData(chatLines);
             }
+            if (guiNewChat != null && sentMessages != null) {
+                if (modeV) ((ApecGuiIngameVanilla) mc.ingameGUI).setChatSentMessages(sentMessages);
+                else ((ApecGuiIngameForge) mc.ingameGUI).setChatSentMessages(sentMessages);
+            }
+            this.ApplyDeltas();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -150,9 +160,11 @@ public class GUIModifier extends Component {
         IChatComponent header = null,footer = null;
         GuiNewChat guiNewChat = null;
         List<ChatLine> chatLines = null;
+        List<String> sentMessages = null;
         try {
-            guiNewChat = (GuiNewChat) FieldUtils.readField((GuiIngame)this.mc.ingameGUI, ApecUtils.unObfedFieldNames.get("persistantChatGUI"), true);
+            guiNewChat = (GuiNewChat) FieldUtils.readField(this.mc.ingameGUI, ApecUtils.unObfedFieldNames.get("persistantChatGUI"), true);
             chatLines = (List<ChatLine>)FieldUtils.readDeclaredField(guiNewChat,ApecUtils.unObfedFieldNames.get("chatMessages"),true);
+            sentMessages = guiNewChat.getSentMessages();
             header = (IChatComponent) FieldUtils.readField(this.mc.ingameGUI.getTabList(), ApecUtils.unObfedFieldNames.get("header"), true);
             footer = (IChatComponent) FieldUtils.readField(this.mc.ingameGUI.getTabList(), ApecUtils.unObfedFieldNames.get("footer"), true);
         } catch (Exception e) {
@@ -167,10 +179,32 @@ public class GUIModifier extends Component {
             for (int i = chatLines.size() - 1;i > -1;i--) {
                 _guiNewChat.printChatMessage(chatLines.get(i).getChatComponent());
             }
+            FieldUtils.writeDeclaredField(_guiNewChat,ApecUtils.unObfedFieldNames.get("sentMessages"),sentMessages,true);
             mc.ingameGUI.getTabList().setHeader(header);
             mc.ingameGUI.getTabList().setFooter(footer);
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    private void ApplyDeltas() {
+        try {
+            Scanner scanner = new Scanner(new File("config/Apec/GuiDeltas.txt"));
+            while (scanner.hasNextLine()) {
+                String s = scanner.nextLine();
+                String[] tempSplit = s.split("#");
+                int idx = Integer.parseInt(tempSplit[0]);
+                Vector2f delta = new Vector2f(Float.parseFloat(tempSplit[1].split("@")[0]),Float.parseFloat(tempSplit[1].split("@")[1]));
+                float scale = 1f;
+                if (tempSplit[1].split("@").length == 3) {
+                    scale = Float.parseFloat(tempSplit[1].split("@")[2]);
+                }
+                getGuiComponent(GUIComponentID.values()[idx]).setDelta_position(delta);
+                getGuiComponent(GUIComponentID.values()[idx]).setScale(scale);
+            }
+            scanner.close();
+        } catch (IOException e) {
+            ApecUtils.showMessage("[\u00A72Apec\u00A7f] There was an error reading GUI deltas!");
         }
     }
 

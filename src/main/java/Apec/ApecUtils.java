@@ -18,11 +18,12 @@ public class ApecUtils {
     private static String[] colorCodes = { "\u00a70","\u00a71","\u00a72","\u00a73","\u00a74","\u00a75","\u00a76","\u00a77","\u00a78","\u00a79","\u00a7a","\u00a7b","\u00a7c","\u00a7d","\u00a7e","\u00a7f" };
 
     public static HashMap<String,String> unObfedFieldNames = new HashMap<String,String>() {{
-        put("footer","field_175255_h");
-        put("header","field_175256_i");
+        put("footer",inFMLDebugFramework ? "footer" : "field_175255_h");
+        put("header",inFMLDebugFramework ? "header" : "field_175256_i");
         put("upperChestInventory",inFMLDebugFramework ? "upperChestInventory" : "field_147016_v");
         put("lowerChestInventory",inFMLDebugFramework ? "lowerChestInventory" : "field_147015_w");
         put("persistantChatGUI",inFMLDebugFramework ? "persistantChatGUI" : "field_73840_e");
+        put("sentMessages", inFMLDebugFramework ? "sentMessages" : "field_146248_g");
         put("chatMessages","field_146253_i");
     }};
 
@@ -33,7 +34,13 @@ public class ApecUtils {
         return s;
     }
 
+    public static float getMagnitude(Vector2f v1,Vector2f v2) {
+        return (float)Math.sqrt(Math.pow(v1.x-v1.y,2) + Math.pow(v1.y-v2.y,2));
+    }
 
+    public static boolean zeroMagnitude (Vector2f v) {
+        return v.x == 0 && v.y == 0;
+    }
 
     public static String removeColorCodes(String s) {
         for (String code : colorCodes) {
@@ -103,13 +110,41 @@ public class ApecUtils {
         return s.substring(nonSpaceIdx);
     }
 
+    public static List<String> orderByWidth (List<String> l) {
+        List<Integer> arr = new ArrayList<Integer>();
+        for (String s : l) {
+            arr.add(Minecraft.getMinecraft().fontRendererObj.getStringWidth(s));
+        }
+        bubbleSort(arr,l);
+        return l;
+    }
+
+    private static void bubbleSort(List<Integer> arr,List<String> s) {
+        int n = arr.size();
+        for (int i = 0; i < n - 1; i++)
+            for (int j = 0; j < n - i - 1; j++)
+                if (arr.get(j) < arr.get(j + 1)) {
+                    int temp = arr.get(j);
+                    arr.set(j, arr.get(j + 1));
+                    arr.set(j + 1, temp);
+
+                    String _temp = s.get(j);
+                    s.set(j, s.get(j + 1));
+                    s.set(j + 1, _temp);
+                }
+    }
+
     public static void drawThiccBorderString(String s,int x,int y,int c) {
         String noColorCodeS = ApecUtils.removeColorCodes(s);
-        Minecraft.getMinecraft().fontRendererObj.drawString(noColorCodeS, x + 1,y, (c >> 24) << 24);
-        Minecraft.getMinecraft().fontRendererObj.drawString(noColorCodeS, x - 1, y, (c >> 24) << 24);
-        Minecraft.getMinecraft().fontRendererObj.drawString(noColorCodeS, x, y + 1, (c >> 24) << 24);
-        Minecraft.getMinecraft().fontRendererObj.drawString(noColorCodeS, x, y - 1, (c >> 24) << 24);
-        Minecraft.getMinecraft().fontRendererObj.drawString(s, x, y, c);
+        if (ApecMain.Instance.settingsManager.getSettingState(SettingID.BORDER_TYPE)) {
+            Minecraft.getMinecraft().fontRendererObj.drawString(noColorCodeS, x + 1, y, (c >> 24) << 24);
+            Minecraft.getMinecraft().fontRendererObj.drawString(noColorCodeS, x - 1, y, (c >> 24) << 24);
+            Minecraft.getMinecraft().fontRendererObj.drawString(noColorCodeS, x, y + 1, (c >> 24) << 24);
+            Minecraft.getMinecraft().fontRendererObj.drawString(noColorCodeS, x, y - 1, (c >> 24) << 24);
+            Minecraft.getMinecraft().fontRendererObj.drawString(s, x, y, c);
+        } else {
+            Minecraft.getMinecraft().fontRendererObj.drawStringWithShadow(s,x,y,c);
+        }
     }
 
 

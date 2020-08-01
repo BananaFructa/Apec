@@ -3,44 +3,84 @@ package Apec.Components.Gui.Menu;
 import Apec.ApecMain;
 import Apec.Component;
 import Apec.ComponentId;
+import Apec.Components.Gui.Menu.CustomizationMenu.CustomizationGui;
 import Apec.Settings.Setting;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraftforge.client.event.GuiScreenEvent;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import org.lwjgl.LWJGLException;
+import org.lwjgl.Sys;
+import org.lwjgl.input.Mouse;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 public class ApecMenu extends Component {
 
     protected Minecraft mc = Minecraft.getMinecraft();
+    public Integer page = 0;
 
     public ApecMenu() {
         super(ComponentId.SETTINGS_MENU);
     }
 
+    public static String getStringFromAction (NavigationAction action) {
+        switch (action) {
+            case BACK:
+                return "<";
+            case NEXT:
+                return ">";
+            case OPEN_GUI_EDITING:
+                return "Customize Gui";
+            default:
+                return "N/A";
+        }
+    }
+
     @Override
-    protected void onEnable() {
-        ApecMenuGui apecMenuGui = new ApecMenuGui();
+    protected void onEnable()  {
+        ApecMenuGui apecMenuGui = new ApecMenuGui(page);
         mc.displayGuiScreen(apecMenuGui);
         this.Toggle();
     }
 
 
-    private class ApecMenuGui extends GuiScreen {
+    public static class ApecMenuGui extends GuiScreen {
+
+        Integer page;
+
+        public ApecMenuGui(Integer pageCounter) {
+            this.page = pageCounter;
+        }
 
         @Override
         public void initGui() {
             super.initGui();
+            this.loadAtPage(page);
             ScaledResolution sr = new ScaledResolution(mc);
             int h = sr.getScaledHeight()/2;
             int w = sr.getScaledWidth()/2;
-            for (int i = 0;i < ApecMain.Instance.settingsManager.settings.size();i++) {
-                buttonList.add(new ApecMenuButton(i,w-235+(i%3)*160,h-120 + 60*(i/3),15*10,5*10, ApecMain.Instance.settingsManager.settings.get(i)));
+            this.buttonList.add(new ApecMenuNavigationButton(0,w-265,h-130,20,250,NavigationAction.BACK));
+            this.buttonList.add(new ApecMenuNavigationButton(0,w+245,h-130,20,250,NavigationAction.NEXT));
+            this.buttonList.add(new ApecMenuNavigationButton(0,5,5,85,23,NavigationAction.OPEN_GUI_EDITING));
+        }
+
+        public void executeNavigation(NavigationAction action) {
+            switch (action) {
+                case BACK:
+                    if (page > 0)
+                    page = page - 1;
+                    break;
+                case NEXT:
+                    if (page < ApecMain.Instance.settingsManager.settings.size() / 12)
+                    page = page + 1;
+                    break;
+                case OPEN_GUI_EDITING:
+                    mc.displayGuiScreen(new CustomizationGui());
+                    break;
             }
         }
 
@@ -50,13 +90,13 @@ public class ApecMenu extends Component {
             int h = sr.getScaledHeight()/2;
             int w = sr.getScaledWidth()/2;
             final int spaceBetweenLines = 60, spaceBetweenRows = 160;
-            drawRect(w-245,h-130,w+245,h+130,0x990a0a0a);
-            for (int i = 0;i < ApecMain.Instance.settingsManager.settings.size();i++) {
+            drawRect(w-245,h-130,w+245,h+120,0x990a0a0a);
+            for (int i = page*12;i < ApecMain.Instance.settingsManager.settings.size() && i < (page+1)*12;i++) {
                 Setting s = ApecMain.Instance.settingsManager.settings.get(i);
                 boolean enabled = ApecMain.Instance.settingsManager.settings.get(i).enabled;
 
-                int x = w-235+(i%3)*160;
-                int y = h-120 + spaceBetweenLines * (i/3);
+                int x = w-235+((i%12)%3)*160;
+                int y = h-120 + spaceBetweenLines * ((i%12)/3);
 
                 drawRectangleAt(x,y,15,5,mouseX,mouseY);
 
@@ -117,8 +157,33 @@ public class ApecMenu extends Component {
         @Override
         protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
             super.mouseClicked(mouseX, mouseY, mouseButton);
-            if (mouseButton == 0) for (net.minecraft.client.gui.GuiButton guiButton : this.buttonList)
+            boolean needsToReloadButtons = false;
+            if (mouseButton == 0) for (net.minecraft.client.gui.GuiButton guiButton : this.buttonList) {
+                if (guiButton instanceof ApecMenuButton)
                 if (guiButton.mousePressed(mc, mouseX, mouseY)) ((ApecMenuButton) guiButton).ToggleSetting();
+                if (guiButton instanceof ApecMenuNavigationButton)
+                if (guiButton.mousePressed(mc, mouseX, mouseY)) {
+                    ((ApecMenuNavigationButton)guiButton).ExecuteAction();
+                    needsToReloadButtons = true;
+                }
+            }
+            if (needsToReloadButtons) this.loadAtPage(page);
+        }
+
+        private void loadAtPage(int page) {
+            ScaledResolution sr = new ScaledResolution(mc);
+            int h = sr.getScaledHeight()/2;
+            int w = sr.getScaledWidth()/2;
+            List<GuiButton> buttonToRemove = new ArrayList<GuiButton>();
+            for (GuiButton guiButton : this.buttonList) {
+                if (guiButton instanceof ApecMenuButton)  buttonToRemove.add(guiButton);
+            }
+            for (GuiButton guiButton : buttonToRemove) {
+                this.buttonList.remove(guiButton);
+            }
+            for (int i = page*12;i < ApecMain.Instance.settingsManager.settings.size() && i < (page+1)*12;i++) {
+                buttonList.add(new ApecMenuButton(i,w-235+((i%12)%3)*160,h-120 + 60*((i%12)/3),15*10,5*10, ApecMain.Instance.settingsManager.settings.get(i)));
+            }
         }
 
     }

@@ -21,8 +21,10 @@ import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import org.apache.commons.lang3.reflect.FieldUtils;
+import org.lwjgl.Sys;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -39,6 +41,8 @@ public class DataExtractor {
     private final String dpsSymbol = "DPS";
     private final String secSymbol = "second";
     private final String secretSymbol = "Secrets";
+    private final String chickenRaceSymbol = "CHICKEN RACING";
+    private final String jumpSymbol = "JUMP";
 
     private boolean alreadyShowedTabError = false;
     private boolean alreadyShowedScrErr = false;
@@ -51,6 +55,9 @@ public class DataExtractor {
 
     private String lastHour = "",lastDate = "",lastZone = "";
 
+    private String lastSkillXp = "";
+    private String lastPurse = "";
+
     private final String magmaBossName = "magma cube boss";
 
     private final String sendTradeRequestMsg = "You have sent a trade request to";
@@ -61,8 +68,12 @@ public class DataExtractor {
     private final String recieveTradeRequestMsg = "has sent you a trade request";
     private final String expireRecieveTradeRequest = "The /trade request from";
 
+    private final String tradeCompleted = "Trade completed";
+
     private final String combatZoneName = "the catacombs";
     private final String clearedName = "dungeon cleared";
+
+    private boolean usesPiggyBank = false;
 
     private boolean hasSentATradeRequest = false;
     private boolean hasRecievedATradeRequest = false;
@@ -80,7 +91,7 @@ public class DataExtractor {
     public boolean isInSkyblock = false; // This flag is true if the player is in skyblock
 
     // Gets the action bar data
-    @SubscribeEvent(priority = EventPriority.HIGH)
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onChatMsg(ClientChatReceivedEvent event) {
         if (event.message.getUnformattedText().contains(String.valueOf(HpSymbol)) || event.message.getUnformattedText().contains(String.valueOf(MnSymbol))) {
             actionBarData = event.message.getUnformattedText();
@@ -93,10 +104,12 @@ public class DataExtractor {
             if (msg.contains(recieveTradeRequestMsg)) hasRecievedATradeRequest = true;
             if (msg.contains(expireRecieveTradeRequest)) hasRecievedATradeRequest = false;
 
-            if (msg.contains(tradeCancelled)) {
+            if (msg.contains(tradeCancelled) || msg.contains(tradeCompleted)) {
                 if (hasSentATradeRequest) hasSentATradeRequest = false;
                 if (hasRecievedATradeRequest) hasRecievedATradeRequest = false;
             }
+
+
 
         }
 
@@ -181,7 +194,11 @@ public class DataExtractor {
             if (isInTheCatacombs) {
                 scoreBoardData.IRL_Date = "Data Unavailable";
                 scoreBoardData.Server = "Data Unavailable";
-                scoreBoardData.Purse = "Purse: \u00a76Data Unavailable";
+                if (ApecMain.Instance.settingsManager.getSettingState(SettingID.SHOW_CACHED_PURSE_IN_DUNGEONS)) {
+                    scoreBoardData.Purse = lastPurse;
+                } else {
+                    scoreBoardData.Purse = "Purse: \u00a76Data Unavailable";
+                }
             }
 
             if (isInTheCatacombs) {
@@ -313,7 +330,9 @@ public class DataExtractor {
 
     private void ScoreboardParser(ScoreBoardData sd,String s,int idx,List<String > l) {
         if (s.contains("Purse") || s.contains("Piggy")) {
+            usesPiggyBank = s.contains("Piggy");
             sd.Purse = s;
+            lastPurse = sd.Purse;
             if (!l.get(l.size() - 1 - idx - 2).contains("www")) {
                 for (int i = idx + 2;i < l.size()-1;i++) {
                     String _s = l.get(l.size()-i);
@@ -325,7 +344,7 @@ public class DataExtractor {
             // Detects the guesting slots
         } else if (ApecUtils.containedByCharSequence(s,"Redstone:")) {
             sd.ExtraInfo.add(ApecUtils.removeFirstSpaces(s));
-        } else if (s.contains("(") && s.contains(")")) {
+        } else if (s.contains("\u270c")) {
             sd.ExtraInfo.add(ApecUtils.removeFirstSpaces(s));
         }
 
@@ -454,8 +473,9 @@ public class DataExtractor {
             {
                 String secmentedString = segmentString(actionBarData, ")", '+', ' ', 1, 1, false);
                 if (secmentedString != null) {
+                    lastSkillXp = secmentedString;
                     String wholeString = ApecUtils.removeAllCodes(secmentedString);
-                    Tuple<Float, Float> t = formatStringFractF(segmentString(actionBarData, "(", '(', ')', 1, 1, true));
+                    Tuple<Float, Float> t = formatStringFractF(segmentString(secmentedString, "(", '(', ')', 1, 1, true));
 
                     playerStats.SkillIsShown = true;
                     playerStats.SkillInfo = wholeString;
@@ -463,7 +483,17 @@ public class DataExtractor {
                     playerStats.BaseSkillExp = t.getSecond();
 
                 } else {
-                    playerStats.SkillIsShown = false;
+                    if (ApecMain.Instance.settingsManager.getSettingState(SettingID.ALWAYS_SHOW_SKILL) && !lastSkillXp.equals("")) {
+                        String wholeString = ApecUtils.removeAllCodes(lastSkillXp);
+                        Tuple<Float, Float> t = formatStringFractF(segmentString(lastSkillXp, "(", '(', ')', 1, 1, true));
+
+                        playerStats.SkillIsShown = true;
+                        playerStats.SkillInfo = wholeString;
+                        playerStats.SkillExp = t.getFirst();
+                        playerStats.BaseSkillExp = t.getSecond();
+                    } else {
+                        playerStats.SkillIsShown = false;
+                    }
                 }
             }
         } catch (Exception err) {
@@ -495,6 +525,8 @@ public class DataExtractor {
         String dps = segmentString(actionBarData,dpsSymbol,'\u00a7',' ',1,1,false);
         String sec = segmentString(actionBarData,secSymbol,'\u00a7',' ',1,2,false);
         String secrets = segmentString(actionBarData,secretSymbol,'\u00a7','\u00a7',1,1,false);
+        String chickenRace = segmentString(actionBarData,chickenRaceSymbol,'\u00a7',' ',2,2,false);
+        String jump = segmentString(actionBarData,jumpSymbol,'\u00a7','P',3,1,false);
 
         if ((endRace != null || woodRacing != null || dps != null || sec != null) && !otherData.ExtraInfo.isEmpty()) otherData.ExtraInfo.add(" ");
 
@@ -503,6 +535,8 @@ public class DataExtractor {
         if (dps != null) otherData.ExtraInfo.add(dps);
         if (sec != null) otherData.ExtraInfo.add(sec);
         if (secrets != null) otherData.ExtraInfo.add(secrets);
+        if (chickenRace != null) otherData.ExtraInfo.add(chickenRace);
+        if (jump != null) otherData.ExtraInfo.add(jump);
 
         if (ApecMain.Instance.settingsManager.getSettingState(SettingID.SHOW_POTIONS_EFFECTS)) {
 
@@ -536,7 +570,7 @@ public class DataExtractor {
                 if (sd.Purse != null) {
                     String purse = ApecUtils.removeNonNumericalChars(ApecUtils.removeAllCodes(sd.Purse));
                     if (!purse.equals("")) {
-                        if (Float.parseFloat(purse) >= 5000000f) events.add(EventIDs.COIN_COUNT);
+                        if (Float.parseFloat(purse) >= 5000000f && !usesPiggyBank) events.add(EventIDs.COIN_COUNT);
                     }
                 }
                 if (hasSentATradeRequest) events.add(EventIDs.TRADE_OUT);
@@ -566,9 +600,23 @@ public class DataExtractor {
             String[] lines = footerTabData.split("\n");
             if (!lines[2].contains("No effects")) {
                 for (int i = 2; i < lines.length && lines[i].contains(":"); i++) {
-                    effects.add(lines[i]);
+                    if (ApecMain.Instance.settingsManager.getSettingState(SettingID.COMPACT_POTION)) {
+                        effects.add(lines[i]);
+                    } else {
+                        String[] split = lines[i].split(" {5}");
+                        if (ApecMain.Instance.settingsManager.getSettingState(SettingID.HIDE_NIGHT_VISION)) {
+                            for (int j = 0; j < split.length; j++) {
+                                if (!ApecUtils.removeAllCodes(split[j]).contains("Night Vision")) {
+                                    effects.add(split[j]);
+                                }
+                            }
+                        } else {
+                            effects.addAll(Arrays.asList(split));
+                        }
+                    }
                 }
             }
+            ApecUtils.orderByWidth(effects);
             return effects;
         } catch (Exception err) {
             return new ArrayList<String>();

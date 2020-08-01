@@ -1,6 +1,8 @@
 package Apec.Components.Gui.GuiIngame;
 
 import Apec.*;
+import Apec.Components.Gui.GuiIngame.GuiElements.GUIComponent;
+import Apec.Settings.SettingID;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.*;
 import net.minecraft.client.network.NetHandlerPlayClient;
@@ -21,6 +23,7 @@ import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.common.MinecraftForge;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.util.vector.Vector2f;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -62,23 +65,6 @@ public class ApecGuiIngameForge extends GuiIngameForge {
 
     private static final int WHITE = 0xFFFFFF;
 
-    //Flags to toggle the rendering of certain aspects of the HUD, valid conditions
-    //must be met for them to render normally. If those conditions are met, but this flag
-    //is false, they will not be rendered.
-    public static boolean renderHelmet = true;
-    public static boolean renderPortal = true;
-    public static boolean renderHotbar = true;
-    public static boolean renderCrosshairs = true;
-    public static boolean renderBossHealth = true;
-    public static boolean renderHealth = true;
-    public static boolean renderArmor = true;
-    public static boolean renderFood = true;
-    public static boolean renderHealthMount = true;
-    public static boolean renderAir = true;
-    public static boolean renderExperiance = true;
-    public static boolean renderJumpBar = true;
-    public static boolean renderObjective = true;
-
     public static int left_height = 39;
     public static int right_height = 39;
 
@@ -96,7 +82,7 @@ public class ApecGuiIngameForge extends GuiIngameForge {
         eventParent = new RenderGameOverlayEvent(partialTicks, res);
         int width = res.getScaledWidth();
         int height = res.getScaledHeight();
-        renderJumpBar = mc.thePlayer.isRidingHorse();
+        GuiIngameForge.renderJumpBar = mc.thePlayer.isRidingHorse();
 
         right_height = 39;
         left_height = 39;
@@ -116,21 +102,23 @@ public class ApecGuiIngameForge extends GuiIngameForge {
             GlStateManager.tryBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, 1, 0);
         }
 
-        if (renderHelmet) renderHelmet(res, partialTicks);
+        if (GuiIngameForge.renderHelmet) renderHelmet(res, partialTicks);
 
-        if (renderPortal && !mc.thePlayer.isPotionActive(Potion.confusion))
+        if (GuiIngameForge.renderPortal && !mc.thePlayer.isPotionActive(Potion.confusion))
         {
             renderPortal(res, partialTicks);
         }
 
         renderTooltip(res, partialTicks);
 
+        if (gUIModifier != null) gUIModifier.onRender(res);
+
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
         zLevel = -90.0F;
         rand.setSeed((long)(updateCounter * 312871));
 
-        if (renderCrosshairs) renderCrosshairs(width, height);
-        if (renderBossHealth) renderBossHealth();
+        if (GuiIngameForge.renderCrosshairs) renderCrosshairs(width, height);
+        if (GuiIngameForge.renderBossHealth) renderBossHealth();
 
         pre(HEALTH);
         mc.mcProfiler.startSection("health");
@@ -192,8 +180,6 @@ public class ApecGuiIngameForge extends GuiIngameForge {
         GlStateManager.disableLighting();
         GlStateManager.enableAlpha();
 
-        if (gUIModifier != null) gUIModifier.onRender(res);
-
         post(ALL);
     }
 
@@ -203,13 +189,19 @@ public class ApecGuiIngameForge extends GuiIngameForge {
         if (pre(HOTBAR)) return;
         if (this.mc.getRenderViewEntity() instanceof EntityPlayer)
         {
+            GUIComponent guiComponent = ((GUIModifier)ApecMain.Instance.getComponent(ComponentId.GUI_MODIFIER)).getGuiComponent(GUIComponentID.HOT_BAR);
+            Vector2f pos = ApecUtils.addVec(guiComponent.getAnchorPointPosition(sr),guiComponent.getDelta_position());
+            float scale = guiComponent.getScale();
+
             GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
             this.mc.getTextureManager().bindTexture(widgetsTexPath);
             EntityPlayer entityplayer = (EntityPlayer)this.mc.getRenderViewEntity();
+            GlStateManager.pushMatrix();
+            GlStateManager.scale(scale,scale,scale);
             float f = this.zLevel;
             this.zLevel = -90.0F;
-            this.drawTexturedModalRect(sr.getScaledWidth()-183, sr.getScaledHeight() - 43, 0, 0, 182, 22);
-            this.drawTexturedModalRect(sr.getScaledWidth()-183- 1 + entityplayer.inventory.currentItem * 20, sr.getScaledHeight() - 43 - 1, 0, 22, 24, 22);
+            this.drawTexturedModalRect(pos.x/scale, pos.y/scale, 0, 0, 182, 22);
+            this.drawTexturedModalRect(pos.x/scale- 1 + entityplayer.inventory.currentItem * 20, pos.y/scale-1, 0, 22, 24, 22);
 
             GlStateManager.enableBlend();
             GlStateManager.enableRescaleNormal();
@@ -220,10 +212,11 @@ public class ApecGuiIngameForge extends GuiIngameForge {
 
             for (int j = 0; j < 9; ++j)
             {
-                int k = sr.getScaledWidth() - 182 + j * 20 + 2;
-                int l = sr.getScaledHeight() - 37 - 3;
-                this.renderHotbarItem(j, k, l, partialTicks, entityplayer);
+                int k = (int)(pos.x/scale + 1 + j * 20 + 2);
+                int l = (int)(pos.y/scale + 3);
+                this.renderHotbarItem(j, (int)k, (int)l, partialTicks, entityplayer);
             }
+            GlStateManager.popMatrix();
 
             RenderHelper.disableStandardItemLighting();
             GlStateManager.disableRescaleNormal();
@@ -394,13 +387,28 @@ public class ApecGuiIngameForge extends GuiIngameForge {
 
                 if (opacity > 0)
                 {
+                    GUIComponent guiComponent = ((GUIModifier)ApecMain.Instance.getComponent(ComponentId.GUI_MODIFIER)).getGuiComponent(GUIComponentID.HOT_BAR);
+                    Vector2f pos = ApecUtils.addVec(guiComponent.getAnchorPointPosition(res),guiComponent.getDelta_position());
+                    Vector2f delta = guiComponent.getDelta_position();
+                    float scale = guiComponent.getScale();
+
+                    GlStateManager.pushMatrix();
+                    GlStateManager.scale(scale,scale,scale);
                     GlStateManager.pushMatrix();
                     GlStateManager.enableBlend();
                     GlStateManager.tryBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, 1, 0);
-                    FontRenderer font = highlightingItemStack.getItem().getFontRenderer(highlightingItemStack);
-                    int x = res.getScaledWidth() - 182;
-                    int y = res.getScaledHeight() - 53;
-                    fontrenderer.drawStringWithShadow(name, x, y, WHITE | (opacity << 24));
+                    int x,y;
+                    if (!ApecMain.Instance.settingsManager.getSettingState(SettingID.ITEM_HIGHLIGHT_TEXT)) {
+                        x = (int) (pos.x/scale) + 1;
+                        y = (int) (pos.y/scale) - 10;
+                    } else {
+                        x = (int)((- this.getFontRenderer().getStringWidth(name)/ 2) - 92/scale + res.getScaledWidth()/scale);
+                        y = (int)(res.getScaledHeight()/scale - 67/scale);
+                        x += delta.x/scale;
+                        y += delta.y/scale;
+                    }
+                    fontrenderer.drawStringWithShadow(name,x, y, WHITE | (opacity << 24));
+                    GlStateManager.popMatrix();
                     GlStateManager.disableBlend();
                     GlStateManager.popMatrix();
                 }
@@ -572,6 +580,10 @@ public class ApecGuiIngameForge extends GuiIngameForge {
         for (int i = messages.size() - 1;i > -1;i--) {
             this.persistantChatGUI.printChatMessage(messages.get(i).getChatComponent());
         }
+    }
+
+    public void setChatSentMessages(List<String> messages) throws IllegalAccessException {
+        FieldUtils.writeDeclaredField(this.persistantChatGUI,ApecUtils.unObfedFieldNames.get("sentMessages"),messages,true);
     }
 
 }
