@@ -1,11 +1,13 @@
 package Apec.Components.Gui.GuiIngame.GuiElements;
 
+import Apec.ApecMain;
 import Apec.ApecUtils;
 import Apec.Components.Gui.GuiIngame.GUIComponentID;
 import Apec.Components.Gui.GuiIngame.GUIModifier;
 import Apec.DataExtractor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import org.lwjgl.util.vector.Vector2f;
 

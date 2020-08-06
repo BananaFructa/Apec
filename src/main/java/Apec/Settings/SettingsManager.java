@@ -16,6 +16,7 @@ public class SettingsManager {
     public List<Setting> settings = new ArrayList<Setting>() {{
         add(new Setting(SettingID.AUTO_ENABLE,true));
         add(new Setting(SettingID.HP_BAR,true));
+        add(new Setting(SettingID.SHOW_ABSORPTION_BAR,true));
         add(new Setting(SettingID.MP_BAR,true));
         add(new Setting(SettingID.XP_BAR,true));
         add(new Setting(SettingID.SHOW_AIR_BAR,true));
@@ -28,6 +29,7 @@ public class SettingsManager {
         add(new Setting(SettingID.HIDE_NIGHT_VISION,false));
         add(new Setting(SettingID.ITEM_HIGHLIGHT_TEXT,false));
         add(new Setting(SettingID.NPC_GUI,true));
+        add(new Setting(SettingID.SHOW_ABILITY_TEXT,true));
         add(new Setting(SettingID.HIDE_IN_F3,false));
         add(new Setting(SettingID.SNAP_IN_EDITING,true));
         add(new Setting(SettingID.SHOW_CACHED_PURSE_IN_DUNGEONS,true));
@@ -98,6 +100,10 @@ public class SettingsManager {
                 return new Tuple<String, String>("Snap in gui editing","Activates snapping while in the gui customization menu");
             case INFO_BOX_ANIMATION:
                 return new Tuple<String, String>("Bottom Bar Animation","A slide down animation for the bottom box when i chat");
+            case SHOW_ABILITY_TEXT:
+                return new Tuple<String, String>("Show ability text","Shows the ability text at the mana bar");
+            case SHOW_ABSORPTION_BAR:
+                return new Tuple<String, String>("Show absorption bar","Shows the absorption bar");
             default:
                 return new Tuple<String, String>("N/A","N/A");
         }

@@ -29,10 +29,12 @@ public class HpBar extends GUIComponent {
             Vector2f StatBar = this.getAnchorPointPosition(sr);
             StatBar = ApecUtils.addVec(StatBar, delta_position);
 
-            mc.renderEngine.bindTexture(new ResourceLocation(ApecMain.modId, "gui/statBars.png"));
             float hpFactor = (ps.Hp > ps.BaseHp) ? 1 : (float) ps.Hp / (float) ps.BaseHp;
 
-            if (ps.Ap != 0) {
+            mc.renderEngine.bindTexture(new ResourceLocation(ApecMain.modId, "gui/statBars.png"));
+
+            boolean showAP = ApecMain.Instance.settingsManager.getSettingState(SettingID.SHOW_ABSORPTION_BAR);
+            if (ps.Ap != 0 && showAP) {
                 gi.drawTexturedModalRect((int) StatBar.x/scale, (int) StatBar.y/scale, 0, 60, 182, 5);
                 gi.drawTexturedModalRect((int) StatBar.x/scale, (int) StatBar.y/scale, 0, 65, (int) (((float) ps.Ap / (float) ps.BaseAp) * 49f), 5);
                 gi.drawTexturedModalRect((int) StatBar.x/scale + 51, (int) StatBar.y/scale, 51, 65, (int) (hpFactor * 131f), 5);
@@ -49,14 +51,19 @@ public class HpBar extends GUIComponent {
         GlStateManager.pushMatrix();
         GlStateManager.scale(scale,scale,scale);
         if (ApecMain.Instance.settingsManager.getSettingState(SettingID.HP_BAR)) {
+
+            boolean showAP = ApecMain.Instance.settingsManager.getSettingState(SettingID.SHOW_ABSORPTION_BAR);
+
             Vector2f StatBar = this.getAnchorPointPosition(sr);
 
             StatBar = ApecUtils.addVec(StatBar, delta_position);
 
-            String HPString = ps.Hp + "/" + ps.BaseHp + " HP";
+            int addedHp = ps.Hp + ps.Ap;
+            String HPString = (!showAP && ps.Ap != 0 ? "\u00a7e" + addedHp + "\u00a7r" : ps.Hp) + "/" + ps.BaseHp + " HP";
             ApecUtils.drawThiccBorderString(HPString, (int) (StatBar.x/scale + 112 + 70 - mc.fontRendererObj.getStringWidth(HPString)), (int) (StatBar.y/scale - 10), 0xd10808);
 
-            if (ps.Ap != 0) {
+
+            if (ps.Ap != 0 && showAP) {
                 String APString = ps.Ap + "/" + ps.BaseAp + " AP";
                 ApecUtils.drawThiccBorderString(APString, (int)(StatBar.x/scale + 112 + 65 - mc.fontRendererObj.getStringWidth(APString) - mc.fontRendererObj.getStringWidth(HPString)), (int)(StatBar.y/scale - 10), 0xC8AC35);
             }

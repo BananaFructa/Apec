@@ -92,7 +92,6 @@ public class CustomizationGui extends GuiScreen {
         }
     }
 
-
     long st = 0;
 
     @Override

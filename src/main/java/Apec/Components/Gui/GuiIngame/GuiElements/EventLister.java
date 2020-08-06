@@ -9,6 +9,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiIngame;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.util.ResourceLocation;
 import org.lwjgl.util.vector.Vector2f;
 
 import java.util.ArrayList;
@@ -20,6 +21,7 @@ public class EventLister extends GUIComponent {
     }
 
     public void drawTex(DataExtractor.PlayerStats ps, DataExtractor.ScoreBoardData sd, DataExtractor.OtherData od, ScaledResolution sr,boolean editingMode) {
+        mc.renderEngine.bindTexture(new ResourceLocation(ApecMain.modId, "gui/statBars.png"));
         GlStateManager.pushMatrix();
         GlStateManager.scale(scale,scale,scale);
         if (editingMode) {

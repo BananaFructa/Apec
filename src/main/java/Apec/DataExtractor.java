@@ -14,14 +14,17 @@ import net.minecraft.scoreboard.Score;
 import net.minecraft.scoreboard.ScoreObjective;
 import net.minecraft.scoreboard.ScorePlayerTeam;
 import net.minecraft.scoreboard.Scoreboard;
+import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.IChatComponent;
 import net.minecraft.util.Tuple;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.InputEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.lwjgl.Sys;
+import org.lwjgl.input.Mouse;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -115,8 +118,10 @@ public class DataExtractor {
 
     }
 
+
     @SubscribeEvent
     public void onTick(TickEvent.ClientTickEvent event) {
+
         try {
             String s = getScoreBoardTitle();
             if (!s.equals("")) {
@@ -460,6 +465,17 @@ public class DataExtractor {
                 if (segmentedString != null) {
                     playerStats.Defence = Integer.parseInt(ApecUtils.removeAllCodes(segmentedString));
                     lastDefence = playerStats.Defence;
+                } else if (!actionBarData.contains(endRaceSymbol) &&
+                        !actionBarData.contains(woodRacingSymbol) &&
+                        !actionBarData.contains(dpsSymbol) &&
+                        !actionBarData.contains(secSymbol) &&
+                        !actionBarData.contains(secretSymbol) &&
+                        !actionBarData.contains(chickenRaceSymbol) &&
+                        !actionBarData.contains(jumpSymbol))
+                // Makes sure that the defence is not replace by something else in the auction bar and it is really 0
+                {
+                    playerStats.Defence = 0;
+                    lastDefence = playerStats.Defence;
                 } else {
                     playerStats.Defence = lastDefence;
                 }
@@ -470,7 +486,6 @@ public class DataExtractor {
 
         try {
             // Skill
-            {
                 String secmentedString = segmentString(actionBarData, ")", '+', ' ', 1, 1, false);
                 if (secmentedString != null) {
                     lastSkillXp = secmentedString;
@@ -495,9 +510,21 @@ public class DataExtractor {
                         playerStats.SkillIsShown = false;
                     }
                 }
-            }
         } catch (Exception err) {
             playerStats.SkillIsShown = false;
+        }
+
+        try {
+            // ABILITY
+            String segmentedString = segmentString(actionBarData, ")",'\u00a7',' ',3,1,false);
+            if (segmentedString != null) {
+                if (segmentedString.contains("-") && actionBarData.contains(String.valueOf(MnSymbol)) /* This is to make sure that the data is indeed from the action bar */ ) {
+                    playerStats.IsAbilityShown = true;
+                    playerStats.AbilityText = segmentedString;
+                }
+            }
+        } catch (Exception err) {
+            playerStats.IsAbilityShown = false;
         }
 
         return playerStats;
@@ -763,6 +790,8 @@ public class DataExtractor {
         public float SkillExp;
         public float BaseSkillExp;
         public boolean SkillIsShown;
+        public boolean IsAbilityShown;
+        public String AbilityText;
     }
 
     public class OtherData {

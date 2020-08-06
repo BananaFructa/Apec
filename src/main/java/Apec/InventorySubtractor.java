@@ -88,6 +88,7 @@ public class InventorySubtractor {
         for (SubtractionListElem _sle : subtractionListElems) {
             if (_sle.text.equals(sle.text)) {
                 _sle.quant += sle.quant;
+                _sle.lifetme = 200;
                 return;
             }
         }

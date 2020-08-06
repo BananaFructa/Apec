@@ -10,6 +10,7 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.event.ClickEvent;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.IChatComponent;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.GuiIngameForge;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
@@ -30,18 +31,15 @@ public class GUIModifier extends Component {
 
     private  Minecraft mc = Minecraft.getMinecraft();
 
-    private List<GUIComponentID> compenetsToBlockInF3 = new ArrayList<GUIComponentID>() {{
-
-    }};
 
     public ArrayList<GUIComponent> GUIComponents = new ArrayList<GUIComponent>() {{
+        add(new InfoBox()); // The block box with the things that used to be in the scoreboard
         add(new HpBar());
         add(new MnBar());
         add(new XpBar());
         add(new AirBar());
         add(new SkillBar()); // The bar that shows the skill progression
         add(new InventoryTraffic()); // The thing that shows the inventory traffic
-        add(new InfoBox()); // The block box with the things that used to be in the scoreboard
         add(new ExtraInfo()); // The other things that used to be in the scoreboard
         //add(new BossHealthBar());
         add(new HotBar());
@@ -80,8 +78,8 @@ public class GUIModifier extends Component {
         return null;
     }
 
-    private boolean shouldBlockF3(GUIComponentID gUiComponentID) {
-        return ApecMain.Instance.settingsManager.getSettingState(SettingID.HIDE_IN_F3) && mc.gameSettings.showDebugInfo && this.compenetsToBlockInF3.contains(gUiComponentID);
+    private boolean shouldBlockF3(GUIComponent component) {
+        return ApecMain.Instance.settingsManager.getSettingState(SettingID.HIDE_IN_F3) && mc.gameSettings.showDebugInfo && component.getRealAnchorPoint(new ScaledResolution(mc)).y < 150;
     }
 
     public void onRender(ScaledResolution sr) {
@@ -94,11 +92,11 @@ public class GUIModifier extends Component {
         try {
             GlStateManager.enableBlend();
             for (GUIComponent component : GUIComponents) {
-                if (shouldBlockF3(component.gUiComponentID)) continue;
+                if (shouldBlockF3(component)) continue;
                 component.drawTex(ps, sd, od, sr,mc.currentScreen instanceof CustomizationGui);
             }
             for (GUIComponent component : GUIComponents) {
-                if (shouldBlockF3(component.gUiComponentID)) continue;
+                if (shouldBlockF3(component)) continue;
                 component.draw(ps, sd, od, sr,mc.currentScreen instanceof CustomizationGui);
             }
         } catch (Exception e) {

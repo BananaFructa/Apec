@@ -49,7 +49,7 @@ public class MnBar extends GUIComponent {
 
             StatBar = ApecUtils.addVec(StatBar, delta_position);
 
-            String MPString = ps.Mp + "/" + ps.BaseMp + " MP";
+            String MPString = (ps.IsAbilityShown && ApecMain.Instance.settingsManager.getSettingState(SettingID.SHOW_ABILITY_TEXT) ? ps.AbilityText + "\u00a7r ": "") + ps.Mp + "/" + ps.BaseMp + " MP";
             ApecUtils.drawThiccBorderString(MPString, (int)(StatBar.x/scale + 112 + 70 - mc.fontRendererObj.getStringWidth(MPString)), (int)(StatBar.y/scale - 10), 0x1139bd);
         }
         GlStateManager.popMatrix();
