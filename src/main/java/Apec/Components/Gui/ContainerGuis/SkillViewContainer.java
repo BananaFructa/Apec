@@ -1,9 +1,8 @@
 package Apec.Components.Gui.ContainerGuis;
 
-import Apec.ApecMain;
-import Apec.ComponentId;
-import Apec.Components.Gui.Menu.ApecMenuButton;
+import Apec.ApecUtils;
 import com.google.common.collect.Sets;
+import javafx.scene.transform.Scale;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
@@ -13,6 +12,7 @@ import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.init.Items;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
@@ -21,16 +21,24 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.input.Keyboard;
 
+import javax.vecmath.Vector2f;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-/**
- * Modified copy of the original GuiContainer.class
- */
+public abstract class SkillViewContainer extends GuiScreen {
 
-public abstract class AuctionHouseContainer extends GuiScreen {
+    int[] skillXpContainerSlot = new int[] {
+            0,9,18,27,28,29,20,11,2,3,4,13,22,31,32,33,24,15,6,7,8,17,26,35,44,53
+    };
+
+    boolean handleNextClick = false;
+    boolean userIsDragging = false;
+    Vector2f initialMousePosition = new Vector2f(0,0);
+    int xSliderValue = 0;
+    int tempSlideValue = 0;
+    boolean firstSetxSlider = true;
 
     /** The location of the inventory background texture */
     protected static final ResourceLocation inventoryBackground = new ResourceLocation("textures/gui/container/inventory.png");
@@ -72,113 +80,10 @@ public abstract class AuctionHouseContainer extends GuiScreen {
     private boolean doubleClick;
     private ItemStack shiftClickedSlot;
 
-    private List<String> SortList = new ArrayList<String>();
-    private List<String> ModeList = new ArrayList<String>();
-    private List<String> RarityList = new ArrayList<String>();
-    private String Page = "";
-
-    private boolean acceptNextClick = false;
-
-    public AuctionHouseContainer(Container inventorySlotsIn)
+    public SkillViewContainer(Container inventorySlotsIn)
     {
         this.inventorySlots = inventorySlotsIn;
         this.ignoreMouseUp = true;
-        this.rePositionSlots();
-    }
-
-    private void rePositionSlots() {
-        for (Slot s : this.inventorySlots.inventorySlots) {
-            s.xDisplayPosition -= 10;
-            s.yDisplayPosition += 23;
-
-        }
-        for (int i = 11;i <=43;i+=9) {
-            expandSlotPosition(i);
-        }
-    }
-
-    private void expandSlotPosition(int _i) {
-        for (int i = _i;i <= _i + 5;i++) {
-            this.inventorySlots.inventorySlots.get(i).xDisplayPosition += (i-_i-2.5f)*4f;
-        }
-    }
-
-    private void executeCategorySelect(AuctionHouseComponent.CategoryID categoryID) {
-        acceptNextClick = true;
-        handleMouseClick(this.inventorySlots.inventorySlots.get(categoryID.ordinal() * 9),categoryID.ordinal()*9,0,0);
-    }
-
-    private void executeAction (AuctionHouseComponent.Actions actions) {
-        acceptNextClick = true;
-        switch (actions) {
-            case SEARCH:
-                handleMouseClick(this.inventorySlots.inventorySlots.get(48), 48, 0, 0);
-                break;
-            case NEXT:
-                handleMouseClick(this.inventorySlots.inventorySlots.get(53),53,0,0);
-                break;
-            case BACK:
-                handleMouseClick(this.inventorySlots.inventorySlots.get(46),46,0,0);
-                break;
-            case SORT_CHANGE:
-                handleMouseClick(this.inventorySlots.inventorySlots.get(50),50,0,0);
-                break;
-            case MOD_CHANGE:
-                handleMouseClick(this.inventorySlots.inventorySlots.get(52),52,0,0);
-                break;
-            case RARITY_CHANGE:
-                handleMouseClick(this.inventorySlots.inventorySlots.get(51),51,0,0);
-                break;
-            case CLOSE:
-                handleMouseClick(this.inventorySlots.inventorySlots.get(49),49,0,0);
-                break;
-        }
-    }
-
-    protected List<String> getSortText() {
-        try {
-            if (this.inventorySlots.inventorySlots.get(50).inventory.getStackInSlot(50) != null) {
-                SortList = this.inventorySlots.inventorySlots.get(50).inventory.getStackInSlot(50).getTooltip(mc.thePlayer, false).subList(0, 6);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return SortList;
-    }
-
-    protected List<String> getModeText() {
-        try {
-            if (this.inventorySlots.inventorySlots.get(52).inventory.getStackInSlot(52) != null) {
-                ModeList = this.inventorySlots.inventorySlots.get(52).inventory.getStackInSlot(52).getTooltip(mc.thePlayer, false).subList(0,5);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return ModeList;
-    }
-
-    protected String getPageText() {
-        try {
-            if (this.inventorySlots.inventorySlots.get(53).inventory.getStackInSlot(53) != null) {
-                List<String> s = this.inventorySlots.inventorySlots.get(53).inventory.getStackInSlot(53).getTooltip(mc.thePlayer, false);
-                if (s.size() > 1)
-                Page = this.inventorySlots.inventorySlots.get(53).inventory.getStackInSlot(53).getTooltip(mc.thePlayer, false).get(1);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return Page;
-    }
-
-    protected List<String> getRarityText() {
-        try {
-            if (this.inventorySlots.inventorySlots.get(51).inventory.getStackInSlot(51) != null) {
-                RarityList = this.inventorySlots.inventorySlots.get(51).inventory.getStackInSlot(51).getTooltip(mc.thePlayer, false).subList(0,11);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return RarityList;
     }
 
     /**
@@ -188,25 +93,47 @@ public abstract class AuctionHouseContainer extends GuiScreen {
     public void initGui()
     {
         super.initGui();
+        firstSetxSlider = true;
         this.mc.thePlayer.openContainer = this.inventorySlots;
         this.guiLeft = (this.width - this.xSize) / 2;
         this.guiTop = (this.height - this.ySize) / 2;
-        ScaledResolution sr = new ScaledResolution(Minecraft.getMinecraft());
-        int w = sr.getScaledWidth()/2;
-        int h= sr.getScaledHeight()/2;
-        this.buttonList.add(new AuctionHouseToggleButton(0,w-200,h-80+54,100,16,"Weapons", AuctionHouseComponent.CategoryID.WEAPONS));
-        this.buttonList.add(new AuctionHouseToggleButton(0,w-200,h-64+54,100,16,"Armour", AuctionHouseComponent.CategoryID.ARMOUR));
-        this.buttonList.add(new AuctionHouseToggleButton(0,w-200,h-48+54,100,16,"Accessories", AuctionHouseComponent.CategoryID.ACCESSORIES));
-        this.buttonList.add(new AuctionHouseToggleButton(0,w-200,h-32+54,100,16,"Consumables", AuctionHouseComponent.CategoryID.CONSUMABLES));
-        this.buttonList.add(new AuctionHouseToggleButton(0,w-200,h-16+54,100,16,"Blocks", AuctionHouseComponent.CategoryID.BLOCKS));
-        this.buttonList.add(new AuctionHouseToggleButton(0,w-200,h+54,100,16,"Tools & Misc", AuctionHouseComponent.CategoryID.OTHER));
-        this.buttonList.add(new AuctionHouseButton(0,w-99,h+54,15,15, AuctionHouseComponent.Actions.SEARCH));
-        this.buttonList.add(new AuctionHouseButton(0,w+100-15,h+54,15,15, AuctionHouseComponent.Actions.NEXT));
-        this.buttonList.add(new AuctionHouseButton(0,w+100-30,h+54,15,15, AuctionHouseComponent.Actions.BACK));
-        this.buttonList.add(new AuctionHouseButton(0,w+110,h-100,80,70, AuctionHouseComponent.Actions.SORT_CHANGE));
-        this.buttonList.add(new AuctionHouseButton(0,w+110,h-30,80,70, AuctionHouseComponent.Actions.MOD_CHANGE));
-        this.buttonList.add(new AuctionHouseButton(0,w+200,h-100,80,120, AuctionHouseComponent.Actions.RARITY_CHANGE));
-        this.buttonList.add(new AuctionHouseButton(0,w+85,h-100,15,15, AuctionHouseComponent.Actions.CLOSE));
+        ScaledResolution sr= new ScaledResolution(mc);
+        this.buttonList.add(new SkillViewButton(0,sr.getScaledWidth()-30,0,15,15, ChestGuiComponent.Actions.BACK));
+        this.buttonList.add(new SkillViewButton(0,sr.getScaledWidth()-15,0,15,15, ChestGuiComponent.Actions.CLOSE));
+        this.buttonList.add(new SkillViewButton(0,0,sr.getScaledHeight()-30,120,30, ChestGuiComponent.Actions.PAGE_CHANGE));
+    }
+
+    public void executeAction(SkillViewComponent.Actions action) {
+        handleNextClick = true;
+        switch (action) {
+            case CLOSE:
+                handleMouseClick(this.inventorySlots.inventorySlots.get(49),49,0,0);
+                break;
+            case BACK:
+                handleMouseClick(this.inventorySlots.inventorySlots.get(48),48,0,0);
+                break;
+            case PAGE_CHANGE:
+                if (this.inventorySlots.inventorySlots.get(45).inventory.getStackInSlot(45).getItem() == Items.arrow) {
+                    handleMouseClick(this.inventorySlots.inventorySlots.get(45),45,0,0);
+                } else {
+                    handleMouseClick(this.inventorySlots.inventorySlots.get(50),50,0,0);
+                }
+                break;
+        }
+    }
+
+    public List<String> getPageText() {
+        try {
+            List<String> _s;
+            if (this.inventorySlots.inventorySlots.get(45).inventory.getStackInSlot(45).getItem() == Items.arrow) {
+                _s = this.inventorySlots.inventorySlots.get(45).inventory.getStackInSlot(45).getTooltip(mc.thePlayer, false);
+            } else {
+                _s = this.inventorySlots.inventorySlots.get(50).inventory.getStackInSlot(50).getTooltip(mc.thePlayer, false);
+            }
+            return _s;
+        } catch (Exception e) {
+            return new ArrayList<String>();
+        }
     }
 
     /**
@@ -214,16 +141,72 @@ public abstract class AuctionHouseContainer extends GuiScreen {
      */
     public void drawScreen(int mouseX, int mouseY, float partialTicks)
     {
-        //System.out.println(this.inventorySlots.inventorySlots.get(50).inventory.getStackInSlot(50).getTooltip(mc.thePlayer,false));
         this.drawDefaultBackground();
         int i = this.guiLeft;
         int j = this.guiTop;
         this.drawGuiContainerBackgroundLayer(partialTicks, mouseX, mouseY);
-        super.drawScreen(mouseX, mouseY, partialTicks);
         GlStateManager.disableRescaleNormal();
         RenderHelper.disableStandardItemLighting();
         GlStateManager.disableLighting();
         GlStateManager.disableDepth();
+        super.drawScreen(mouseX, mouseY, partialTicks);
+
+        try {
+            if (this.inventorySlots.inventorySlots.get(skillXpContainerSlot[0]).inventory.getStackInSlot(skillXpContainerSlot[0]).getItem() != null) {
+                int totalWidth = 15;
+                int startSliderValue = 0;
+                ScaledResolution sr = new ScaledResolution(mc);
+                for (int k = 0; k < 25; k++) {
+                    List<String> list = this.inventorySlots.inventorySlots.get(skillXpContainerSlot[k + 1]).inventory.getStackInSlot(skillXpContainerSlot[k + 1]).getTooltip(mc.thePlayer, false);
+                    int height = list.size() * 10;
+                    int width = ApecUtils.getMaxStringWidth(list);
+                    drawRect(totalWidth + xSliderValue + tempSlideValue, sr.getScaledHeight() / 2 - height / 2, totalWidth + width + xSliderValue + tempSlideValue, sr.getScaledHeight() / 2 + height / 2, 0xaa353535);
+                    if (ApecUtils.doesListContainRegex(list, "Progress") && firstSetxSlider) {
+                        startSliderValue = -totalWidth + sr.getScaledWidth()/2 - width/2;
+                    }
+                    for (int l = 0; l < list.size(); l++) {
+                        fontRendererObj.drawString(list.get(l), totalWidth + xSliderValue + tempSlideValue, sr.getScaledHeight() / 2 - height / 2 + 1 + 10 * (l), 0xffffff);
+                    }
+                    totalWidth += width + 15;
+                }
+
+                if (firstSetxSlider) {
+                    xSliderValue = startSliderValue;
+                    firstSetxSlider = false;
+                }
+
+                if (userIsDragging) {
+                    tempSlideValue = mouseX - (int) initialMousePosition.x;
+                    if (tempSlideValue + xSliderValue > 0) {
+                        tempSlideValue = 0;
+                        xSliderValue = 0;
+                    }
+                    if (tempSlideValue + xSliderValue < -totalWidth + sr.getScaledWidth() - 15) {
+                        tempSlideValue = 0;
+                        xSliderValue = -totalWidth + sr.getScaledWidth() - 15;
+                    }
+                } else {
+                    if (tempSlideValue + xSliderValue > 0) {
+                        tempSlideValue = 0;
+                        xSliderValue = 0;
+                    }
+                    if (tempSlideValue + xSliderValue < -totalWidth + sr.getScaledWidth() - 15) {
+                        tempSlideValue = 0;
+                        xSliderValue = -totalWidth + sr.getScaledWidth() - 15;
+                    }
+                    xSliderValue += tempSlideValue;
+                    tempSlideValue = 0;
+                }
+
+                List<String> linesForIntroduction = this.inventorySlots.inventorySlots.get(skillXpContainerSlot[0]).inventory.getStackInSlot(skillXpContainerSlot[0]).getTooltip(mc.thePlayer, false);
+                for (int k = 0; k < linesForIntroduction.size(); k++) {
+                    fontRendererObj.drawString(linesForIntroduction.get(k), 1, 1 + 10 * k, 0xffffff);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         RenderHelper.enableGUIStandardItemLighting();
         GlStateManager.pushMatrix();
         GlStateManager.translate((float)i, (float)j, 0.0F);
@@ -235,55 +218,10 @@ public abstract class AuctionHouseContainer extends GuiScreen {
         OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, (float)k / 1.0F, (float)l / 1.0F);
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 
-        for (int i1 = 0; i1 < this.inventorySlots.inventorySlots.size(); ++i1)
-        {
-            if ((i1 >= 11 && i1 <= 16) || (i1 >= 20 && i1 <= 25) || (i1 >= 29 && i1 <= 34) || (i1 >= 38 && i1 <= 43)) {
-                Slot slot = (Slot) this.inventorySlots.inventorySlots.get(i1);
-                this.drawSlot(slot);
-
-                if (this.isMouseOverSlot(slot, mouseX, mouseY) && slot.canBeHovered()) {
-                    this.theSlot = slot;
-                    GlStateManager.disableLighting();
-                    GlStateManager.disableDepth();
-                    int j1 = slot.xDisplayPosition;
-                    int k1 = slot.yDisplayPosition;
-                    GlStateManager.colorMask(true, true, true, false);
-                    this.drawGradientRect(j1, k1, j1 + 16, k1 + 16, -2130706433, -2130706433);
-                    GlStateManager.colorMask(true, true, true, true);
-                    GlStateManager.enableLighting();
-                    GlStateManager.enableDepth();
-                }
-            }
-        }
-
         RenderHelper.disableStandardItemLighting();
         this.drawGuiContainerForegroundLayer(mouseX, mouseY);
         RenderHelper.enableGUIStandardItemLighting();
         InventoryPlayer inventoryplayer = this.mc.thePlayer.inventory;
-        ItemStack itemstack = this.draggedStack == null ? inventoryplayer.getItemStack() : this.draggedStack;
-
-        if (itemstack != null)
-        {
-            int j2 = 8;
-            int k2 = this.draggedStack == null ? 8 : 16;
-            String s = null;
-
-            if (this.draggedStack != null && this.isRightMouseClick)
-            {
-                itemstack = itemstack.copy();
-                itemstack.stackSize = MathHelper.ceiling_float_int((float)itemstack.stackSize / 2.0F);
-            }
-            else if (this.dragSplitting && this.dragSplittingSlots.size() > 1)
-            {
-                itemstack = itemstack.copy();
-                itemstack.stackSize = this.dragSplittingRemnant;
-
-                if (itemstack.stackSize == 0)
-                {
-                    s = "" + EnumChatFormatting.YELLOW + "0";
-                }
-            }
-        }
 
         if (this.returningStack != null)
         {
@@ -344,89 +282,9 @@ public abstract class AuctionHouseContainer extends GuiScreen {
      */
     protected abstract void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY);
 
-    private void drawSlot(Slot slotIn)
-    {
-        int i = slotIn.xDisplayPosition;
-        int j = slotIn.yDisplayPosition;
-        ItemStack itemstack = slotIn.getStack();
-        boolean flag = false;
-        boolean flag1 = slotIn == this.clickedSlot && this.draggedStack != null && !this.isRightMouseClick;
-        ItemStack itemstack1 = this.mc.thePlayer.inventory.getItemStack();
-        String s = null;
-
-        if (slotIn == this.clickedSlot && this.draggedStack != null && this.isRightMouseClick && itemstack != null)
-        {
-            itemstack = itemstack.copy();
-            itemstack.stackSize /= 2;
-        }
-        else if (this.dragSplitting && this.dragSplittingSlots.contains(slotIn) && itemstack1 != null)
-        {
-            if (this.dragSplittingSlots.size() == 1)
-            {
-                return;
-            }
-
-            if (Container.canAddItemToSlot(slotIn, itemstack1, true) && this.inventorySlots.canDragIntoSlot(slotIn))
-            {
-                itemstack = itemstack1.copy();
-                flag = true;
-                Container.computeStackSize(this.dragSplittingSlots, this.dragSplittingLimit, itemstack, slotIn.getStack() == null ? 0 : slotIn.getStack().stackSize);
-
-                if (itemstack.stackSize > itemstack.getMaxStackSize())
-                {
-                    s = EnumChatFormatting.YELLOW + "" + itemstack.getMaxStackSize();
-                    itemstack.stackSize = itemstack.getMaxStackSize();
-                }
-
-                if (itemstack.stackSize > slotIn.getItemStackLimit(itemstack))
-                {
-                    s = EnumChatFormatting.YELLOW + "" + slotIn.getItemStackLimit(itemstack);
-                    itemstack.stackSize = slotIn.getItemStackLimit(itemstack);
-                }
-            }
-            else
-            {
-                this.dragSplittingSlots.remove(slotIn);
-                this.updateDragSplitting();
-            }
-        }
-
-        this.zLevel = 100.0F;
-        this.itemRender.zLevel = 100.0F;
-
-        if (itemstack == null)
-        {
-            TextureAtlasSprite textureatlassprite = slotIn.getBackgroundSprite();
-
-            if (textureatlassprite != null)
-            {
-                GlStateManager.disableLighting();
-                this.mc.getTextureManager().bindTexture(slotIn.getBackgroundLocation());
-                this.drawTexturedModalRect(i, j, textureatlassprite, 16, 16);
-                GlStateManager.enableLighting();
-                flag1 = true;
-            }
-        }
-
-        if (!flag1)
-        {
-            if (flag)
-            {
-                drawRect(i, j, i + 16, j + 16, -2130706433);
-            }
-
-            GlStateManager.enableDepth();
-            this.itemRender.renderItemAndEffectIntoGUI(itemstack, i, j);
-            this.itemRender.renderItemOverlayIntoGUI(this.fontRendererObj, itemstack, i, j, s);
-        }
-
-        this.itemRender.zLevel = 0.0F;
-        this.zLevel = 0.0F;
-    }
-
     private void updateDragSplitting()
     {
-       ItemStack itemstack = this.mc.thePlayer.inventory.getItemStack();
+        ItemStack itemstack = this.mc.thePlayer.inventory.getItemStack();
 
         if (itemstack != null && this.dragSplitting)
         {
@@ -477,35 +335,24 @@ public abstract class AuctionHouseContainer extends GuiScreen {
     protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException
     {
         super.mouseClicked(mouseX, mouseY, mouseButton);
+
+        if (mouseButton == 0) {
+            for (GuiButton guiButton : this.buttonList) {
+                if (guiButton.mousePressed(mc,mouseX,mouseY)) {
+                    executeAction(((SkillViewButton)guiButton).action);
+                    break;
+                }
+            }
+        }
+
         boolean flag = mouseButton == this.mc.gameSettings.keyBindPickBlock.getKeyCode() + 100;
         Slot slot = this.getSlotAtPosition(mouseX, mouseY);
         long i = Minecraft.getSystemTime();
         this.doubleClick = this.lastClickSlot == slot && i - this.lastClickTime < 250L && this.lastClickButton == mouseButton;
         this.ignoreMouseUp = false;
 
-        if (mouseButton == 0) {
-            for (GuiButton guiButton : this.buttonList) {
-                if (guiButton.mousePressed(mc,mouseX,mouseY)) {
-                    if (guiButton instanceof AuctionHouseToggleButton) {
-                        AuctionHouseToggleButton button = (AuctionHouseToggleButton) guiButton;
-                        if (!button.state) {
-                            button.Toggle();
-                            for (GuiButton _guiButton : this.buttonList) {
-                                if (_guiButton != guiButton && _guiButton instanceof AuctionHouseToggleButton) {
-                                    AuctionHouseToggleButton _button = (AuctionHouseToggleButton) _guiButton;
-                                    if (_button.state) _button.Toggle();
-                                }
-                            }
-                            executeCategorySelect(button.categoryID);
-                            ((AuctionHouseComponent) ApecMain.Instance.getComponent(ComponentId.AUCTION_HOUSE_MENU)).currentCategory = button.categoryID;
-                        }
-                    } else if (guiButton instanceof AuctionHouseButton) {
-                        executeAction(((AuctionHouseButton)guiButton).action);
-                    }
-                    break;
-                }
-            }
-        }
+        userIsDragging = true;
+        initialMousePosition = new Vector2f(mouseX,mouseY);
 
         if (mouseButton == 0 || mouseButton == 1 || flag)
         {
@@ -658,6 +505,7 @@ public abstract class AuctionHouseContainer extends GuiScreen {
     protected void mouseReleased(int mouseX, int mouseY, int state)
     {
         super.mouseReleased(mouseX, mouseY, state); //Forge, Call parent to release buttons
+        userIsDragging = false;
         Slot slot = this.getSlotAtPosition(mouseX, mouseY);
         int i = this.guiLeft;
         int j = this.guiTop;
@@ -822,9 +670,8 @@ public abstract class AuctionHouseContainer extends GuiScreen {
      */
     protected void handleMouseClick(Slot slotIn, int slotId, int clickedButton, int clickType)
     {
-        if ((slotId >= 11 && slotId <= 16) || (slotId >= 20 && slotId <= 25) || (slotId >= 29 && slotId <= 34) || (slotId >= 38 && slotId <= 43) || acceptNextClick) {
-
-            acceptNextClick = false;
+        if (handleNextClick) {
+            handleNextClick = false;
             if (slotIn != null) {
                 slotId = slotIn.slotNumber;
             }
@@ -887,7 +734,6 @@ public abstract class AuctionHouseContainer extends GuiScreen {
     {
         if (this.mc.thePlayer != null)
         {
-            ((AuctionHouseComponent)ApecMain.Instance.getComponent(ComponentId.AUCTION_HOUSE_MENU)).guiIsOpened = false;
             this.inventorySlots.onContainerClosed(this.mc.thePlayer);
         }
     }
@@ -912,5 +758,17 @@ public abstract class AuctionHouseContainer extends GuiScreen {
             this.mc.thePlayer.closeScreen();
         }
     }
+
+    /* ======================================== FORGE START =====================================*/
+
+    /**
+     * Returns the slot that is currently displayed under the mouse.
+     */
+    public Slot getSlotUnderMouse()
+    {
+        return this.theSlot;
+    }
+
+    /* ======================================== FORGE END   =====================================*/
 
 }

@@ -12,6 +12,7 @@ import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.IChatComponent;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.GuiIngameForge;
+import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import org.apache.commons.lang3.reflect.FieldUtils;
@@ -35,10 +36,15 @@ public class GUIModifier extends Component {
     public ArrayList<GUIComponent> GUIComponents = new ArrayList<GUIComponent>() {{
         add(new InfoBox()); // The block box with the things that used to be in the scoreboard
         add(new HpBar());
+        add(new HpText());
         add(new MnBar());
+        add(new MpText());
         add(new XpBar());
+        add(new XpText());
         add(new AirBar());
+        add(new AirText());
         add(new SkillBar()); // The bar that shows the skill progression
+        add(new SkillText());
         add(new InventoryTraffic()); // The thing that shows the inventory traffic
         add(new ExtraInfo()); // The other things that used to be in the scoreboard
         //add(new BossHealthBar());
@@ -52,6 +58,10 @@ public class GUIModifier extends Component {
 
     boolean alreadyAutoEnabled = false;
     boolean alreadyAutoDisabled = false;
+    public boolean shouldTheGuiAppear = false;
+
+    ApecGuiIngameVanilla InstaceV = null;
+    ApecGuiIngameForge InstanceF = null;
 
     @SubscribeEvent
     public void onTick(TickEvent.ClientTickEvent event) {
@@ -71,6 +81,15 @@ public class GUIModifier extends Component {
         }
     }
 
+    @SubscribeEvent(priority = EventPriority.LOW)
+    public void onTickLowest(TickEvent.ClientTickEvent event) {
+        if (shouldTheGuiAppear && !(mc.ingameGUI instanceof ApecGuiIngameVanilla || mc.ingameGUI instanceof ApecGuiIngameForge)) {
+            boolean modeV = ApecMain.Instance.settingsManager.getSettingState(SettingID.OVERWRITE_GUI);
+            if (modeV && InstaceV != null) mc.ingameGUI = InstaceV;
+            if (!modeV && InstanceF != null) mc.ingameGUI = InstanceF;
+        }
+    }
+
     public GUIComponent getGuiComponent(GUIComponentID guiComponentID) {
         for (GUIComponent component : GUIComponents) {
             if (component.gUiComponentID == guiComponentID) return component;
@@ -79,7 +98,7 @@ public class GUIModifier extends Component {
     }
 
     private boolean shouldBlockF3(GUIComponent component) {
-        return ApecMain.Instance.settingsManager.getSettingState(SettingID.HIDE_IN_F3) && mc.gameSettings.showDebugInfo && component.getRealAnchorPoint(new ScaledResolution(mc)).y < 150;
+        return ApecMain.Instance.settingsManager.getSettingState(SettingID.HIDE_IN_F3) && mc.gameSettings.showDebugInfo && component.getRealAnchorPoint().y < 150;
     }
 
     public void onRender(ScaledResolution sr) {
@@ -130,10 +149,12 @@ public class GUIModifier extends Component {
 
         if (modeV) {
             ApecUtils.showMessage("[\u00A72Apec\u00A7f] Opening GUI! MODE = VANILLA");
-            mc.ingameGUI = new ApecGuiIngameVanilla(mc);
+            InstaceV = new ApecGuiIngameVanilla(mc);
+            mc.ingameGUI = InstaceV;
         } else {
             ApecUtils.showMessage("[\u00A72Apec\u00A7f] Opening GUI! MODE = FORGE");
-            mc.ingameGUI = new ApecGuiIngameForge(mc);
+            InstanceF = new ApecGuiIngameForge(mc);
+            mc.ingameGUI = InstanceF;
         }
 
         try {
@@ -151,6 +172,7 @@ public class GUIModifier extends Component {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        shouldTheGuiAppear = true;
     }
 
     @Override
@@ -183,6 +205,7 @@ public class GUIModifier extends Component {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        shouldTheGuiAppear = false;
     }
 
     private void ApplyDeltas() {

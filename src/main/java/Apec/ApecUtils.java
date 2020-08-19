@@ -2,6 +2,7 @@ package Apec;
 
 import Apec.Settings.SettingID;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.util.ChatComponentText;
 import org.lwjgl.util.vector.Vector2f;
 
@@ -34,8 +35,8 @@ public class ApecUtils {
         return s;
     }
 
-    public static float getMagnitude(Vector2f v1,Vector2f v2) {
-        return (float)Math.sqrt(Math.pow(v1.x-v1.y,2) + Math.pow(v1.y-v2.y,2));
+    public static float getMagnitude(Vector2f v1) {
+        return (float)Math.sqrt(Math.pow(v1.x,2) + Math.pow(v1.y,2));
     }
 
     public static boolean zeroMagnitude (Vector2f v) {
@@ -77,6 +78,18 @@ public class ApecUtils {
 
     }
 
+    public static int getMaxStringWidth(List<String> l) {
+        int w = 0;
+        FontRenderer fr = Minecraft.getMinecraft().fontRendererObj;
+        for (String _l : l) {
+            int _w =  fr.getStringWidth(_l);
+            if (w < _w) {
+                w = _w;
+            }
+        }
+        return w;
+    }
+
     /**
      * Usually used to ensure compatibility with other mods that replace classes with a child version of it
      */
@@ -99,6 +112,13 @@ public class ApecUtils {
             if (lastIndex == s1.length()) return false;
         }
         return true;
+    }
+
+    public static boolean doesListContainRegex(List<String> l,String regex) {
+        for (String _l : l) {
+            if (_l.contains(regex)) return true;
+        }
+        return false;
     }
 
     public static String removeFirstSpaces(String s) {

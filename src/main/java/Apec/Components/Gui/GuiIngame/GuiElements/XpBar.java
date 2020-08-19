@@ -21,12 +21,13 @@ public class XpBar extends GUIComponent {
 
     @Override
     public void drawTex(DataExtractor.PlayerStats ps, DataExtractor.ScoreBoardData sd, DataExtractor.OtherData od, ScaledResolution sr,boolean editingMode) {
+        super.drawTex(ps,sd,od,sr,editingMode);
         GlStateManager.pushMatrix();
         GlStateManager.scale(scale,scale,scale);
         if (ApecMain.Instance.settingsManager.getSettingState(SettingID.XP_BAR)) {
             GuiIngame gi = Minecraft.getMinecraft().ingameGUI;
 
-            Vector2f StatBar = this.getAnchorPointPosition(sr);
+            Vector2f StatBar = this.getAnchorPointPosition();
             StatBar = ApecUtils.addVec(StatBar, delta_position);
 
             mc.renderEngine.bindTexture(new ResourceLocation(ApecMain.modId, "gui/statBars.png"));
@@ -38,28 +39,13 @@ public class XpBar extends GUIComponent {
     }
 
     @Override
-    public void draw(DataExtractor.PlayerStats ps, DataExtractor.ScoreBoardData sd,DataExtractor.OtherData od, ScaledResolution sr,boolean editingMode) {
-        GlStateManager.pushMatrix();
-        GlStateManager.scale(scale,scale,scale);
-        if (ApecMain.Instance.settingsManager.getSettingState(SettingID.XP_BAR)) {
-            Vector2f StatBar = this.getAnchorPointPosition(sr);
-
-            StatBar = ApecUtils.addVec(StatBar, delta_position);
-
-            String XPString = "Lvl " + this.mc.thePlayer.experienceLevel + " XP";
-            ApecUtils.drawThiccBorderString(XPString, (int) (StatBar.x/scale + 112 + 70 - mc.fontRendererObj.getStringWidth(XPString)), (int)(StatBar.y/scale - 10), 0x80ff20);
-        }
-        GlStateManager.popMatrix();
-    }
-
-    @Override
-    public Vector2f getAnchorPointPosition(ScaledResolution sr) {
-        return new Vector2f(sr.getScaledWidth() - 190, 53);
+    public Vector2f getAnchorPointPosition() {
+        return new Vector2f(g_sr.getScaledWidth() - 190, 53);
     }
 
     @Override
     public Vector2f getBoundingPoint() {
-        return ApecUtils.addVec(getRealAnchorPoint(new ScaledResolution(mc)),new Vector2f(182*scale,5*scale));
+        return ApecUtils.addVec(getRealAnchorPoint(),new Vector2f(182*scale,5*scale));
     }
 
 }

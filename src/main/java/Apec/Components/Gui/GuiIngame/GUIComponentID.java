@@ -11,5 +11,10 @@ public enum GUIComponentID {
     EXTRA_INFO,
     WARNING_ICONS,
     INFO_BOX,
-    HOT_BAR
+    HOT_BAR,
+    HP_TEXT,
+    MP_TEXT,
+    XP_TEXT,
+    SKILL_TEXT,
+    AIR_TEXT
 }

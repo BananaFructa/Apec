@@ -7,36 +7,79 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.io.File;
 import java.util.Scanner;
 
+import static Apec.Settings.SettingID.*;
+
 public class SettingsManager {
 
     public List<Setting> settings = new ArrayList<Setting>() {{
-        add(new Setting(SettingID.AUTO_ENABLE,true));
+        add(new Setting(AUTO_ENABLE,true));
         add(new Setting(SettingID.HP_BAR,true));
+        add(new Setting(SettingID.HP_TEXT,true));
         add(new Setting(SettingID.SHOW_ABSORPTION_BAR,true));
-        add(new Setting(SettingID.MP_BAR,true));
-        add(new Setting(SettingID.XP_BAR,true));
-        add(new Setting(SettingID.SHOW_AIR_BAR,true));
-        add(new Setting(SettingID.SHOW_SKILL_XP,true));
-        add(new Setting(SettingID.ALWAYS_SHOW_SKILL,false));
-        add(new Setting(SettingID.SHOW_WARNING,true));
-        add(new Setting(SettingID.INVENTORY_TRAFFIC,true));
-        add(new Setting(SettingID.SHOW_POTIONS_EFFECTS,true));
-        add(new Setting(SettingID.COMPACT_POTION,false));
-        add(new Setting(SettingID.HIDE_NIGHT_VISION,false));
-        add(new Setting(SettingID.ITEM_HIGHLIGHT_TEXT,false));
-        add(new Setting(SettingID.NPC_GUI,true));
-        add(new Setting(SettingID.SHOW_ABILITY_TEXT,true));
-        add(new Setting(SettingID.HIDE_IN_F3,false));
-        add(new Setting(SettingID.SNAP_IN_EDITING,true));
-        add(new Setting(SettingID.SHOW_CACHED_PURSE_IN_DUNGEONS,true));
-        add(new Setting(SettingID.INFO_BOX_ANIMATION,true));
-        add(new Setting(SettingID.BORDER_TYPE,true));
-        add(new Setting(SettingID.OVERWRITE_GUI,false));
-        add(new Setting(SettingID.SHOW_DEBUG_MESSAGES,false));
+        add(new Setting(MP_BAR,true));
+        add(new Setting(MP_TEXT,true));
+        add(new Setting(XP_BAR,true));
+        add(new Setting(XP_TEXT,true));
+        add(new Setting(SHOW_AIR_BAR,true));
+        add(new Setting(AIR_TEXT,true));
+        add(new Setting(SHOW_SKILL_XP,true));
+        add(new Setting(SKILL_TEXT,true));
+        add(new Setting(ALWAYS_SHOW_SKILL,false));
+        add(new Setting(SHOW_WARNING,true));
+        add(new Setting(INVENTORY_TRAFFIC,true));
+        add(new Setting(SHOW_POTIONS_EFFECTS,true));
+        add(new Setting(COMPACT_POTION,false));
+        add(new Setting(HIDE_NIGHT_VISION,false));
+        add(new Setting(SHOW_CURRENT_SERVER,false));
+        add(new Setting(ITEM_HIGHLIGHT_TEXT,false));
+        add(new Setting(NPC_GUI,true));
+        add(new Setting(MENU_GUI,true));
+        add(new Setting(SHOW_ABILITY_TEXT,true));
+        add(new Setting(HIDE_IN_F3,false));
+        add(new Setting(SNAP_IN_EDITING,true));
+        add(new Setting(SHOW_CACHED_PURSE_IN_DUNGEONS,true));
+        add(new Setting(INFO_BOX_ANIMATION,true));
+        add(new Setting(BORDER_TYPE,true));
+        add(new Setting(OVERWRITE_GUI,false));
+        add(new Setting(SHOW_DEBUG_MESSAGES,false));
+    }};
+
+    private static HashMap<SettingID,Tuple<String,String>> settingData = new HashMap<SettingID, Tuple<String, String>>() {{
+        put(AUTO_ENABLE,new Tuple<String, String>("Auto Toggle","The GUI will automatically enable/disable when you join/leave skyblock"));
+        put(SHOW_WARNING,new Tuple<String, String>("Show Warning Icons","Show the warning icons under the status bars"));
+        put(SHOW_POTIONS_EFFECTS,new Tuple<String, String>("Show potion effects","Show potion effects on the left side of the screen"));
+        put(SHOW_DEBUG_MESSAGES,new Tuple<String, String>("Show Debug Messages","Shows messages in the chat about different events in the code"));
+        put(OVERWRITE_GUI,new Tuple<String, String>("Overwrite GUIs","Overwrites any other mod's ingame gui (close and reopen when enabled)"));
+        put(NPC_GUI,new Tuple<String, String>("Npc GUIs", "Custom GUIs for Npcs"));
+        put(MENU_GUI,new Tuple<String, String>("Menu GUIs", "Custom GUIs for menus"));
+        put(INVENTORY_TRAFFIC,new Tuple<String, String>("Show Inventory Traffic", "Show what items are going in and out of the inventory"));
+        put(HIDE_IN_F3,new Tuple<String, String>("Hide in F3", "Hides certain elements while in f3"));
+        put(SHOW_SKILL_XP,new Tuple<String, String>("Show skill xp", "When you get skill xp it will appear on the screen"));
+        put(BORDER_TYPE,new Tuple<String, String>("Black border text", "When disabled the text will show without the black border"));
+        put(COMPACT_POTION,new Tuple<String, String>("Compact potion display","Shows 2 potions per line. As they are shown in the tab menu"));
+        put(ITEM_HIGHLIGHT_TEXT,new Tuple<String, String>("Normal tooltip text","Shows the tooltip text of an item centered with the hotbar"));
+        put(HP_BAR,new Tuple<String, String>("Show HP Bar","Toggles on or off the hp bar"));
+        put(MP_BAR,new Tuple<String, String>("Show MP Bar","Toggles on or off the mp bar"));
+        put(XP_BAR,new Tuple<String, String>("Show XP Bar","Toggles on or off the xp bar"));
+        put(HIDE_NIGHT_VISION,new Tuple<String, String>("Don't show night vision","Don't show the night vision effect in the effect list"));
+        put(ALWAYS_SHOW_SKILL,new Tuple<String, String>("Always show skill xp","Constantly shows skill xp, using cached values when not normally shown"));
+        put(SHOW_CACHED_PURSE_IN_DUNGEONS,new Tuple<String, String>("Show cached purse","Shows a cached value of the purse while in dungeons"));
+        put(SHOW_AIR_BAR,new Tuple<String, String>("Show air bar","Toggles on or off the air bar"));
+        put(SNAP_IN_EDITING,new Tuple<String, String>("Snap in gui editing","Activates snapping while in the gui customization menu"));
+        put(INFO_BOX_ANIMATION,new Tuple<String, String>("Bottom Bar Animation","A slide down animation for the bottom box when i chat"));
+        put(SHOW_ABILITY_TEXT,new Tuple<String, String>("Show ability text","Shows the ability text at the mana bar"));
+        put(SHOW_ABSORPTION_BAR,new Tuple<String, String>("Show absorption bar","Shows the absorption bar"));
+        put(HP_TEXT,new Tuple<String, String>("Show HP Text","Shows the HP text"));
+        put(MP_TEXT,new Tuple<String, String>("Show MP Text","Shows the MP text"));
+        put( XP_TEXT,new Tuple<String, String>("Show XP Text","Shows the XP text"));
+        put(AIR_TEXT,new Tuple<String, String>("Show Air text","Shows the air text"));
+        put(SKILL_TEXT,new Tuple<String, String>("Show Skill text","Shows the skill text"));
+        put(SHOW_CURRENT_SERVER,new Tuple<String, String>("Show current server","Show in which server you are in"));
     }};
 
     public boolean getSettingState(SettingID settingID){
@@ -57,56 +100,7 @@ public class SettingsManager {
     }
 
     public static Tuple<String,String> getNameAndDesc (SettingID settingID) {
-        switch (settingID) {
-            case AUTO_ENABLE:
-                return new Tuple<String, String>("Auto Toggle","The GUI will automatically enable/disable when you join/leave skyblock");
-            case SHOW_WARNING:
-                return new Tuple<String, String>("Show Warning Icons","Show the warning icons under the status bars");
-            case SHOW_POTIONS_EFFECTS:
-                return new Tuple<String, String>("Show potion effects","Show potion effects on the left side of the screen");
-            case SHOW_DEBUG_MESSAGES:
-                return new Tuple<String, String>("Show Debug Messages","Shows messages in the chat about different events in the code");
-            case OVERWRITE_GUI:
-                return new Tuple<String, String>("Overwrite GUIs","Overwrites any other mod's ingame gui (close and reopen when enabled)");
-            case NPC_GUI:
-                return new Tuple<String, String>("Npc GUIs", "Custom GUIs for Npcs");
-            case INVENTORY_TRAFFIC:
-                return new Tuple<String, String>("Show Inventory Traffic", "Show what items are going in and out of the inventory");
-            case HIDE_IN_F3:
-                return new Tuple<String, String>("Hide in F3", "Hides certain elements while in f3");
-            case SHOW_SKILL_XP:
-                return new Tuple<String, String>("Show skill xp", "When you get skill xp it will appear on the screen");
-            case BORDER_TYPE:
-                return new Tuple<String, String>("Black border text", "When disabled the text will show without the black border");
-            case COMPACT_POTION:
-                return new Tuple<String, String>("Compact potion display","Shows 2 potions per line. As they are shown in the tab menu");
-            case ITEM_HIGHLIGHT_TEXT:
-                return new Tuple<String, String>("Normal tooltip text","Shows the tooltip text of an item centered with the hotbar");
-            case HP_BAR:
-                return new Tuple<String, String>("Show HP Bar","Toggles on or off the hp bar");
-            case MP_BAR:
-                return new Tuple<String, String>("Show MP Bar","Toggles on or off the mp bar");
-            case XP_BAR:
-                return new Tuple<String, String>("Show XP Bar","Toggles on or off the xp bar");
-            case HIDE_NIGHT_VISION:
-                return new Tuple<String, String>("Don't show night vision","Don't show the night vision effect in the effect list");
-            case ALWAYS_SHOW_SKILL:
-                return new Tuple<String, String>("Always show skill xp","Constantly shows skill xp, using cached values when not normally shown");
-            case SHOW_CACHED_PURSE_IN_DUNGEONS:
-                return new Tuple<String, String>("Show cached purse","Shows a cached value of the purse while in dungeons");
-            case SHOW_AIR_BAR:
-                return new Tuple<String, String>("Show air bar","Toggles on or off the air bar");
-            case SNAP_IN_EDITING:
-                return new Tuple<String, String>("Snap in gui editing","Activates snapping while in the gui customization menu");
-            case INFO_BOX_ANIMATION:
-                return new Tuple<String, String>("Bottom Bar Animation","A slide down animation for the bottom box when i chat");
-            case SHOW_ABILITY_TEXT:
-                return new Tuple<String, String>("Show ability text","Shows the ability text at the mana bar");
-            case SHOW_ABSORPTION_BAR:
-                return new Tuple<String, String>("Show absorption bar","Shows the absorption bar");
-            default:
-                return new Tuple<String, String>("N/A","N/A");
-        }
+        return settingData.get(settingID);
     }
 
     public void SaveSettings() {

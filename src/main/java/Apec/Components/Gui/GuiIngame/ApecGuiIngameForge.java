@@ -190,7 +190,7 @@ public class ApecGuiIngameForge extends GuiIngameForge {
         if (this.mc.getRenderViewEntity() instanceof EntityPlayer)
         {
             GUIComponent guiComponent = ((GUIModifier)ApecMain.Instance.getComponent(ComponentId.GUI_MODIFIER)).getGuiComponent(GUIComponentID.HOT_BAR);
-            Vector2f pos = ApecUtils.addVec(guiComponent.getAnchorPointPosition(sr),guiComponent.getDelta_position());
+            Vector2f pos = ApecUtils.addVec(guiComponent.getAnchorPointPosition(),guiComponent.getDelta_position());
             float scale = guiComponent.getScale();
 
             GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
@@ -388,7 +388,7 @@ public class ApecGuiIngameForge extends GuiIngameForge {
                 if (opacity > 0)
                 {
                     GUIComponent guiComponent = ((GUIModifier)ApecMain.Instance.getComponent(ComponentId.GUI_MODIFIER)).getGuiComponent(GUIComponentID.HOT_BAR);
-                    Vector2f pos = ApecUtils.addVec(guiComponent.getAnchorPointPosition(res),guiComponent.getDelta_position());
+                    Vector2f pos = guiComponent.getRealAnchorPoint();
                     Vector2f delta = guiComponent.getDelta_position();
                     float scale = guiComponent.getScale();
 

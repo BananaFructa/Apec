@@ -18,9 +18,10 @@ public class ExtraInfo extends GUIComponent {
 
     @Override
     public void draw(DataExtractor.PlayerStats ps, DataExtractor.ScoreBoardData sd,DataExtractor.OtherData od, ScaledResolution sr,boolean editingMode) {
+        super.draw(ps,sd,od,sr,editingMode);
         GlStateManager.pushMatrix();
         GlStateManager.scale(scale,scale,scale);
-        Vector2f ExtraScoreInfo = getAnchorPointPosition(sr);
+        Vector2f ExtraScoreInfo = getAnchorPointPosition();
 
         ExtraScoreInfo = ApecUtils.addVec(ExtraScoreInfo,delta_position);
 
@@ -41,12 +42,12 @@ public class ExtraInfo extends GUIComponent {
     }
 
     @Override
-    public Vector2f getAnchorPointPosition(ScaledResolution sr) {
+    public Vector2f getAnchorPointPosition() {
         return new Vector2f(5,85);
     }
 
     @Override
     public Vector2f getBoundingPoint() {
-        return ApecUtils.addVec(getRealAnchorPoint(new ScaledResolution(mc)),new Vector2f(55*scale,100*scale));
+        return ApecUtils.addVec(getRealAnchorPoint(),new Vector2f(55*scale,100*scale));
     }
 }

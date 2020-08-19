@@ -21,12 +21,13 @@ public class MnBar extends GUIComponent {
 
     @Override
     public void drawTex(DataExtractor.PlayerStats ps, DataExtractor.ScoreBoardData sd, DataExtractor.OtherData od, ScaledResolution sr,boolean editingMode) {
+        super.drawTex(ps,sd,od,sr,editingMode);
         GlStateManager.pushMatrix();
         GlStateManager.scale(scale,scale,scale);
         if (ApecMain.Instance.settingsManager.getSettingState(SettingID.MP_BAR)) {
             GuiIngame gi = Minecraft.getMinecraft().ingameGUI;
 
-            Vector2f StatBar = this.getAnchorPointPosition(sr);
+            Vector2f StatBar = this.getAnchorPointPosition();
             StatBar = ApecUtils.addVec(StatBar, delta_position);
 
             float mpFactor = ps.Mp > ps.BaseMp ? 1 :(float) ps.Mp / (float) ps.BaseMp;
@@ -37,32 +38,16 @@ public class MnBar extends GUIComponent {
             gi.drawTexturedModalRect((int) StatBar.x/scale, (int) StatBar.y/scale, 0, 15, (int) (mpFactor * 182f), 5);
         }
         GlStateManager.popMatrix();
-
     }
 
     @Override
-    public void draw(DataExtractor.PlayerStats ps, DataExtractor.ScoreBoardData sd,DataExtractor.OtherData od, ScaledResolution sr,boolean editingMode) {
-        GlStateManager.pushMatrix();
-        GlStateManager.scale(scale,scale,scale);
-        if (ApecMain.Instance.settingsManager.getSettingState(SettingID.MP_BAR)) {
-            Vector2f StatBar = this.getAnchorPointPosition(sr);
-
-            StatBar = ApecUtils.addVec(StatBar, delta_position);
-
-            String MPString = (ps.IsAbilityShown && ApecMain.Instance.settingsManager.getSettingState(SettingID.SHOW_ABILITY_TEXT) ? ps.AbilityText + "\u00a7r ": "") + ps.Mp + "/" + ps.BaseMp + " MP";
-            ApecUtils.drawThiccBorderString(MPString, (int)(StatBar.x/scale + 112 + 70 - mc.fontRendererObj.getStringWidth(MPString)), (int)(StatBar.y/scale - 10), 0x1139bd);
-        }
-        GlStateManager.popMatrix();
-    }
-
-    @Override
-    public Vector2f getAnchorPointPosition(ScaledResolution sr) {
-        return new Vector2f(sr.getScaledWidth() - 190, 34);
+    public Vector2f getAnchorPointPosition() {
+        return new Vector2f(g_sr.getScaledWidth() - 190, 34);
     }
 
     @Override
     public Vector2f getBoundingPoint() {
-        return ApecUtils.addVec(getRealAnchorPoint(new ScaledResolution(mc)),new Vector2f(182*scale,5*scale));
+        return ApecUtils.addVec(getRealAnchorPoint(),new Vector2f(182*scale,5*scale));
     }
 
 }

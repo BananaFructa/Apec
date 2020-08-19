@@ -2,6 +2,7 @@ package Apec;
 
 import Apec.Components.Gui.GuiIngame.ApecGuiIngameForge;
 import Apec.Components.Gui.GuiIngame.ApecGuiIngameVanilla;
+import Apec.Components.Gui.GuiIngame.GUIModifier;
 import Apec.Settings.SettingID;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
@@ -46,6 +47,9 @@ public class DataExtractor {
     private final String secretSymbol = "Secrets";
     private final String chickenRaceSymbol = "CHICKEN RACING";
     private final String jumpSymbol = "JUMP";
+    private final String crystalRaceSymbol = "CRYSTAL CORE RACE";
+    private final String giantMushroomSymbol = "GIANT MUSHROOM RACE";
+    private final String precursorRuinsSymbol = "PRECURSOR RUINS RACE";
 
     private boolean alreadyShowedTabError = false;
     private boolean alreadyShowedScrErr = false;
@@ -94,6 +98,7 @@ public class DataExtractor {
     public boolean isInSkyblock = false; // This flag is true if the player is in skyblock
 
     // Gets the action bar data
+    // The priority is set on highest so the data is getting parsed before it's modified by sba
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onChatMsg(ClientChatReceivedEvent event) {
         if (event.message.getUnformattedText().contains(String.valueOf(HpSymbol)) || event.message.getUnformattedText().contains(String.valueOf(MnSymbol))) {
@@ -111,15 +116,11 @@ public class DataExtractor {
                 if (hasSentATradeRequest) hasSentATradeRequest = false;
                 if (hasRecievedATradeRequest) hasRecievedATradeRequest = false;
             }
-
-
-
         }
-
     }
 
-
-    @SubscribeEvent
+    // The priority is on lowest since the gui swapping that happens if sidebar mod swiched it happens on priority low
+    @SubscribeEvent(priority = EventPriority.LOWEST)
     public void onTick(TickEvent.ClientTickEvent event) {
 
         try {
@@ -128,7 +129,7 @@ public class DataExtractor {
                 this.isInSkyblock = ApecUtils.removeAllCodes(s).toLowerCase().contains("skyblock");
             }
         } catch (Exception e) { }
-        if (mc.ingameGUI instanceof ApecGuiIngameForge || mc.ingameGUI instanceof ApecGuiIngameVanilla) {
+        if (((GUIModifier)ApecMain.Instance.getComponent(ComponentId.GUI_MODIFIER)).shouldTheGuiAppear) {
             try {
                 IChatComponent icc = (IChatComponent) FieldUtils.readField(mc.ingameGUI.getTabList(), ApecUtils.unObfedFieldNames.get("footer"), true);
                 if (icc == null) {
@@ -146,6 +147,7 @@ public class DataExtractor {
 
             try {
                 this.scoreBoardLines = getSidebarLines();
+                this.scoreBoardLines = addDataFixesScoreboard(this.scoreBoardLines);
             } catch (Exception e) {
 
             }
@@ -165,6 +167,16 @@ public class DataExtractor {
             }
 
         }
+    }
+
+    /**
+     * This only includes adding missing brackets in dungeons
+     */
+    public List<String> addDataFixesScoreboard(List<String> s) {
+        for (String _s: s) {
+            if (_s.contains("[") && !_s.contains("]")) _s.concat("\u00a7]");
+        }
+        return s;
     }
 
     /**
@@ -197,12 +209,16 @@ public class DataExtractor {
             }
 
             if (isInTheCatacombs) {
-                scoreBoardData.IRL_Date = "Data Unavailable";
-                scoreBoardData.Server = "Data Unavailable";
                 if (ApecMain.Instance.settingsManager.getSettingState(SettingID.SHOW_CACHED_PURSE_IN_DUNGEONS)) {
                     scoreBoardData.Purse = lastPurse;
                 } else {
                     scoreBoardData.Purse = "Purse: \u00a76Data Unavailable";
+                }
+            }
+
+            if (!scoreBoardLines.isEmpty()) {
+                if (scoreBoardLines.get(scoreBoardLines.size() - 1).contains("\u00a78") && ApecMain.Instance.settingsManager.getSettingState(SettingID.SHOW_CURRENT_SERVER)) {
+                    scoreBoardData.ExtraInfo.add("Currently in: " + segmentString(scoreBoardLines.get(scoreBoardLines.size() - 1), "\u00a78", '\u00a7', ' ', 1, 1, false));
                 }
             }
 
@@ -213,14 +229,6 @@ public class DataExtractor {
                 for (int i = 0; i < scoreBoardLines.size(); i++) {
                     String s;
                     switch (i) {
-                        case 0:
-                            s = scoreBoardLines.get(size - i);
-                            String[] dns = s.split(" ");
-                            if (dns.length >= 2) {
-                                scoreBoardData.IRL_Date = dns[0];
-                                scoreBoardData.Server = dns[1];
-                            }
-                            break;
                         case 2:
                             s = scoreBoardLines.get(size - i);
                             scoreBoardData.Date = s;
@@ -459,32 +467,6 @@ public class DataExtractor {
         }
 
         try {
-            // DEF
-            {
-                String segmentedString = segmentString(actionBarData, String.valueOf(DfSymbol), '\u00a7', DfSymbol, 2, 1, false);
-                if (segmentedString != null) {
-                    playerStats.Defence = Integer.parseInt(ApecUtils.removeAllCodes(segmentedString));
-                    lastDefence = playerStats.Defence;
-                } else if (!actionBarData.contains(endRaceSymbol) &&
-                        !actionBarData.contains(woodRacingSymbol) &&
-                        !actionBarData.contains(dpsSymbol) &&
-                        !actionBarData.contains(secSymbol) &&
-                        !actionBarData.contains(secretSymbol) &&
-                        !actionBarData.contains(chickenRaceSymbol) &&
-                        !actionBarData.contains(jumpSymbol))
-                // Makes sure that the defence is not replace by something else in the auction bar and it is really 0
-                {
-                    playerStats.Defence = 0;
-                    lastDefence = playerStats.Defence;
-                } else {
-                    playerStats.Defence = lastDefence;
-                }
-            }
-        } catch (Exception err) {
-            playerStats.Defence = lastDefence;
-        }
-
-        try {
             // Skill
                 String secmentedString = segmentString(actionBarData, ")", '+', ' ', 1, 1, false);
                 if (secmentedString != null) {
@@ -527,6 +509,37 @@ public class DataExtractor {
             playerStats.IsAbilityShown = false;
         }
 
+        try {
+            // DEF
+            {
+                String segmentedString = segmentString(actionBarData, String.valueOf(DfSymbol), '\u00a7', DfSymbol, 2, 1, false);
+                if (segmentedString != null) {
+                    playerStats.Defence = Integer.parseInt(ApecUtils.removeAllCodes(segmentedString));
+                    lastDefence = playerStats.Defence;
+                } else if (!actionBarData.contains(endRaceSymbol) &&
+                        !actionBarData.contains(woodRacingSymbol) &&
+                        !actionBarData.contains(dpsSymbol) &&
+                        !actionBarData.contains(secSymbol) &&
+                        !actionBarData.contains(secretSymbol) &&
+                        !actionBarData.contains(chickenRaceSymbol) &&
+                        !actionBarData.contains(jumpSymbol) &&
+                        !actionBarData.contains(crystalRaceSymbol) &&
+                        !actionBarData.contains(giantMushroomSymbol) &&
+                        !actionBarData.contains(precursorRuinsSymbol) &&
+                        !playerStats.IsAbilityShown &&
+                        !playerStats.SkillIsShown)
+                // Makes sure that the defence is not replace by something else in the auction bar and it is really 0
+                {
+                    playerStats.Defence = 0;
+                    lastDefence = playerStats.Defence;
+                } else {
+                    playerStats.Defence = lastDefence;
+                }
+            }
+        } catch (Exception err) {
+            playerStats.Defence = lastDefence;
+        }
+
         return playerStats;
     }
 
@@ -554,6 +567,9 @@ public class DataExtractor {
         String secrets = segmentString(actionBarData,secretSymbol,'\u00a7','\u00a7',1,1,false);
         String chickenRace = segmentString(actionBarData,chickenRaceSymbol,'\u00a7',' ',2,2,false);
         String jump = segmentString(actionBarData,jumpSymbol,'\u00a7','P',3,1,false);
+        String crystalRace = segmentString(actionBarData,crystalRaceSymbol,'\u00a7',' ',2,2,false);
+        String mushroomRace = segmentString(actionBarData,giantMushroomSymbol,'\u00a7',' ',2,2,false);
+        String precursorRace = segmentString(actionBarData,precursorRuinsSymbol,'\u00a7',' ',2,2,false);
 
         if ((endRace != null || woodRacing != null || dps != null || sec != null) && !otherData.ExtraInfo.isEmpty()) otherData.ExtraInfo.add(" ");
 
@@ -564,6 +580,9 @@ public class DataExtractor {
         if (secrets != null) otherData.ExtraInfo.add(secrets);
         if (chickenRace != null) otherData.ExtraInfo.add(chickenRace);
         if (jump != null) otherData.ExtraInfo.add(jump);
+        if (crystalRace != null) otherData.ExtraInfo.add(crystalRace);
+        if (mushroomRace != null) otherData.ExtraInfo.add(mushroomRace);
+        if (precursorRace != null) otherData.ExtraInfo.add(precursorRace);
 
         if (ApecMain.Instance.settingsManager.getSettingState(SettingID.SHOW_POTIONS_EFFECTS)) {
 
@@ -595,7 +614,9 @@ public class DataExtractor {
             try {
                 if (mc.thePlayer != null) if (isInvFull()) events.add(EventIDs.INV_FULL);
                 if (sd.Purse != null) {
-                    String purse = ApecUtils.removeNonNumericalChars(ApecUtils.removeAllCodes(sd.Purse));
+                    String purse = ApecUtils.removeAllCodes(sd.Purse);
+                    if (purse.contains("(")) purse = purse.substring(0,purse.indexOf("("));
+                    purse = ApecUtils.removeNonNumericalChars(purse);
                     if (!purse.equals("")) {
                         if (Float.parseFloat(purse) >= 5000000f && !usesPiggyBank) events.add(EventIDs.COIN_COUNT);
                     }
@@ -628,8 +649,20 @@ public class DataExtractor {
             if (!lines[2].contains("No effects")) {
                 for (int i = 2; i < lines.length && lines[i].contains(":"); i++) {
                     if (ApecMain.Instance.settingsManager.getSettingState(SettingID.COMPACT_POTION)) {
-                        effects.add(lines[i]);
+                        if(ApecMain.Instance.settingsManager.getSettingState(SettingID.HIDE_NIGHT_VISION)) {
+                            String[] split = lines[i].split(" {5}");
+                            if (split.length > 1) {
+                                if (split[0].contains("Night Vision")) effects.add(split[1]);
+                                else if (split[1].contains("Night Vision")) effects.add(split[0]);
+                                else effects.add(lines[i]);
+                            } else if (!lines[i].contains("Night Vision")) {
+                                effects.add(lines[i]);
+                            }
+                        } else {
+                            effects.add(lines[i]);
+                        }
                     } else {
+
                         String[] split = lines[i].split(" {5}");
                         if (ApecMain.Instance.settingsManager.getSettingState(SettingID.HIDE_NIGHT_VISION)) {
                             for (int j = 0; j < split.length; j++) {
@@ -640,6 +673,7 @@ public class DataExtractor {
                         } else {
                             effects.addAll(Arrays.asList(split));
                         }
+
                     }
                 }
             }

@@ -18,30 +18,32 @@ public class GUIComponent {
     protected Vector2f delta_position = new Vector2f(0,0);
     protected float scale = 1;
     public GUIComponentID gUiComponentID;
+    protected ScaledResolution g_sr;
 
     public GUIComponent(GUIComponentID gUiComponentID) {
         this.gUiComponentID = gUiComponentID;
         MinecraftForge.EVENT_BUS.register(this);
+        g_sr = new ScaledResolution(mc);
     }
 
     public void drawTex(DataExtractor.PlayerStats ps, DataExtractor.ScoreBoardData sd, DataExtractor.OtherData od, ScaledResolution sr,boolean editingMode) {
-
+       g_sr = sr;
     }
 
     public void draw(DataExtractor.PlayerStats ps, DataExtractor.ScoreBoardData sd, DataExtractor.OtherData od,ScaledResolution sr,boolean editingMode) {
-
+       g_sr = sr;
     }
 
     public void setDelta_position(Vector2f dp) {
         delta_position = dp;
     }
 
-    public Vector2f getAnchorPointPosition (ScaledResolution sr) {
+    public Vector2f getAnchorPointPosition () {
         return new Vector2f(0,0);
     }
 
-    public Vector2f getRealAnchorPoint(ScaledResolution sr) {
-        return ApecUtils.addVec(getAnchorPointPosition(new ScaledResolution(mc)),getDelta_position());
+    public Vector2f getRealAnchorPoint() {
+        return ApecUtils.addVec(getAnchorPointPosition(),getDelta_position());
     }
 
     public void setScale(float s) {

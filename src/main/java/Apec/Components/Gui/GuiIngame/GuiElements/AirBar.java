@@ -26,7 +26,7 @@ public class AirBar extends GUIComponent {
         if (ApecMain.Instance.settingsManager.getSettingState(SettingID.SHOW_AIR_BAR)) {
             GuiIngame gi = Minecraft.getMinecraft().ingameGUI;
 
-            Vector2f StatBar = this.getAnchorPointPosition(sr);
+            Vector2f StatBar = this.getAnchorPointPosition();
             StatBar = ApecUtils.addVec(StatBar, delta_position);
 
             mc.renderEngine.bindTexture(new ResourceLocation(ApecMain.modId, "gui/statBars.png"));
@@ -43,32 +43,13 @@ public class AirBar extends GUIComponent {
     }
 
     @Override
-    public void draw(DataExtractor.PlayerStats ps, DataExtractor.ScoreBoardData sd,DataExtractor.OtherData od, ScaledResolution sr,boolean editingMode) {
-        GlStateManager.pushMatrix();
-        GlStateManager.scale(scale,scale,scale);
-        if (ApecMain.Instance.settingsManager.getSettingState(SettingID.SHOW_AIR_BAR)) {
-            Vector2f StatBar = this.getAnchorPointPosition(sr);
-
-            StatBar = ApecUtils.addVec(StatBar, delta_position);
-
-            if (mc.thePlayer.isInsideOfMaterial(Material.water) || editingMode) {
-                float airPrec = (mc.thePlayer.getAir() / 300f) * 100;
-                if (airPrec < 0) airPrec = 0;
-                String ARString = (int) airPrec + "% Air";
-                ApecUtils.drawThiccBorderString(ARString, (int)(StatBar.x/scale + 112 + 70 - mc.fontRendererObj.getStringWidth(ARString)), (int) (StatBar.y/scale - 10), 0x8ba6b2);
-            }
-        }
-        GlStateManager.popMatrix();
-    }
-
-    @Override
-    public Vector2f getAnchorPointPosition(ScaledResolution sr) {
-        return new Vector2f(sr.getScaledWidth() - 190, 72);
+    public Vector2f getAnchorPointPosition() {
+        return new Vector2f(g_sr.getScaledWidth() - 190, 72);
     }
 
     @Override
     public Vector2f getBoundingPoint() {
-        return ApecUtils.addVec(getRealAnchorPoint(new ScaledResolution(mc)),new Vector2f(182*scale,5*scale));
+        return ApecUtils.addVec(getRealAnchorPoint(),new Vector2f(182*scale,5*scale));
     }
 
 }

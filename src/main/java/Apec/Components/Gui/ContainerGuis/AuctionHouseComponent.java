@@ -1,7 +1,9 @@
 package Apec.Components.Gui.ContainerGuis;
 
+import Apec.ApecMain;
 import Apec.Component;
 import Apec.ComponentId;
+import Apec.Settings.SettingID;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiIngame;
 import net.minecraft.client.gui.GuiScreen;
@@ -14,7 +16,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import scala.collection.parallel.ParIterableLike;
 
-public class AuctionHouseComponent extends Component {
+public class AuctionHouseComponent extends ChestGuiComponent {
 
     public boolean guiIsOpened = false;
 
@@ -46,14 +48,15 @@ public class AuctionHouseComponent extends Component {
         super(ComponentId.AUCTION_HOUSE_MENU);
     }
 
-    public void OpenTheGui(IInventory upper, IInventory lower, GuiOpenEvent event) {
-        isInOtherMenu = lower.getDisplayName().getUnformattedText().contains("View") || lower.getDisplayName().getUnformattedText().contains("Confirm");
-        if(lower.getDisplayName().getUnformattedText().equals("Auctions Browser")) {
+    public void OpenGui(IInventory upper, IInventory lower, GuiOpenEvent event) {
+        if (ApecMain.Instance.settingsManager.getSettingState(SettingID.NPC_GUI)) {
+            isInOtherMenu = lower.getDisplayName().getUnformattedText().contains("View") || lower.getDisplayName().getUnformattedText().contains("Confirm");
+            if (lower.getDisplayName().getUnformattedText().equals("Auctions Browser")) {
                 event.setCanceled(true);
-            Minecraft.getMinecraft().displayGuiScreen(new AuctionHouseGui(upper, lower));
-            guiIsOpened = true;
+                Minecraft.getMinecraft().displayGuiScreen(new AuctionHouseGui(upper, lower));
+                guiIsOpened = true;
+            }
         }
-
     }
 
     boolean last = false, _last = false;

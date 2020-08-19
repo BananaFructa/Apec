@@ -24,7 +24,7 @@ public class InfoBox extends GUIComponent {
 
     @Override
     public void draw(DataExtractor.PlayerStats ps, DataExtractor.ScoreBoardData sd,DataExtractor.OtherData od, ScaledResolution sr,boolean editingMode) {
-
+        super.draw(ps,sd,od,sr,editingMode);
         boolean isInChat = Minecraft.getMinecraft().currentScreen instanceof GuiChat;
         float fps = Minecraft.getDebugFPS();
         if (ApecMain.Instance.settingsManager.getSettingState(SettingID.INFO_BOX_ANIMATION)) {
@@ -38,7 +38,7 @@ public class InfoBox extends GUIComponent {
         if (yDecremetor > 40) yDecremetor = 40;
         GuiIngame gi = Minecraft.getMinecraft().ingameGUI;
         gi.drawRect(0 + (int) delta_position.x, sr.getScaledHeight() - 20 + (int) delta_position.y + (int)yDecremetor, sr.getScaledWidth() + (int) delta_position.x, sr.getScaledHeight() + (int) delta_position.y, 0xca0a0a0a);
-        Vector2f GuiPos = getAnchorPointPosition(sr);
+        Vector2f GuiPos = getAnchorPointPosition();
 
         GuiPos = ApecUtils.addVec(GuiPos, delta_position);
         GuiPos.y += yDecremetor;
@@ -59,7 +59,7 @@ public class InfoBox extends GUIComponent {
     }
 
     @Override
-    public Vector2f getAnchorPointPosition(ScaledResolution sr) {
-        return new Vector2f(20, sr.getScaledHeight() - 14);
+    public Vector2f getAnchorPointPosition() {
+        return new Vector2f(20, g_sr.getScaledHeight() - 14);
     }
 }

@@ -61,7 +61,6 @@ public class InventorySubtractor {
             for (String k : lastHashMap.keySet()) {
                 if (currentHashMap.containsKey(k)) {
                     if (currentHashMap.get(k).intValue() != lastHashMap.get(k).intValue()) {
-                        System.out.println("A");
                         addToList(new SubtractionListElem(k,currentHashMap.get(k) - lastHashMap.get(k)));
                     }
                 } else {

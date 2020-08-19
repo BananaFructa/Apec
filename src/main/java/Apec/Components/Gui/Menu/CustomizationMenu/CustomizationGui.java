@@ -35,11 +35,12 @@ public class CustomizationGui extends GuiScreen {
         refreshSnapPoints();
         for (GUIComponent component : components) {
             if (!(component instanceof InfoBox)) {
-                Vector2f v = component.getAnchorPointPosition(sr);
-                this.buttonList.add(new CustomizationGuiButton((int) v.x - 5, (int) v.y - 5, 10, 10, component, xSnapPoints, ySnapPoints));
+                Vector2f v = component.getAnchorPointPosition();
+                this.buttonList.add(new CustomizationGuiButton(component, xSnapPoints, ySnapPoints));
                 this.buttonList.add(new CustomizationGuiSlider((int) v.x + 7, (int) v.y + 7,component));
             }
         }
+        this.buttonList.add(new CustomizationResetButton(0,sr.getScaledWidth()/2 - 25,0,50,15));
     }
 
     @Override
@@ -47,7 +48,7 @@ public class CustomizationGui extends GuiScreen {
         final ScaledResolution sr = new ScaledResolution(mc);
         for (GUIComponent component : components) {
             if (!(component instanceof InfoBox)) {
-                drawRect((int) component.getRealAnchorPoint(sr).x, (int) component.getRealAnchorPoint(sr).y, (int) component.getBoundingPoint().x, (int) component.getBoundingPoint().y, 0x55ffffff);
+                drawRect((int) component.getRealAnchorPoint().x, (int) component.getRealAnchorPoint().y, (int) component.getBoundingPoint().x, (int) component.getBoundingPoint().y, 0x55ffffff);
             }
         }
         super.drawScreen(mouseX, mouseY, partialTicks);
@@ -73,20 +74,33 @@ public class CustomizationGui extends GuiScreen {
         super.mouseClicked(mouseX, mouseY, mouseButton);
         if (mouseButton == 0) {
             for (GuiButton guiButton : this.buttonList) {
+                if (guiButton.mousePressed(Minecraft.getMinecraft(), mouseX, mouseY) && guiButton instanceof CustomizationGuiSlider) {
+                    ((CustomizationGuiSlider) guiButton).userStartedDragging(mouseX, mouseY);
+                    return;
+                }
+            }
+            for (GuiButton guiButton : this.buttonList) {
                 if (guiButton.mousePressed(Minecraft.getMinecraft(), mouseX, mouseY) && guiButton instanceof CustomizationGuiButton) {
                     ((CustomizationGuiButton) guiButton).userStartedDragging(mouseX, mouseY);
-                    break;
-                } else if (guiButton.mousePressed(Minecraft.getMinecraft(), mouseX, mouseY) && guiButton instanceof CustomizationGuiSlider) {
-                    ((CustomizationGuiSlider) guiButton).userStartedDragging();
+                    return;
+                }
+            }
+            for (GuiButton guiButton : this.buttonList) {
+                if (guiButton.mousePressed(Minecraft.getMinecraft(), mouseX, mouseY) && guiButton instanceof CustomizationResetButton) {
+                    for (GUIComponent component : components) {
+                        component.setDelta_position(new Vector2f(0,0));
+                        component.setScale(1);
+                    }
                 }
             }
         } else if (mouseButton == 1) {
             for (GuiButton guiButton : this.buttonList) {
                 if (guiButton.mousePressed(Minecraft.getMinecraft(), mouseX, mouseY) && guiButton instanceof CustomizationGuiButton) {
                     ((CustomizationGuiButton) guiButton).setDeltaToZero();
-                    break;
+                    return;
                 } else if (guiButton.mousePressed(Minecraft.getMinecraft(), mouseX, mouseY) && guiButton instanceof CustomizationGuiSlider) {
                     ((CustomizationGuiSlider) guiButton).resetScale();
+                    return;
                 }
             }
         }
@@ -98,7 +112,6 @@ public class CustomizationGui extends GuiScreen {
     public void handleKeyboardInput() throws IOException {
         super.handleKeyboardInput();
         int key = Keyboard.getEventKey();
-        // TODO: just please make a better way of checking this
         if ((key == Keyboard.KEY_LEFT || key == Keyboard.KEY_RIGHT || key == Keyboard.KEY_UP || key == Keyboard.KEY_DOWN) && System.currentTimeMillis() - st > 200) {
             st = System.currentTimeMillis();
             for (GuiButton guiButton : this.buttonList) {
@@ -128,7 +141,7 @@ public class CustomizationGui extends GuiScreen {
         final ScaledResolution sr = new ScaledResolution(mc);
         for (GUIComponent component : components) {
             if (!(component instanceof InfoBox)) {
-                Vector2f pos = component.getRealAnchorPoint(sr);
+                Vector2f pos = component.getRealAnchorPoint();
                 Vector2f b_pos = component.getBoundingPoint();
                 xSnapPoints.add(sr.getScaledWidth()/2);
                 xSnapPoints.add((int) pos.x);

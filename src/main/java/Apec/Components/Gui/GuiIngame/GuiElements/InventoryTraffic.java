@@ -19,10 +19,11 @@ public class InventoryTraffic extends GUIComponent {
 
     @Override
     public void draw(DataExtractor.PlayerStats ps, DataExtractor.ScoreBoardData sd,DataExtractor.OtherData od, ScaledResolution sr,boolean editingMode) {
+        super.draw(ps,sd,od,sr,editingMode);
         GlStateManager.pushMatrix();
         GlStateManager.scale(scale,scale,scale);
         if (ApecMain.Instance.settingsManager.getSettingState(SettingID.INVENTORY_TRAFFIC)) {
-            Vector2f subtrListPos = this.getAnchorPointPosition(sr);
+            Vector2f subtrListPos = this.getAnchorPointPosition();
 
             subtrListPos = ApecUtils.addVec(subtrListPos, delta_position);
 
@@ -66,12 +67,12 @@ public class InventoryTraffic extends GUIComponent {
     }
 
     @Override
-    public Vector2f getAnchorPointPosition(ScaledResolution sr) {
+    public Vector2f getAnchorPointPosition() {
         return new Vector2f(5, 5);
     }
 
     @Override
     public Vector2f getBoundingPoint() {
-        return ApecUtils.addVec(getRealAnchorPoint(new ScaledResolution(mc)),new Vector2f(65*scale,75*scale));
+        return ApecUtils.addVec(getRealAnchorPoint(),new Vector2f(65*scale,75*scale));
     }
 }

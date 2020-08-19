@@ -245,7 +245,7 @@ public class ApecGuiIngameVanilla extends GuiIngame {
             if (this.mc.getRenderViewEntity() instanceof EntityPlayer)
             {
                 GUIComponent guiComponent = ((GUIModifier)ApecMain.Instance.getComponent(ComponentId.GUI_MODIFIER)).getGuiComponent(GUIComponentID.HOT_BAR);
-                Vector2f pos = ApecUtils.addVec(guiComponent.getAnchorPointPosition(sr),guiComponent.getDelta_position());
+                Vector2f pos = ApecUtils.addVec(guiComponent.getAnchorPointPosition(),guiComponent.getDelta_position());
 
                 GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
                 this.mc.getTextureManager().bindTexture(widgetsTexPath);
@@ -290,7 +290,7 @@ public class ApecGuiIngameVanilla extends GuiIngame {
                 }
 
                 GUIComponent guiComponent = ((GUIModifier)ApecMain.Instance.getComponent(ComponentId.GUI_MODIFIER)).getGuiComponent(GUIComponentID.HOT_BAR);
-                Vector2f pos = ApecUtils.addVec(guiComponent.getAnchorPointPosition(p_181551_1_),guiComponent.getDelta_position());
+                Vector2f pos = ApecUtils.addVec(guiComponent.getAnchorPointPosition(),guiComponent.getDelta_position());
                 Vector2f delta = guiComponent.getDelta_position();
 
                 int i,j;

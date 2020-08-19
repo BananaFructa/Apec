@@ -20,11 +20,12 @@ public class SkillBar extends GUIComponent {
 
     @Override
     public void drawTex(DataExtractor.PlayerStats ps, DataExtractor.ScoreBoardData sd,DataExtractor.OtherData od, ScaledResolution sr,boolean editingMode) {
+        super.drawTex(ps,sd,od,sr,editingMode);
         GlStateManager.pushMatrix();
         GlStateManager.scale(scale,scale,scale);
         if (ApecMain.Instance.settingsManager.getSettingState(SettingID.SHOW_SKILL_XP) || editingMode) {
             GuiIngame gi = Minecraft.getMinecraft().ingameGUI;
-            Vector2f SkillBarPos = getAnchorPointPosition(sr);
+            Vector2f SkillBarPos = getAnchorPointPosition();
 
             SkillBarPos = ApecUtils.addVec(SkillBarPos, delta_position);
 
@@ -47,32 +48,12 @@ public class SkillBar extends GUIComponent {
     }
 
     @Override
-    public void draw(DataExtractor.PlayerStats ps, DataExtractor.ScoreBoardData sd,DataExtractor.OtherData od, ScaledResolution sr,boolean editingMode) {
-        GlStateManager.pushMatrix();
-        GlStateManager.scale(scale,scale,scale);
-        Vector2f p = this.getAnchorPointPosition(sr);
-        p = ApecUtils.addVec(p,this.delta_position);
-        if (ApecMain.Instance.settingsManager.getSettingState(SettingID.SHOW_SKILL_XP) || editingMode) {
-            if (ps.SkillIsShown) {
-                if (ps.SkillInfo.contains("Rune")) {
-                    ApecUtils.drawThiccBorderString(ps.SkillInfo, (int)(p.x/scale + 91 - mc.fontRendererObj.getStringWidth(ps.SkillInfo) / 2), (int)(p.y/scale - 10), 0x6B3694);
-                } else {
-                    ApecUtils.drawThiccBorderString(ps.SkillInfo, (int)(p.x/scale + 91 - mc.fontRendererObj.getStringWidth(ps.SkillInfo) / 2), (int)(p.y/scale - 10), 0x4ca7a8);
-                }
-            } else if (editingMode) {
-                ApecUtils.drawThiccBorderString("+0.0 Farming (0/0)", (int)(p.x/scale + 91 - mc.fontRendererObj.getStringWidth("+0.0 Farming (0/0)") / 2), (int)(p.y/scale - 10), 0x4ca7a8);
-            }
-        }
-        GlStateManager.popMatrix();
-    }
-
-    @Override
-    public Vector2f getAnchorPointPosition(ScaledResolution sr) {
-        return new Vector2f((int) (sr.getScaledWidth() / 2 - 91), sr.getScaledHeight() - 30);
+    public Vector2f getAnchorPointPosition() {
+        return new Vector2f((int) (g_sr.getScaledWidth() / 2 - 91), g_sr.getScaledHeight() - 30);
     }
 
     @Override
     public Vector2f getBoundingPoint() {
-        return ApecUtils.addVec(getRealAnchorPoint(new ScaledResolution(mc)),new Vector2f(182*scale,5*scale));
+        return ApecUtils.addVec(getRealAnchorPoint(),new Vector2f(182*scale,5*scale));
     }
 }

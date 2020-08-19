@@ -21,6 +21,8 @@ public class EventLister extends GUIComponent {
     }
 
     public void drawTex(DataExtractor.PlayerStats ps, DataExtractor.ScoreBoardData sd, DataExtractor.OtherData od, ScaledResolution sr,boolean editingMode) {
+        super.drawTex(ps,sd,od,sr,editingMode);
+        super.drawTex(ps,sd,od,sr,editingMode);
         mc.renderEngine.bindTexture(new ResourceLocation(ApecMain.modId, "gui/statBars.png"));
         GlStateManager.pushMatrix();
         GlStateManager.scale(scale,scale,scale);
@@ -35,17 +37,13 @@ public class EventLister extends GUIComponent {
             }};
         }
         if (od.currentEvents != null) {
-            Vector2f warningPos = getAnchorPointPosition(sr);
+            Vector2f warningPos = getAnchorPointPosition();
             warningPos = ApecUtils.addVec(warningPos,this.delta_position);
             for (int i = 0; i < od.currentEvents.size(); i++) {
                 drawIconForID(od.currentEvents.get(i), (int)(warningPos.x/scale - (i+1) * 20),(int)(warningPos.y/scale));
             }
         }
         GlStateManager.popMatrix();
-    }
-
-    public void draw(DataExtractor.PlayerStats ps, DataExtractor.ScoreBoardData sd, DataExtractor.OtherData od,ScaledResolution sr,boolean editingMode) {
-
     }
 
     private void drawIconForID (EventIDs eventID,int x,int y) {
@@ -77,13 +75,13 @@ public class EventLister extends GUIComponent {
     }
 
     @Override
-    public Vector2f getAnchorPointPosition(ScaledResolution sr) {
-        return new Vector2f(sr.getScaledWidth() - 2, 65);
+    public Vector2f getAnchorPointPosition() {
+        return new Vector2f(g_sr.getScaledWidth() - 2, 65);
     }
 
     @Override
     public Vector2f getBoundingPoint() {
-        return ApecUtils.addVec(getRealAnchorPoint(new ScaledResolution(mc)),new Vector2f(-120*scale,15*scale));
+        return ApecUtils.addVec(getRealAnchorPoint(),new Vector2f(-120*scale,15*scale));
     }
 
 }
