@@ -31,6 +31,7 @@ public enum SettingID {
     AIR_TEXT,
     SKILL_TEXT,
     SHOW_CURRENT_SERVER,
-    MENU_GUI
+    MENU_GUI,
+    COLORED_SKILL_XP
 
 }

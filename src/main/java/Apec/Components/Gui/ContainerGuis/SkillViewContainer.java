@@ -20,6 +20,7 @@ import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
 
 import javax.vecmath.Vector2f;
 import java.io.IOException;
@@ -134,6 +135,17 @@ public abstract class SkillViewContainer extends GuiScreen {
         } catch (Exception e) {
             return new ArrayList<String>();
         }
+    }
+
+    @Override
+    public void handleMouseInput() throws IOException {
+        super.handleMouseInput();
+        int i = Mouse.getEventDWheel();
+        if (i > 1)
+            xSliderValue += 20;
+        if (i < -1)
+            xSliderValue -= 20;
+
     }
 
     /**

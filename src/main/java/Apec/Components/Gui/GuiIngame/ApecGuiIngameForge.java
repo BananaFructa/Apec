@@ -2,6 +2,7 @@ package Apec.Components.Gui.GuiIngame;
 
 import Apec.*;
 import Apec.Components.Gui.GuiIngame.GuiElements.GUIComponent;
+import Apec.Components.Gui.Menu.CustomizationMenu.CustomizationGui;
 import Apec.Settings.SettingID;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.*;
@@ -38,7 +39,7 @@ import static net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType
  * And this kids is the story of how banana gone insane
  */
 
-public class ApecGuiIngameForge extends GuiIngameForge {
+public class ApecGuiIngameForge extends ApecGuiIngame {
 
     GUIModifier gUIModifier;
 
@@ -374,39 +375,50 @@ public class ApecGuiIngameForge extends GuiIngameForge {
         {
             mc.mcProfiler.startSection("toolHighlight");
 
-            if (this.remainingHighlightTicks > 0 && this.highlightingItemStack != null)
+            if ((this.remainingHighlightTicks > 0 && this.highlightingItemStack != null) || mc.currentScreen instanceof CustomizationGui)
             {
-                String name = this.highlightingItemStack.getDisplayName();
-                if (this.highlightingItemStack.hasDisplayName())
-                    name = EnumChatFormatting.ITALIC + name;
+                String name;
+                if (this.highlightingItemStack != null) {
+                    name = this.highlightingItemStack.getDisplayName();
+                    if (this.highlightingItemStack.hasDisplayName())
+                        name = EnumChatFormatting.ITALIC + name;
 
-                name = this.highlightingItemStack.getItem().getHighlightTip(this.highlightingItemStack, name);
+                    name = this.highlightingItemStack.getItem().getHighlightTip(this.highlightingItemStack, name);
+                } else {
+                    name = "Item";
+                }
 
                 int opacity = (int)((float)this.remainingHighlightTicks * 256.0F / 10.0F);
-                if (opacity > 255) opacity = 255;
+                if (opacity > 255 || mc.currentScreen instanceof CustomizationGui) opacity = 255;
 
                 if (opacity > 0)
                 {
-                    GUIComponent guiComponent = ((GUIModifier)ApecMain.Instance.getComponent(ComponentId.GUI_MODIFIER)).getGuiComponent(GUIComponentID.HOT_BAR);
-                    Vector2f pos = guiComponent.getRealAnchorPoint();
-                    Vector2f delta = guiComponent.getDelta_position();
-                    float scale = guiComponent.getScale();
+                    GUIComponent guiComponentH = ((GUIModifier)ApecMain.Instance.getComponent(ComponentId.GUI_MODIFIER)).getGuiComponent(GUIComponentID.HOT_BAR);
+                    Vector2f posH = guiComponentH.getRealAnchorPoint();
+                    Vector2f deltaH = guiComponentH.getDelta_position();
+                    float scaleH = guiComponentH.getScale();
+
+                    GUIComponent guiComponentT = ((GUIModifier)ApecMain.Instance.getComponent(ComponentId.GUI_MODIFIER)).getGuiComponent(GUIComponentID.TOOL_TIP_TEXT);
+                    Vector2f deltaT = guiComponentT.getDelta_position();
 
                     GlStateManager.pushMatrix();
-                    GlStateManager.scale(scale,scale,scale);
+                    GlStateManager.scale(scaleH,scaleH,scaleH);
                     GlStateManager.pushMatrix();
                     GlStateManager.enableBlend();
                     GlStateManager.tryBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, 1, 0);
+
                     int x,y;
                     if (!ApecMain.Instance.settingsManager.getSettingState(SettingID.ITEM_HIGHLIGHT_TEXT)) {
-                        x = (int) (pos.x/scale) + 1;
-                        y = (int) (pos.y/scale) - 10;
+                        x = (int) (posH.x/scaleH) + 1;
+                        y = (int) (posH.y/scaleH) - 10;
                     } else {
-                        x = (int)((- this.getFontRenderer().getStringWidth(name)/ 2) - 92/scale + res.getScaledWidth()/scale);
-                        y = (int)(res.getScaledHeight()/scale - 67/scale);
-                        x += delta.x/scale;
-                        y += delta.y/scale;
+                        x = (int)((- this.getFontRenderer().getStringWidth(name)/ 2) - 92/scaleH + res.getScaledWidth()/scaleH);
+                        y = (int)(res.getScaledHeight()/scaleH - 67/scaleH);
+                        x += deltaH.x/scaleH;
+                        y += deltaH.y/scaleH;
                     }
+                    x += deltaT.x/scaleH;
+                    y += deltaT.y/scaleH;
                     fontrenderer.drawStringWithShadow(name,x, y, WHITE | (opacity << 24));
                     GlStateManager.popMatrix();
                     GlStateManager.disableBlend();
@@ -521,6 +533,8 @@ public class ApecGuiIngameForge extends GuiIngameForge {
     {
         mc.mcProfiler.startSection("chat");
 
+        if (pre(CHAT)) return;
+
         RenderGameOverlayEvent.Chat event = new RenderGameOverlayEvent.Chat(eventParent, 0, height - 48);
         if (MinecraftForge.EVENT_BUS.post(event)) return;
 
@@ -573,17 +587,6 @@ public class ApecGuiIngameForge extends GuiIngameForge {
         @Override protected void renderDebugInfoRight(ScaledResolution res){}
         private List<String> getLeft(){ return this.call(); }
         private List<String> getRight(){ return this.getDebugInfoRight(); }
-    }
-
-    public void setChatData (List<ChatLine> messages) {
-        //FieldUtils.writeDeclaredField(this.persistantChatGUI, "field_146253_i",messages, true);
-        for (int i = messages.size() - 1;i > -1;i--) {
-            this.persistantChatGUI.printChatMessage(messages.get(i).getChatComponent());
-        }
-    }
-
-    public void setChatSentMessages(List<String> messages) throws IllegalAccessException {
-        FieldUtils.writeDeclaredField(this.persistantChatGUI,ApecUtils.unObfedFieldNames.get("sentMessages"),messages,true);
     }
 
 }

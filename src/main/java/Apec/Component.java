@@ -15,6 +15,10 @@ public class Component {
         MinecraftForge.EVENT_BUS.register(this);
     }
 
+    public void init() {
+
+    }
+
     public void Toggle() {
         this.Enabled = !this.Enabled;
         if (this.Enabled) this.onEnable();

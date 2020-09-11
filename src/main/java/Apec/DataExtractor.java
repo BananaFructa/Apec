@@ -50,6 +50,7 @@ public class DataExtractor {
     private final String crystalRaceSymbol = "CRYSTAL CORE RACE";
     private final String giantMushroomSymbol = "GIANT MUSHROOM RACE";
     private final String precursorRuinsSymbol = "PRECURSOR RUINS RACE";
+    private final String reviveSymbol = "Revive";
 
     private boolean alreadyShowedTabError = false;
     private boolean alreadyShowedScrErr = false;
@@ -101,7 +102,9 @@ public class DataExtractor {
     // The priority is set on highest so the data is getting parsed before it's modified by sba
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onChatMsg(ClientChatReceivedEvent event) {
-        if (event.message.getUnformattedText().contains(String.valueOf(HpSymbol)) || event.message.getUnformattedText().contains(String.valueOf(MnSymbol))) {
+        if (event.message.getUnformattedText().contains(String.valueOf(HpSymbol))
+                || event.message.getUnformattedText().contains(String.valueOf(MnSymbol))
+                || event.message.getUnformattedText().contains(reviveSymbol)) {
             actionBarData = event.message.getUnformattedText();
         } else if (!event.message.getUnformattedText().contains("<") && !event.message.getUnformattedText().contains(":")){
 
@@ -576,8 +579,11 @@ public class DataExtractor {
         if (endRace != null) otherData.ExtraInfo.add(endRace);
         if (woodRacing != null) otherData.ExtraInfo.add(woodRacing);
         if (dps != null) otherData.ExtraInfo.add(dps);
-        if (sec != null) otherData.ExtraInfo.add(sec);
         if (secrets != null) otherData.ExtraInfo.add(secrets);
+        // The condition is like this to make sure the actionData is not null
+        if (actionBarData != null ? actionBarData.contains("Revive") : false) otherData.ExtraInfo.add(actionBarData);
+        // The revive message also contais the word second so we have to be sure is not that one
+        else if (sec != null) otherData.ExtraInfo.add(sec);
         if (chickenRace != null) otherData.ExtraInfo.add(chickenRace);
         if (jump != null) otherData.ExtraInfo.add(jump);
         if (crystalRace != null) otherData.ExtraInfo.add(crystalRace);

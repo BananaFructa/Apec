@@ -3,9 +3,12 @@ package Apec.Components.Gui.Menu.CustomizationMenu;
 import Apec.ApecMain;
 import Apec.ApecUtils;
 import Apec.ComponentId;
+import Apec.Components.Gui.GuiIngame.ApecGuiIngame;
+import Apec.Components.Gui.GuiIngame.GUIComponentID;
 import Apec.Components.Gui.GuiIngame.GUIModifier;
 import Apec.Components.Gui.GuiIngame.GuiElements.GUIComponent;
 import Apec.Components.Gui.GuiIngame.GuiElements.InfoBox;
+import Apec.Components.Gui.GuiIngame.GuiElements.ToolTipText;
 import Apec.Settings.SettingID;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
@@ -32,12 +35,16 @@ public class CustomizationGui extends GuiScreen {
     public void initGui() {
         super.initGui();
         final ScaledResolution sr = new ScaledResolution(mc);
+        if (mc.ingameGUI instanceof ApecGuiIngame) {
+            ApecGuiIngame guiIngame = (ApecGuiIngame)mc.ingameGUI;
+            ((ToolTipText)((GUIModifier)ApecMain.Instance.getComponent(ComponentId.GUI_MODIFIER)).getGuiComponent(GUIComponentID.TOOL_TIP_TEXT)).SetText(guiIngame.GetHighlightText());
+        }
         refreshSnapPoints();
         for (GUIComponent component : components) {
             if (!(component instanceof InfoBox)) {
                 Vector2f v = component.getAnchorPointPosition();
                 this.buttonList.add(new CustomizationGuiButton(component, xSnapPoints, ySnapPoints));
-                this.buttonList.add(new CustomizationGuiSlider((int) v.x + 7, (int) v.y + 7,component));
+                if (component.scalable) this.buttonList.add(new CustomizationGuiSlider((int) v.x + 7, (int) v.y + 7,component));
             }
         }
         this.buttonList.add(new CustomizationResetButton(0,sr.getScaledWidth()/2 - 25,0,50,15));

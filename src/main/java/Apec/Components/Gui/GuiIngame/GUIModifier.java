@@ -49,6 +49,7 @@ public class GUIModifier extends Component {
         add(new ExtraInfo()); // The other things that used to be in the scoreboard
         //add(new BossHealthBar());
         add(new HotBar());
+        add(new ToolTipText());
         add(new EventLister());
     }};
 
@@ -56,12 +57,18 @@ public class GUIModifier extends Component {
         super(ComponentId.GUI_MODIFIER);
     }
 
+    @Override
+    public void init() {
+        for (GUIComponent component : GUIComponents) {
+            component.init();
+        }
+    }
+
     boolean alreadyAutoEnabled = false;
     boolean alreadyAutoDisabled = false;
     public boolean shouldTheGuiAppear = false;
 
-    ApecGuiIngameVanilla InstaceV = null;
-    ApecGuiIngameForge InstanceF = null;
+    ApecGuiIngame Instance = null;
 
     @SubscribeEvent
     public void onTick(TickEvent.ClientTickEvent event) {
@@ -83,10 +90,8 @@ public class GUIModifier extends Component {
 
     @SubscribeEvent(priority = EventPriority.LOW)
     public void onTickLowest(TickEvent.ClientTickEvent event) {
-        if (shouldTheGuiAppear && !(mc.ingameGUI instanceof ApecGuiIngameVanilla || mc.ingameGUI instanceof ApecGuiIngameForge)) {
-            boolean modeV = ApecMain.Instance.settingsManager.getSettingState(SettingID.OVERWRITE_GUI);
-            if (modeV && InstaceV != null) mc.ingameGUI = InstaceV;
-            if (!modeV && InstanceF != null) mc.ingameGUI = InstanceF;
+        if (shouldTheGuiAppear && !(mc.ingameGUI instanceof ApecGuiIngame)) {
+            if (Instance != null) mc.ingameGUI = Instance;
         }
     }
 
@@ -149,12 +154,12 @@ public class GUIModifier extends Component {
 
         if (modeV) {
             ApecUtils.showMessage("[\u00A72Apec\u00A7f] Opening GUI! MODE = VANILLA");
-            InstaceV = new ApecGuiIngameVanilla(mc);
-            mc.ingameGUI = InstaceV;
+            Instance = new ApecGuiIngameVanilla(mc);
+            mc.ingameGUI = Instance;
         } else {
             ApecUtils.showMessage("[\u00A72Apec\u00A7f] Opening GUI! MODE = FORGE");
-            InstanceF = new ApecGuiIngameForge(mc);
-            mc.ingameGUI = InstanceF;
+            Instance = new ApecGuiIngameForge(mc);
+            mc.ingameGUI = Instance;
         }
 
         try {

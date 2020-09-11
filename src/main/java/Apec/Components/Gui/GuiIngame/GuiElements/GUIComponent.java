@@ -20,10 +20,17 @@ public class GUIComponent {
     public GUIComponentID gUiComponentID;
     protected ScaledResolution g_sr;
 
+    public boolean scalable = true;
+
     public GUIComponent(GUIComponentID gUiComponentID) {
         this.gUiComponentID = gUiComponentID;
         MinecraftForge.EVENT_BUS.register(this);
         g_sr = new ScaledResolution(mc);
+    }
+
+    public GUIComponent(GUIComponentID gUiComponentID,boolean scalable) {
+        this(gUiComponentID);
+        this.scalable = scalable;
     }
 
     public void drawTex(DataExtractor.PlayerStats ps, DataExtractor.ScoreBoardData sd, DataExtractor.OtherData od, ScaledResolution sr,boolean editingMode) {
@@ -32,6 +39,10 @@ public class GUIComponent {
 
     public void draw(DataExtractor.PlayerStats ps, DataExtractor.ScoreBoardData sd, DataExtractor.OtherData od,ScaledResolution sr,boolean editingMode) {
        g_sr = sr;
+    }
+
+    public void init() {
+
     }
 
     public void setDelta_position(Vector2f dp) {

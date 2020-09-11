@@ -29,6 +29,7 @@ public class SettingsManager {
         add(new Setting(AIR_TEXT,true));
         add(new Setting(SHOW_SKILL_XP,true));
         add(new Setting(SKILL_TEXT,true));
+        add(new Setting(COLORED_SKILL_XP,true));
         add(new Setting(ALWAYS_SHOW_SKILL,false));
         add(new Setting(SHOW_WARNING,true));
         add(new Setting(INVENTORY_TRAFFIC,true));
@@ -80,6 +81,7 @@ public class SettingsManager {
         put(AIR_TEXT,new Tuple<String, String>("Show Air text","Shows the air text"));
         put(SKILL_TEXT,new Tuple<String, String>("Show Skill text","Shows the skill text"));
         put(SHOW_CURRENT_SERVER,new Tuple<String, String>("Show current server","Show in which server you are in"));
+        put(COLORED_SKILL_XP,new Tuple<String,String>("Colored skill xp","Shows a different colored bar for each skill xp"));
     }};
 
     public boolean getSettingState(SettingID settingID){

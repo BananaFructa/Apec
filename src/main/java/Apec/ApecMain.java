@@ -40,7 +40,7 @@ public class ApecMain
 
     public static final String modId = "apec"; 
     public static final String name = "Apec";
-    public static final String version = "1.6";
+    public static final String version = "1.6.1";
 
     public static ApecMain Instance;
 
@@ -84,6 +84,8 @@ public class ApecMain
         this.settingsManager.LoadSettings();
 
         containerGuiManager.init();
+
+        for (Component component : components) component.init();
 
     }
 

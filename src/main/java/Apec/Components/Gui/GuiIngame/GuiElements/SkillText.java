@@ -3,11 +3,13 @@ package Apec.Components.Gui.GuiIngame.GuiElements;
 import Apec.ApecMain;
 import Apec.ApecUtils;
 import Apec.Components.Gui.GuiIngame.GUIComponentID;
+import Apec.Components.Gui.GuiIngame.SkillType;
 import Apec.DataExtractor;
 import Apec.Settings.SettingID;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.util.ResourceLocation;
 import org.lwjgl.util.vector.Vector2f;
 
 public class SkillText extends GUIComponent {
@@ -31,7 +33,35 @@ public class SkillText extends GUIComponent {
                 if (ps.SkillInfo.contains("Rune")) {
                     ApecUtils.drawThiccBorderString(ps.SkillInfo, (int) (p.x / scale), (int) (p.y / scale - 10), 0x6B3694);
                 } else {
-                    ApecUtils.drawThiccBorderString(ps.SkillInfo, (int) (p.x / scale), (int) (p.y / scale - 10), 0x4ca7a8);
+                    SkillType skillType =  SkillType.GetSkillType(ps.SkillInfo);
+                    int color = 0x4ca7a8;
+                    if (ApecMain.Instance.settingsManager.getSettingState(SettingID.COLORED_SKILL_XP) && skillType != SkillType.NONE) {
+                        mc.renderEngine.bindTexture(new ResourceLocation(ApecMain.modId, "gui/coloredSkillBars.png"));
+                        switch (skillType) {
+                            case FARMING:
+                                color = 0xD0CE30;
+                                break;
+                            case COMBAT:
+                                color = 0xDC3615;
+                                break;
+                            case MINING:
+                                color = 0x797979;
+                                break;
+                            case FORAGING:
+                                color = 0x237926;
+                                break;
+                            case ENCHANTING:
+                                color = 0x711C99;
+                                break;
+                            case FISHING:
+                                color = 0x184A87;
+                                break;
+                            case ALCHEMY:
+                                color = 0x981B4C;
+                                break;
+                        }
+                    }
+                    ApecUtils.drawThiccBorderString(ps.SkillInfo, (int) (p.x / scale), (int) (p.y / scale - 10), color);
                 }
             } else if (editingMode) {
                 stringWidth = Minecraft.getMinecraft().fontRendererObj.getStringWidth("+0.0 Farming (0/0)");
