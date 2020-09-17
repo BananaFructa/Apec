@@ -653,7 +653,7 @@ public class DataExtractor {
             ArrayList<String> effects = new ArrayList<String>();
             String[] lines = footerTabData.split("\n");
             if (!lines[2].contains("No effects")) {
-                for (int i = 2; i < lines.length && lines[i].contains(":"); i++) {
+                for (int i = 3; i < lines.length && lines[i].contains(":"); i++) {
                     if (ApecMain.Instance.settingsManager.getSettingState(SettingID.COMPACT_POTION)) {
                         if(ApecMain.Instance.settingsManager.getSettingState(SettingID.HIDE_NIGHT_VISION)) {
                             String[] split = lines[i].split(" {5}");
