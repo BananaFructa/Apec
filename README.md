@@ -22,7 +22,7 @@ ___
 
 #### Skill XP
 
-![](https://hypixel.net/attachments/yitu-png.1857498/)
+![](https://hypixel.net/attachments/newf-png.1983499/)
 ![](https://hypixel.net/attachments/png.1857500/)
 
 ___
