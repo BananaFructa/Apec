@@ -35,6 +35,7 @@ import java.util.List;
 public class DataExtractor {
 
     private Minecraft mc = Minecraft.getMinecraft();
+    public PotionFetcher potionFetcher = new PotionFetcher(this);
 
     private final char HpSymbol = '\u2764';
     private final char DfSymbol = '\u2748';
@@ -86,6 +87,11 @@ public class DataExtractor {
     private boolean hasSentATradeRequest = false;
     private boolean hasRecievedATradeRequest = false;
 
+    private boolean isInTheCatacombs = false;
+    private boolean wasInTheCatacombs = false;
+
+    public boolean IsDeadInTheCatacombs = false;
+
     private int tradeTicks = 0;
 
     String actionBarData  = ""; // Holds the data that is in the action bar
@@ -102,9 +108,11 @@ public class DataExtractor {
     // The priority is set on highest so the data is getting parsed before it's modified by sba
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onChatMsg(ClientChatReceivedEvent event) {
-        if (event.message.getUnformattedText().contains(String.valueOf(HpSymbol))
+        if ((event.message.getUnformattedText().contains(String.valueOf(HpSymbol))
                 || event.message.getUnformattedText().contains(String.valueOf(MnSymbol))
-                || event.message.getUnformattedText().contains(reviveSymbol)) {
+                || event.message.getUnformattedText().contains(reviveSymbol))
+                && !event.message.getUnformattedText().contains(":")) {
+            IsDeadInTheCatacombs = event.message.getUnformattedText().contains(reviveSymbol);
             actionBarData = event.message.getUnformattedText();
         } else if (!event.message.getUnformattedText().contains("<") && !event.message.getUnformattedText().contains(":")){
 
@@ -130,6 +138,10 @@ public class DataExtractor {
             String s = getScoreBoardTitle();
             if (!s.equals("")) {
                 this.isInSkyblock = ApecUtils.removeAllCodes(s).toLowerCase().contains("skyblock");
+                if (wasInTheCatacombs ^ isInTheCatacombs) {
+                    wasInTheCatacombs = isInTheCatacombs;
+                    potionFetcher.ClearAll();
+                }
             }
         } catch (Exception e) { }
         if (((GUIModifier)ApecMain.Instance.getComponent(ComponentId.GUI_MODIFIER)).shouldTheGuiAppear) {
@@ -157,6 +169,7 @@ public class DataExtractor {
 
             this.playerStats = this.ProcessPlayerStats();
             this.scoreBoardData = this.ProcessScoreBoardData();
+
             this.otherData = this.ProcessOtherData(this.scoreBoardData);
 
             if (hasRecievedATradeRequest || hasSentATradeRequest) {
@@ -170,6 +183,10 @@ public class DataExtractor {
             }
 
         }
+    }
+
+    public String GetTabFooterData() {
+        return this.footerTabData;
     }
 
     /**
@@ -196,7 +213,8 @@ public class DataExtractor {
 
             int size = scoreBoardLines.size() - 1;
 
-            boolean isInTheCatacombs = false;
+            isInTheCatacombs = false;
+
             int catacombsIndex = -1;
             int clearedIndex = -1;
 
@@ -581,7 +599,9 @@ public class DataExtractor {
         if (dps != null) otherData.ExtraInfo.add(dps);
         if (secrets != null) otherData.ExtraInfo.add(secrets);
         // The condition is like this to make sure the actionData is not null
-        if (actionBarData != null ? actionBarData.contains("Revive") : false) otherData.ExtraInfo.add(actionBarData);
+        if (actionBarData != null ? actionBarData.contains("Revive") : false) {
+            otherData.ExtraInfo.add(actionBarData);
+        }
         // The revive message also contais the word second so we have to be sure is not that one
         else if (sec != null) otherData.ExtraInfo.add(sec);
         if (chickenRace != null) otherData.ExtraInfo.add(chickenRace);
@@ -592,7 +612,7 @@ public class DataExtractor {
 
         if (ApecMain.Instance.settingsManager.getSettingState(SettingID.SHOW_POTIONS_EFFECTS)) {
 
-            ArrayList<String> effects = getPlayerEffects();
+            List<String> effects = getPlayerEffects();
             if (!effects.isEmpty()) {
                 if (!otherData.ExtraInfo.isEmpty()) otherData.ExtraInfo.add(" ");
                 otherData.ExtraInfo.addAll(effects);
@@ -648,10 +668,11 @@ public class DataExtractor {
      * @return Retuns the effects of the player
      */
 
-    private ArrayList<String> getPlayerEffects () {
+    private List<String> getPlayerEffects () {
+
         try {
-            ArrayList<String> effects = new ArrayList<String>();
-            String[] lines = footerTabData.split("\n");
+            List<String> effects = potionFetcher.GetPotionEffects();
+            /*String[] lines = footerTabData.split("\n");
             if (!lines[2].contains("No effects")) {
                 for (int i = 3; i < lines.length && lines[i].contains(":"); i++) {
                     if (ApecMain.Instance.settingsManager.getSettingState(SettingID.COMPACT_POTION)) {
@@ -682,7 +703,7 @@ public class DataExtractor {
 
                     }
                 }
-            }
+            }*/
             ApecUtils.orderByWidth(effects);
             return effects;
         } catch (Exception err) {

@@ -1,9 +1,14 @@
 package Apec;
 
+import Apec.Components.Gui.ContainerGuis.ChestGuiComponent;
 import Apec.Settings.SettingID;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.inventory.IInventory;
 import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.Tuple;
+import net.minecraftforge.client.event.GuiOpenEvent;
+import org.apache.commons.lang3.reflect.FieldUtils;
 import org.lwjgl.util.vector.Vector2f;
 
 import java.lang.reflect.Field;
@@ -26,6 +31,10 @@ public class ApecUtils {
         put("persistantChatGUI",inFMLDebugFramework ? "persistantChatGUI" : "field_73840_e");
         put("sentMessages", inFMLDebugFramework ? "sentMessages" : "field_146248_g");
         put("chatMessages","field_146253_i");
+    }};
+
+    public static HashMap<String,String> getUnObfedMethodNames = new HashMap<String, String>() {{
+        put("handleMouseClick", inFMLDebugFramework ? "handleMouseClick" : "func_146984_a");
     }};
 
     public static String removeAllCodes(String s) {
@@ -139,6 +148,7 @@ public class ApecUtils {
         return l;
     }
 
+    // A wise man once said bubble sort is good enough when there are not a lot of elements
     private static void bubbleSort(List<Integer> arr,List<String> s) {
         int n = arr.size();
         for (int i = 0; i < n - 1; i++)
@@ -167,5 +177,24 @@ public class ApecUtils {
         }
     }
 
-
+    public static Tuple<IInventory,IInventory> GetUpperLowerFromGuiEvent(GuiOpenEvent event) {
+        try {
+            /** This is to ensure that there is not an Inner class of the GuiChes class forced by a mod , ughh ughh looking at you Skypixel */
+            String upperFieldName = ApecUtils.unObfedFieldNames.get("upperChestInventory");
+            String lowerFieldName = ApecUtils.unObfedFieldNames.get("lowerChestInventory");
+            if (ApecUtils.isNameInFieldList(event.gui.getClass().getDeclaredFields(), upperFieldName) &&
+                    ApecUtils.isNameInFieldList(event.gui.getClass().getDeclaredFields(), lowerFieldName)) {
+                IInventory upper = (IInventory) FieldUtils.readDeclaredField(event.gui, upperFieldName, true);
+                IInventory lower = (IInventory) FieldUtils.readDeclaredField(event.gui, lowerFieldName, true);
+                return new Tuple<IInventory, IInventory>(upper,lower);
+            } else {
+                IInventory upper = (IInventory) FieldUtils.readField(event.gui, upperFieldName, true);
+                IInventory lower = (IInventory) FieldUtils.readField(event.gui, lowerFieldName, true);
+                return new Tuple<IInventory, IInventory>(upper,lower);
+            }
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 }

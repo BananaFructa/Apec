@@ -93,7 +93,7 @@ public class CustomizationGuiButton extends GuiButton {
                         if (Math.abs(i - mouseY - initialPos.y) < 5) {
                             isSnappedToPositionY = true;
                             this.guiComponent.setDelta_position(new Vector2f(isSnappedToPositionX ? this.guiComponent.getDelta_position().x : mouseX - anchor.x, i - anchor.y));
-                            drawRect(0, i, sr.getScaledWidth(), i + 1, 0xff0000ff);
+                            drawRect(0, i, sr.getScaledWidth(), i + 1, 0xffff0000);
                             break;
                         }
                     }

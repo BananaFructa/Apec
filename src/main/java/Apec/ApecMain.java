@@ -2,29 +2,35 @@ package Apec;
 
 import Apec.Commands.ApecGuiOpenCommand;
 import Apec.Commands.ApecMenuOpenCommand;
+import Apec.Components.Gui.ContainerGuis.ActiveEffectsTransparentComponent;
 import Apec.Components.Gui.ContainerGuis.AuctionHouseComponent;
-import Apec.Components.Gui.ContainerGuis.ChestGuiComponent;
 import Apec.Components.Gui.ContainerGuis.SkillViewComponent;
+import Apec.Components.Gui.GuiIngame.ApecGuiIngame;
 import Apec.Components.Gui.GuiIngame.GUIModifier;
-import Apec.Components.Gui.GuiIngame.GuiElements.GUIComponent;
 import Apec.Components.Gui.Menu.ApecMenu;
-import Apec.Settings.SettingID;
 import Apec.Settings.SettingsManager;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiChest;
+import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.settings.KeyBinding;
-import net.minecraft.inventory.IInventory;
 import net.minecraftforge.client.ClientCommandHandler;
-import net.minecraftforge.client.event.GuiOpenEvent;
+import net.minecraftforge.client.GuiIngameForge;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
+import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
+import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent;
-import org.apache.commons.lang3.reflect.FieldUtils;
+import org.apache.logging.log4j.Logger;
+import org.lwjgl.Sys;
 import org.lwjgl.input.Keyboard;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,10 +43,11 @@ public class ApecMain
      * Don't read that -> You lost
      */
 
+    public static Logger logger = FMLLog.getLogger();
 
     public static final String modId = "apec"; 
     public static final String name = "Apec";
-    public static final String version = "1.6.2";
+    public static final String version = "1.7";
 
     public static ApecMain Instance;
 
@@ -59,6 +66,7 @@ public class ApecMain
         add(new ApecMenu());
         add(new AuctionHouseComponent());
         add(new SkillViewComponent());
+        add(new ActiveEffectsTransparentComponent());
     }};
 
     @EventHandler

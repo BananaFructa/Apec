@@ -26,6 +26,7 @@ import org.apache.commons.lang3.reflect.FieldUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.Vector2f;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -81,6 +82,14 @@ public class ApecGuiIngameForge extends ApecGuiIngame {
     {
         res = new ScaledResolution(mc);
         eventParent = new RenderGameOverlayEvent(partialTicks, res);
+        try {
+            //FieldUtils.writeField(this,"eventParent",eventParent,true);
+            Field f = GuiIngameForge.class.getDeclaredField("eventParent");
+            f.setAccessible(true);
+            f.set(this,eventParent);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         int width = res.getScaledWidth();
         int height = res.getScaledHeight();
         GuiIngameForge.renderJumpBar = mc.thePlayer.isRidingHorse();
@@ -111,6 +120,10 @@ public class ApecGuiIngameForge extends ApecGuiIngame {
         }
 
         renderTooltip(res, partialTicks);
+
+        // This may be very bad but i can't be bothered
+        FakedScaledResolution fsr = new FakedScaledResolution(mc,0,100);
+        super.renderTooltip(fsr,partialTicks);
 
         if (gUIModifier != null) gUIModifier.onRender(res);
 
@@ -155,7 +168,11 @@ public class ApecGuiIngameForge extends ApecGuiIngame {
         }
 
         renderToolHightlight(res);
-        renderHUDText(width, height);
+        try {
+            renderHUDText(width, height);
+        } catch (Exception e) {
+            //TODO: Investigate
+        }
         renderTitle(width, height, partialTicks);
 
 
@@ -226,61 +243,9 @@ public class ApecGuiIngameForge extends ApecGuiIngame {
         post(HOTBAR);
     }
 
-    @Override
-    protected void renderBossHealth()
-    {
-        if (pre(BOSSHEALTH)) return;
-        bind(Gui.icons);
-        GlStateManager.tryBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, 1, 0);
-        mc.mcProfiler.startSection("bossHealth");
-        GlStateManager.enableBlend();
-        if (BossStatus.bossName != null && BossStatus.statusBarTime > 0)
-        {
-            --BossStatus.statusBarTime;
-            FontRenderer fontrenderer = this.mc.fontRendererObj;
-            ScaledResolution scaledresolution = new ScaledResolution(this.mc);
-            int i = scaledresolution.getScaledWidth();
-            int j = 182;
-            int k = i / 2 - j / 2;
-            int l = (int)(BossStatus.healthScale * (float)(j + 1));
-            int i1 = 12;
-            this.drawTexturedModalRect(k, i1, 0, 74, j, 5);
-            this.drawTexturedModalRect(k, i1, 0, 74, j, 5);
-
-            if (l > 0)
-            {
-                this.drawTexturedModalRect(k, i1, 0, 79, l, 5);
-            }
-
-            String s = BossStatus.bossName;
-            this.getFontRenderer().drawStringWithShadow(s, (float)(i / 2 - this.getFontRenderer().getStringWidth(s) / 2), (float)(i1 - 10), 16777215);
-            GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-            this.mc.getTextureManager().bindTexture(icons);
-        }
-        GlStateManager.disableBlend();
-        mc.mcProfiler.endSection();
-        post(BOSSHEALTH);
-    }
-
     public ScaledResolution getResolution()
     {
         return res;
-    }
-
-    protected void renderCrosshairs(int width, int height)
-    {
-        if (pre(CROSSHAIRS)) return;
-        if (this.showCrosshair())
-        {
-            bind(Gui.icons);
-            GlStateManager.enableBlend();
-            GlStateManager.tryBlendFuncSeparate(GL11.GL_ONE_MINUS_DST_COLOR, GL11.GL_ONE_MINUS_SRC_COLOR, 1, 0);
-            GlStateManager.enableAlpha();
-            drawTexturedModalRect(width / 2 - 7, height / 2 - 7, 0, 0, 16, 16);
-            GlStateManager.tryBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, 1, 0);
-            GlStateManager.disableBlend();
-        }
-        post(CROSSHAIRS);
     }
 
     private void renderHelmet(ScaledResolution res, float partialTicks)
@@ -302,71 +267,6 @@ public class ApecGuiIngameForge extends ApecGuiIngame {
         }
 
         post(HELMET);
-    }
-
-    protected void renderPortal(ScaledResolution res, float partialTicks)
-    {
-        if (pre(PORTAL)) return;
-
-        float f1 = mc.thePlayer.prevTimeInPortal + (mc.thePlayer.timeInPortal - mc.thePlayer.prevTimeInPortal) * partialTicks;
-
-        if (f1 > 0.0F)
-        {
-            renderPortal(f1, res);
-        }
-
-        post(PORTAL);
-    }
-
-    protected void renderSleepFade(int width, int height)
-    {
-        if (mc.thePlayer.getSleepTimer() > 0)
-        {
-            mc.mcProfiler.startSection("sleep");
-            GlStateManager.disableDepth();
-            GlStateManager.disableAlpha();
-            int sleepTime = mc.thePlayer.getSleepTimer();
-            float opacity = (float)sleepTime / 100.0F;
-
-            if (opacity > 1.0F)
-            {
-                opacity = 1.0F - (float)(sleepTime - 100) / 10.0F;
-            }
-
-            int color = (int)(220.0F * opacity) << 24 | 1052704;
-            drawRect(0, 0, width, height, color);
-            GlStateManager.enableAlpha();
-            GlStateManager.enableDepth();
-            mc.mcProfiler.endSection();
-        }
-    }
-
-    protected void renderJumpBar(int width, int height)
-    {
-        bind(icons);
-        if (pre(JUMPBAR)) return;
-        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-        GlStateManager.disableBlend();
-
-        mc.mcProfiler.startSection("jumpBar");
-        float charge = mc.thePlayer.getHorseJumpPower();
-        final int barWidth = 182;
-        int x = (width / 2) - (barWidth / 2);
-        int filled = (int)(charge * (float)(barWidth + 1));
-        int top = height - 32 + 3;
-
-        drawTexturedModalRect(x, top, 0, 84, barWidth, 5);
-
-        if (filled > 0)
-        {
-            this.drawTexturedModalRect(x, top, 0, 89, filled, 5);
-        }
-
-        GlStateManager.enableBlend();
-        mc.mcProfiler.endSection();
-        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-
-        post(JUMPBAR);
     }
 
     protected void renderToolHightlight(ScaledResolution res)
@@ -487,83 +387,6 @@ public class ApecGuiIngameForge extends ApecGuiIngame {
 
         mc.mcProfiler.endSection();
         post(TEXT);
-    }
-
-    protected void renderTitle(int width, int height, float partialTicks)
-    {
-        if (field_175195_w > 0)
-        {
-            mc.mcProfiler.startSection("titleAndSubtitle");
-            float age = (float)this.field_175195_w - partialTicks;
-            int opacity = 255;
-
-            if (field_175195_w > field_175193_B + field_175192_A)
-            {
-                float f3 = (float)(field_175199_z + field_175192_A + field_175193_B) - age;
-                opacity = (int)(f3 * 255.0F / (float)field_175199_z);
-            }
-            if (field_175195_w <= field_175193_B) opacity = (int)(age * 255.0F / (float)this.field_175193_B);
-
-            opacity = MathHelper.clamp_int(opacity, 0, 255);
-
-            if (opacity > 8)
-            {
-                GlStateManager.pushMatrix();
-                GlStateManager.translate((float)(width / 2), (float)(height / 2), 0.0F);
-                GlStateManager.enableBlend();
-                GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
-                GlStateManager.pushMatrix();
-                GlStateManager.scale(4.0F, 4.0F, 4.0F);
-                int l = opacity << 24 & -16777216;
-                this.getFontRenderer().drawString(this.field_175201_x, (float)(-this.getFontRenderer().getStringWidth(this.field_175201_x) / 2), -10.0F, 16777215 | l, true);
-                GlStateManager.popMatrix();
-                GlStateManager.pushMatrix();
-                GlStateManager.scale(2.0F, 2.0F, 2.0F);
-                this.getFontRenderer().drawString(this.field_175200_y, (float)(-this.getFontRenderer().getStringWidth(this.field_175200_y) / 2), 5.0F, 16777215 | l, true);
-                GlStateManager.popMatrix();
-                GlStateManager.disableBlend();
-                GlStateManager.popMatrix();
-            }
-
-            this.mc.mcProfiler.endSection();
-        }
-    }
-
-    protected void renderChat(int width, int height)
-    {
-        mc.mcProfiler.startSection("chat");
-
-        if (pre(CHAT)) return;
-
-        RenderGameOverlayEvent.Chat event = new RenderGameOverlayEvent.Chat(eventParent, 0, height - 48);
-        if (MinecraftForge.EVENT_BUS.post(event)) return;
-
-        GlStateManager.pushMatrix();
-        GlStateManager.translate((float)event.posX, (float)event.posY, 0.0F);
-        persistantChatGUI.drawChat(updateCounter);
-        GlStateManager.popMatrix();
-
-        post(CHAT);
-
-        mc.mcProfiler.endSection();
-    }
-
-    protected void renderPlayerList(int width, int height)
-    {
-        ScoreObjective scoreobjective = this.mc.theWorld.getScoreboard().getObjectiveInDisplaySlot(0);
-        NetHandlerPlayClient handler = mc.thePlayer.sendQueue;
-
-        if (mc.gameSettings.keyBindPlayerList.isKeyDown() && (!mc.isIntegratedServerRunning() || handler.getPlayerInfoMap().size() > 1 || scoreobjective != null))
-        {
-            this.overlayPlayerList.updatePlayerList(true);
-            if (pre(PLAYER_LIST)) return;
-            this.overlayPlayerList.renderPlayerlist(width, this.mc.theWorld.getScoreboard(), scoreobjective);
-            post(PLAYER_LIST);
-        }
-        else
-        {
-            this.overlayPlayerList.updatePlayerList(false);
-        }
     }
 
     //Helper macros

@@ -12,6 +12,7 @@ import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.IChatComponent;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.GuiIngameForge;
+import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
@@ -67,6 +68,7 @@ public class GUIModifier extends Component {
     boolean alreadyAutoEnabled = false;
     boolean alreadyAutoDisabled = false;
     public boolean shouldTheGuiAppear = false;
+    static boolean cancelNextHotbar = false;
 
     ApecGuiIngame Instance = null;
 
@@ -115,6 +117,7 @@ public class GUIModifier extends Component {
         od = ApecMain.Instance.dataExtractor.getOtherData();
         try {
             GlStateManager.enableBlend();
+            GlStateManager.color(1,1,1,1);
             for (GUIComponent component : GUIComponents) {
                 if (shouldBlockF3(component)) continue;
                 component.drawTex(ps, sd, od, sr,mc.currentScreen instanceof CustomizationGui);
@@ -130,19 +133,12 @@ public class GUIModifier extends Component {
 
     @Override
     protected void onEnable() {
-        if (!ApecMain.version.equals(ApecMain.Instance.newestVersion)) {
-            ChatComponentText msg = new ChatComponentText("[\u00A72Apec\u00A7f] There is a new version of Apec available! Click on this message to go to the CurseForge page.");
-            msg.getChatStyle().setChatClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL,"https://www.curseforge.com/minecraft/mc-mods/apec"));
-            Minecraft.getMinecraft().thePlayer.addChatMessage(msg);
-        }
         IChatComponent header = null,footer = null;
         GuiNewChat guiNewChat = null;
         List<ChatLine> chatLines = null;
         List<String> sentMessages = null;
         try {
             guiNewChat = (GuiNewChat) FieldUtils.readField((GuiIngame)this.mc.ingameGUI, ApecUtils.unObfedFieldNames.get("persistantChatGUI"), true);
-            chatLines = (List<ChatLine>)FieldUtils.readDeclaredField(guiNewChat,ApecUtils.unObfedFieldNames.get("chatMessages"),true);
-            sentMessages = guiNewChat.getSentMessages();
             header = (IChatComponent) FieldUtils.readField(this.mc.ingameGUI.getTabList(), ApecUtils.unObfedFieldNames.get("header"), true);
             footer = (IChatComponent) FieldUtils.readField(this.mc.ingameGUI.getTabList(), ApecUtils.unObfedFieldNames.get("footer"), true);
         } catch (Exception e) {
@@ -163,17 +159,15 @@ public class GUIModifier extends Component {
         }
 
         try {
+            FieldUtils.writeField(this.mc.ingameGUI, ApecUtils.unObfedFieldNames.get("persistantChatGUI"), guiNewChat, true);
             mc.ingameGUI.getTabList().setHeader(header);
             mc.ingameGUI.getTabList().setFooter(footer);
-            if (guiNewChat != null && chatLines != null) {
-               if (modeV) ((ApecGuiIngameVanilla) mc.ingameGUI).setChatData(chatLines);
-               else ((ApecGuiIngameForge) mc.ingameGUI).setChatData(chatLines);
-            }
-            if (guiNewChat != null && sentMessages != null) {
-                if (modeV) ((ApecGuiIngameVanilla) mc.ingameGUI).setChatSentMessages(sentMessages);
-                else ((ApecGuiIngameForge) mc.ingameGUI).setChatSentMessages(sentMessages);
-            }
             this.ApplyDeltas();
+            if (!ApecMain.version.equals(ApecMain.Instance.newestVersion)) {
+                ChatComponentText msg = new ChatComponentText("[\u00A72Apec\u00A7f] There is a new version of Apec available! Click on this message to go to the CurseForge page.");
+                msg.getChatStyle().setChatClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL,"https://www.curseforge.com/minecraft/mc-mods/apec"));
+                Minecraft.getMinecraft().thePlayer.addChatMessage(msg);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -184,12 +178,8 @@ public class GUIModifier extends Component {
     protected void onDisable() {
         IChatComponent header = null,footer = null;
         GuiNewChat guiNewChat = null;
-        List<ChatLine> chatLines = null;
-        List<String> sentMessages = null;
         try {
             guiNewChat = (GuiNewChat) FieldUtils.readField(this.mc.ingameGUI, ApecUtils.unObfedFieldNames.get("persistantChatGUI"), true);
-            chatLines = (List<ChatLine>)FieldUtils.readDeclaredField(guiNewChat,ApecUtils.unObfedFieldNames.get("chatMessages"),true);
-            sentMessages = guiNewChat.getSentMessages();
             header = (IChatComponent) FieldUtils.readField(this.mc.ingameGUI.getTabList(), ApecUtils.unObfedFieldNames.get("header"), true);
             footer = (IChatComponent) FieldUtils.readField(this.mc.ingameGUI.getTabList(), ApecUtils.unObfedFieldNames.get("footer"), true);
         } catch (Exception e) {
@@ -199,12 +189,7 @@ public class GUIModifier extends Component {
         mc.ingameGUI = new GuiIngameForge(mc);
 
         try {
-            //FieldUtils.writeDeclaredField(FieldUtils.readField((GuiIngame)this.mc.ingameGUI, ApecUtils.unObfedFieldNames.get("persistantChatGUI"), true), "field_146253_i", chatLines, true);
-            GuiNewChat _guiNewChat = (GuiNewChat) FieldUtils.readField((GuiIngame)this.mc.ingameGUI, ApecUtils.unObfedFieldNames.get("persistantChatGUI"), true);
-            for (int i = chatLines.size() - 1;i > -1;i--) {
-                _guiNewChat.printChatMessage(chatLines.get(i).getChatComponent());
-            }
-            FieldUtils.writeDeclaredField(_guiNewChat,ApecUtils.unObfedFieldNames.get("sentMessages"),sentMessages,true);
+            FieldUtils.writeField(this.mc.ingameGUI, ApecUtils.unObfedFieldNames.get("persistantChatGUI"), guiNewChat, true);
             mc.ingameGUI.getTabList().setHeader(header);
             mc.ingameGUI.getTabList().setFooter(footer);
         } catch (Exception e) {

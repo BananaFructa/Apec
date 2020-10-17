@@ -154,9 +154,9 @@ public class CustomizationGui extends GuiScreen {
                 xSnapPoints.add((int) pos.x);
                 ySnapPoints.add((int) pos.y);
                 xSnapPoints.add((int) b_pos.x);
-                xSnapPoints.add((int) b_pos.y);
+                ySnapPoints.add((int) b_pos.y);
                 xSnapPoints.add((int) (b_pos.x/2));
-                xSnapPoints.add((int) (b_pos.y/2));
+                ySnapPoints.add((int) (b_pos.y/2));
             }
         }
     }
