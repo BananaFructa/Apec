@@ -11,11 +11,15 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import org.lwjgl.util.vector.Vector2f;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class GUIComponent {
 
     protected Minecraft mc = Minecraft.getMinecraft();
 
     protected Vector2f delta_position = new Vector2f(0,0);
+    protected List<Vector2f> subComponentDeltas = new ArrayList<Vector2f>();
     protected float scale = 1;
     public GUIComponentID gUiComponentID;
     protected ScaledResolution g_sr;
@@ -27,50 +31,102 @@ public class GUIComponent {
         MinecraftForge.EVENT_BUS.register(this);
         g_sr = new ScaledResolution(mc);
     }
+    public GUIComponent(GUIComponentID gUiComponentID,int SubElementCount) {
+        this(gUiComponentID);
+        for (int i = 0;i < SubElementCount;i++) {
+            this.subComponentDeltas.add(new Vector2f(0,0));
+        }
+    }
 
     public GUIComponent(GUIComponentID gUiComponentID,boolean scalable) {
         this(gUiComponentID);
         this.scalable = scalable;
     }
 
+    /** For texture drawing */
     public void drawTex(DataExtractor.PlayerStats ps, DataExtractor.ScoreBoardData sd, DataExtractor.OtherData od, ScaledResolution sr,boolean editingMode) {
        g_sr = sr;
     }
 
+    /** For rendering text */
     public void draw(DataExtractor.PlayerStats ps, DataExtractor.ScoreBoardData sd, DataExtractor.OtherData od,ScaledResolution sr,boolean editingMode) {
        g_sr = sr;
     }
 
+    /** Initialize function */
     public void init() {
 
     }
 
+    /** Sets the delta position vector */
     public void setDelta_position(Vector2f dp) {
         delta_position = dp;
     }
 
+    /** The initial position point */
     public Vector2f getAnchorPointPosition () {
         return new Vector2f(0,0);
     }
 
+    /** The point at which the object is currently situated */
     public Vector2f getRealAnchorPoint() {
         return ApecUtils.addVec(getAnchorPointPosition(),getDelta_position());
     }
 
+    /** Sets the scale of the element */
     public void setScale(float s) {
         this.scale = s;
     }
 
+    /** Gets the distance vector between the anchor position and the current position */
     public Vector2f getDelta_position() {
         return this.delta_position;
     }
 
+    /** Gives the distance vector between the position of the element and the position of the point that describes the rectangle in which the element is confined */
     public Vector2f getBoundingPoint() {
         return new Vector2f(0,0);
     }
 
+    /** Gets the scale */
     public float getScale() {
         return this.scale;
     }
+
+    public List<Vector2f> getSubElementsAnchorPoints() {
+        return new ArrayList<Vector2f>();
+    }
+
+    public List<Vector2f> getSubElementsRealAnchorPoints() {
+        return ApecUtils.AddVecListToList(getSubElementsAnchorPoints(), getSubElementsDelta_positions());
+    }
+
+    public List<Vector2f> getSubElementsBoundingPoints (){
+        return new ArrayList<Vector2f>();
+    }
+
+    public List<Vector2f> getSubElementsDelta_positions() {
+        return this.subComponentDeltas;
+    }
+
+    public void setSubElementDelta_position(Vector2f dp, int id) {
+        this.subComponentDeltas.set(id,dp);
+    }
+
+    public boolean hasSubComponents() {
+        return subComponentCount() != 0;
+    }
+
+    public int subComponentCount() {
+        return this.subComponentDeltas.size();
+    }
+
+    public void resetDeltaPositions() {
+        this.delta_position = new Vector2f(0,0);
+        for (int i = 0;i < this.subComponentDeltas.size();i++) {
+            this.subComponentDeltas.set(i,new Vector2f(0,0));
+        }
+    }
+
 
 }

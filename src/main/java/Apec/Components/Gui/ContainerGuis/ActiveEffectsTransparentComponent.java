@@ -14,7 +14,10 @@ public class ActiveEffectsTransparentComponent extends ChestGuiComponent {
     }
 
     public void OpenGui(IInventory upper, IInventory lower, GuiOpenEvent event) {
-        if (lower.getDisplayName().getUnformattedText().contains("Active Effects") && ApecMain.Instance.dataExtractor.potionFetcher.NeedsInitialFetch && !(event.gui instanceof ActiveEffectsTransparentGui)) {
+        if (lower.getDisplayName().getUnformattedText().contains("Active Effects")
+                && ApecMain.Instance.dataExtractor.potionFetcher.ShouldRun
+                && ApecMain.Instance.dataExtractor.potionFetcher.NeedsInitialFetch
+                && !(event.gui instanceof ActiveEffectsTransparentGui)) {
             event.setCanceled(true);
             Minecraft.getMinecraft().displayGuiScreen(new ActiveEffectsTransparentGui(upper, lower));
         }

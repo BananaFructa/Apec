@@ -3,6 +3,7 @@ package Apec;
 import Apec.Components.Gui.ContainerGuis.ActiveEffectsTransparentGui;
 import Apec.Settings.SettingID;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.IInventory;
@@ -25,6 +26,7 @@ public class PotionFetcher {
     public boolean ShouldAwaitThreadsExist = false;
     public boolean IsInitilized = false;
     public boolean NeedsInitialFetch = true;
+    public boolean ShouldRun = false;
     private GuiOpenEvent CurrentEvent;
 
     DataExtractor dataExtractor;
@@ -67,7 +69,7 @@ public class PotionFetcher {
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onChatMsg(ClientChatReceivedEvent event) {
-        if (ApecMain.Instance.settingsManager.getSettingState(SettingID.SHOW_POTIONS_EFFECTS)) {
+        if (ShouldRun) {
             if ((event.message.getUnformattedText().contains("SIP") || event.message.getUnformattedText().contains("SLURP")) && !event.message.getUnformattedText().contains(":")) {
                 DumpAndLoad();
             }
@@ -141,7 +143,8 @@ public class PotionFetcher {
 
     @SubscribeEvent
     public void OnTick(TickEvent.ClientTickEvent tickEvent) {
-        if (ApecMain.Instance.settingsManager.getSettingState(SettingID.SHOW_POTIONS_EFFECTS)) {
+        ShouldRun = ApecMain.Instance.settingsManager.getSettingState(SettingID.SHOW_POTIONS_EFFECTS) && !ApecMain.Instance.settingsManager.getSettingState(SettingID.SHOW_EFFECTS_AS_IN_TAB);
+        if (ShouldRun) {
             if (dataExtractor.isInSkyblock && !IsInitilized) init();
             if (!dataExtractor.isInSkyblock && IsInitilized) ClearAll();
             if (System.currentTimeMillis() - LastSystemTime >= 995 && !dataExtractor.IsDeadInTheCatacombs) {
@@ -172,7 +175,7 @@ public class PotionFetcher {
 
     @SubscribeEvent
     public void OnDrink(PlayerUseItemEvent.Finish event) {
-        if (ApecMain.Instance.settingsManager.getSettingState(SettingID.SHOW_POTIONS_EFFECTS)) {
+        if (ShouldRun) {
             if (event.item.getItem() == Items.milk_bucket) {
                 PotionEffects.clear();
             }
@@ -184,12 +187,7 @@ public class PotionFetcher {
     // I know i can make some public functions in the custom gui class instead of doing reflection but i guess it's better when it comes to future modifications
     @SubscribeEvent
     public void OnGuiOpen (final GuiOpenEvent event) {
-        try {
-            System.out.println(event.gui.getClass().getName());
-        } catch (Exception e) {
-
-        }
-        if (ApecMain.Instance.settingsManager.getSettingState(SettingID.SHOW_POTIONS_EFFECTS)) {
+        if (ShouldRun) {
             if (event.gui instanceof ActiveEffectsTransparentGui && NeedsInitialFetch) {
                 Tuple<IInventory, IInventory> UpperLower = ApecUtils.GetUpperLowerFromGuiEvent(event);
                 if (UpperLower == null) return;
@@ -205,7 +203,7 @@ public class PotionFetcher {
                                     assert !ShouldAwaitThreadsExist;
                                 } while ((Container.inventorySlots.inventorySlots.get(0).inventory.getStackInSlot(0) == null
                                         || Container.inventorySlots.inventorySlots.get(53).inventory.getStackInSlot(53) == null)
-                                        && ShouldAwaitThreadsExist);
+                                        && ShouldAwaitThreadsExist && mc.currentScreen instanceof GuiChest);
                                 boolean FullBreak = false;
                                 for (int i = 0; i < 3 && !FullBreak; i++) {
                                     for (int j = 10 + i * 9; j < i * 9 + 17; j++) {

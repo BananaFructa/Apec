@@ -108,30 +108,38 @@ public abstract class AuctionHouseContainer extends GuiScreen {
         handleMouseClick(this.inventorySlots.inventorySlots.get(categoryID.ordinal() * 9),categoryID.ordinal()*9,0,0);
     }
 
-    private void executeAction (AuctionHouseComponent.Actions actions) {
+    private void executeAction (AuctionHouseComponent.Actions actions,int mouseButton) {
         acceptNextClick = true;
-        switch (actions) {
-            case SEARCH:
-                handleMouseClick(this.inventorySlots.inventorySlots.get(48), 48, 0, 0);
-                break;
-            case NEXT:
-                handleMouseClick(this.inventorySlots.inventorySlots.get(53),53,0,0);
-                break;
-            case BACK:
-                handleMouseClick(this.inventorySlots.inventorySlots.get(46),46,0,0);
-                break;
-            case SORT_CHANGE:
-                handleMouseClick(this.inventorySlots.inventorySlots.get(50),50,0,0);
-                break;
-            case MOD_CHANGE:
-                handleMouseClick(this.inventorySlots.inventorySlots.get(52),52,0,0);
-                break;
-            case RARITY_CHANGE:
-                handleMouseClick(this.inventorySlots.inventorySlots.get(51),51,0,0);
-                break;
-            case CLOSE:
-                handleMouseClick(this.inventorySlots.inventorySlots.get(49),49,0,0);
-                break;
+        if (mouseButton == 0) {
+            switch (actions) {
+                case SEARCH:
+                    handleMouseClick(this.inventorySlots.inventorySlots.get(48), 48, 0, 0);
+                    break;
+                case NEXT:
+                    handleMouseClick(this.inventorySlots.inventorySlots.get(53), 53, 0, 0);
+                    break;
+                case BACK:
+                    handleMouseClick(this.inventorySlots.inventorySlots.get(46), 46, 0, 0);
+                    break;
+                case SORT_CHANGE:
+                    handleMouseClick(this.inventorySlots.inventorySlots.get(50), 50, 0, 0);
+                    break;
+                case MOD_CHANGE:
+                    handleMouseClick(this.inventorySlots.inventorySlots.get(52), 52, 0, 0);
+                    break;
+                case RARITY_CHANGE:
+                    handleMouseClick(this.inventorySlots.inventorySlots.get(51), 51, 0, 0);
+                    break;
+                case CLOSE:
+                    handleMouseClick(this.inventorySlots.inventorySlots.get(49), 49, 0, 0);
+                    break;
+            }
+        } else if (mouseButton == 1) {
+            switch (actions) {
+                case SEARCH:
+                    handleMouseClick(this.inventorySlots.inventorySlots.get(47), 47, 0, 0);
+                    break;
+            }
         }
     }
 
@@ -483,7 +491,6 @@ public abstract class AuctionHouseContainer extends GuiScreen {
         this.doubleClick = this.lastClickSlot == slot && i - this.lastClickTime < 250L && this.lastClickButton == mouseButton;
         this.ignoreMouseUp = false;
 
-        if (mouseButton == 0) {
             for (GuiButton guiButton : this.buttonList) {
                 if (guiButton.mousePressed(mc,mouseX,mouseY)) {
                     if (guiButton instanceof AuctionHouseToggleButton) {
@@ -497,15 +504,14 @@ public abstract class AuctionHouseContainer extends GuiScreen {
                                 }
                             }
                             executeCategorySelect(button.categoryID);
-                            ((AuctionHouseComponent) ApecMain.Instance.getComponent(ComponentId.AUCTION_HOUSE_MENU)).currentCategory = button.categoryID;
+                            ((AuctionHouseComponent) ApecMain.Instance.getComponent(ComponentId.AUCTION_HOUSE_MENU)).SetCategoryID(button.categoryID);
                         }
                     } else if (guiButton instanceof AuctionHouseButton) {
-                        executeAction(((AuctionHouseButton)guiButton).action);
+                        executeAction(((AuctionHouseButton)guiButton).action,mouseButton);
                     }
                     break;
                 }
             }
-        }
 
         if (mouseButton == 0 || mouseButton == 1 || flag)
         {

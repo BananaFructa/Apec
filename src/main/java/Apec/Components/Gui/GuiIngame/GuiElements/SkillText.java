@@ -2,7 +2,9 @@ package Apec.Components.Gui.GuiIngame.GuiElements;
 
 import Apec.ApecMain;
 import Apec.ApecUtils;
+import Apec.ComponentId;
 import Apec.Components.Gui.GuiIngame.GUIComponentID;
+import Apec.Components.Gui.GuiIngame.GUIModifier;
 import Apec.Components.Gui.GuiIngame.SkillType;
 import Apec.DataExtractor;
 import Apec.Settings.SettingID;
@@ -73,7 +75,7 @@ public class SkillText extends GUIComponent {
 
     @Override
     public Vector2f getAnchorPointPosition() {
-        return new Vector2f((int) (g_sr.getScaledWidth() / 2 ) - stringWidth/2f, g_sr.getScaledHeight() - 30);
+        return new Vector2f((int) (g_sr.getScaledWidth() / 2 ) - stringWidth/2f, g_sr.getScaledHeight() - 30 + 20 * (1 - ((GUIModifier) ApecMain.Instance.getComponent(ComponentId.GUI_MODIFIER)).getGuiComponent(GUIComponentID.INFO_BOX).scale));
     }
 
     @Override

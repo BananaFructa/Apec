@@ -1,7 +1,10 @@
 package Apec.Components.Gui.GuiIngame.GuiElements;
 
+import Apec.ApecMain;
 import Apec.ApecUtils;
+import Apec.ComponentId;
 import Apec.Components.Gui.GuiIngame.GUIComponentID;
+import Apec.Components.Gui.GuiIngame.GUIModifier;
 import Apec.DataExtractor;
 import net.minecraft.client.gui.ScaledResolution;
 import org.lwjgl.util.vector.Vector2f;
@@ -19,7 +22,8 @@ public class HotBar extends GUIComponent {
 
     @Override
     public Vector2f getAnchorPointPosition() {
-        return new Vector2f(g_sr.getScaledWidth()-183, g_sr.getScaledHeight() - 43);
+        // The scale of the bottom bar is used so that the hotbar remains at the same distance from it on different gui scales
+        return new Vector2f(g_sr.getScaledWidth()-183, g_sr.getScaledHeight() - 43 +20*(1- ((GUIModifier)ApecMain.Instance.getComponent(ComponentId.GUI_MODIFIER)).getGuiComponent(GUIComponentID.INFO_BOX).scale));
     }
 
     @Override

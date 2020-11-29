@@ -1,5 +1,7 @@
 package Apec.Components.Gui.ContainerGuis;
 
+import Apec.ApecMain;
+import Apec.ComponentId;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.inventory.ContainerChest;
@@ -46,6 +48,10 @@ public class AuctionHouseGui extends AuctionHouseContainer {
             mc.fontRendererObj.drawString(rarityLines.get(i),sr.getScaledWidth()/2+203,sr.getScaledHeight()/2-97+10*i,0xffffff);
         }
         mc.fontRendererObj.drawString("Auction Browser" + getPageText().replace("("," ").replace(")",""),((sr.getScaledWidth()/2-97)),((sr.getScaledHeight()/2-97)),0xffffff);
+        String searchTerm = ((AuctionHouseComponent)ApecMain.Instance.getComponent(ComponentId.AUCTION_HOUSE_MENU)).searchTerm;
+        if (!searchTerm.equals("")) {
+            mc.fontRendererObj.drawString("Search: \""+searchTerm+"\"", ((sr.getScaledWidth() / 2 - 97)), ((sr.getScaledHeight() / 2 - 87)), 0xffffff);
+        }
     }
 
 

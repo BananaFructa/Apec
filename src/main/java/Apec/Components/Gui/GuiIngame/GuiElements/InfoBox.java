@@ -10,21 +10,72 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiChat;
 import net.minecraft.client.gui.GuiIngame;
 import net.minecraft.client.gui.ScaledResolution;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
+import org.lwjgl.Sys;
 import org.lwjgl.util.vector.Vector2f;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class InfoBox extends GUIComponent {
 
     float yDecremetor = 0;
 
     public InfoBox() {
-        super(GUIComponentID.INFO_BOX);
+        super(GUIComponentID.INFO_BOX,5);
+    }
+
+    public int PurseStringLength = 0,BitsLength = 0,ZoneStringLength = 0,DefenceStringLength = 0,TimeStringLength = 0;
+
+    @Override
+    public void drawTex(DataExtractor.PlayerStats ps, DataExtractor.ScoreBoardData sd, DataExtractor.OtherData od, ScaledResolution sr, boolean editingMode) {
+        super.drawTex(ps, sd, od, sr, editingMode);
+        boolean UseIcons = ApecMain.Instance.settingsManager.getSettingState(SettingID.INFO_BOX_ICONS);
+        GuiIngame gi = Minecraft.getMinecraft().ingameGUI;
+        mc.renderEngine.bindTexture(new ResourceLocation(ApecMain.modId, "gui/bottomBar.png"));
+        int DrawCounts = (int)(sr.getScaledWidth()/256) + 1;
+        for (int i = 0;i < DrawCounts;i++) {
+            // TODO: This is terrible please do something in the future
+            gi.drawTexturedModalRect((int) delta_position.x + i * 256, sr.getScaledHeight() - 20*scale + (int) delta_position.y + (int)yDecremetor,0,0,256,(int)(20.0f));
+            if (mc.gameSettings.guiScale == 1) {
+                gi.drawTexturedModalRect((int) delta_position.x + i * 256, sr.getScaledHeight() - 7*scale + (int) delta_position.y + (int)yDecremetor,0,0,256,(int)(20.0f));
+            }
+        }
+        GlStateManager.scale(scale,scale,1);
+        if (UseIcons) {
+            Vector2f GuiPos = getRealAnchorPoint();
+
+            GuiPos.y += yDecremetor;
+            mc.renderEngine.bindTexture(new ResourceLocation(ApecMain.modId, "gui/statBars.png"));
+            gi.drawTexturedModalRect((int)(GuiPos.x + (subComponentDeltas.get(0).getX())/scale), (int)((GuiPos.y+ subComponentDeltas.get(0).getY())/scale -1),250,84,6,9);
+            gi.drawTexturedModalRect((int)(GuiPos.x + (subComponentDeltas.get(1).getX())/scale + 120), (int)((GuiPos.y+ subComponentDeltas.get(1).getY())/scale -1),245,84,5,9);
+            if (ApecMain.Instance.dataExtractor.isInTheCatacombs) {
+                gi.drawTexturedModalRect((int) (GuiPos.x + (subComponentDeltas.get(2).getX())/scale + 220 - 1), (int) ((GuiPos.y + subComponentDeltas.get(2).getY())/scale -1), 229, 84, 7, 9);
+            } else {
+                gi.drawTexturedModalRect((int) (GuiPos.x + (subComponentDeltas.get(2).getX())/scale + 220), (int) ((GuiPos.y + subComponentDeltas.get(2).getY())/scale -1 ), 236, 84, 9, 9);
+            }
+            gi.drawTexturedModalRect((int)(GuiPos.x + (subComponentDeltas.get(3).getX())/scale + 360), (int)((GuiPos.y+ subComponentDeltas.get(3).getY())/scale -1),222,84,7,10);
+        }
+        GlStateManager.scale(1,1,1);
     }
 
     @Override
     public void draw(DataExtractor.PlayerStats ps, DataExtractor.ScoreBoardData sd,DataExtractor.OtherData od, ScaledResolution sr,boolean editingMode) {
-        super.draw(ps,sd,od,sr,editingMode);
+        GlStateManager.pushMatrix();
+        if (mc.gameSettings.guiScale == 0) {
+            this.scale = 0.72f;
+        } else if (mc.gameSettings.guiScale == 3) {
+            this.scale = 0.8f;
+        } else if (mc.gameSettings.guiScale == 2) {
+            this.scale = 1f;
+        } else if (mc.gameSettings.guiScale == 1) {
+            this.scale = 1.5f;
+        }
+        GlStateManager.scale(scale, scale, 1);
+        super.draw(ps, sd, od, sr, editingMode);
         boolean isInChat = Minecraft.getMinecraft().currentScreen instanceof GuiChat;
         float fps = Minecraft.getDebugFPS();
         if (ApecMain.Instance.settingsManager.getSettingState(SettingID.INFO_BOX_ANIMATION)) {
@@ -37,29 +88,91 @@ public class InfoBox extends GUIComponent {
         if (yDecremetor < 0) yDecremetor = 0;
         if (yDecremetor > 40) yDecremetor = 40;
         GuiIngame gi = Minecraft.getMinecraft().ingameGUI;
-        gi.drawRect(0 + (int) delta_position.x, sr.getScaledHeight() - 20 + (int) delta_position.y + (int)yDecremetor, sr.getScaledWidth() + (int) delta_position.x, sr.getScaledHeight() + (int) delta_position.y, 0xca0a0a0a);
-        Vector2f GuiPos = getAnchorPointPosition();
+        Vector2f GuiPos = getRealAnchorPoint();
 
-        GuiPos = ApecUtils.addVec(GuiPos, delta_position);
         GuiPos.y += yDecremetor;
 
-        if (mc.gameSettings.guiScale == 0) {
-            mc.fontRendererObj.drawString(sd.Purse, (int) GuiPos.x, (int) GuiPos.y, 0xffffff, false);
-            mc.fontRendererObj.drawString(sd.Zone, (int) GuiPos.x + 100, (int) GuiPos.y, 0xffffff, false);
-            String DFString = "\u00a7a" + ps.Defence + " Defence";
-            mc.fontRendererObj.drawString(DFString, (int) GuiPos.x + 230, (int) GuiPos.y, 0xffffff);
-        } else {
-            mc.fontRendererObj.drawString(sd.Purse, (int) GuiPos.x, (int) GuiPos.y, 0xffffff, false);
-            mc.fontRendererObj.drawString(sd.Zone, (int) GuiPos.x + 160, (int) GuiPos.y, 0xffffff, false);
-            String DFString = "\u00a7a" + ps.Defence + " Defence";
-            mc.fontRendererObj.drawString(DFString, (int) GuiPos.x + 320, (int) GuiPos.y, 0xffffff);
-        }
-        mc.fontRendererObj.drawString(sd.Date + " " + sd.Hour, (int) sr.getScaledWidth() - mc.fontRendererObj.getStringWidth(sd.Date + " " + sd.Hour) - 15 + delta_position.x, (int) GuiPos.y + delta_position.y, 0xffffff, false);
+        boolean UseIcons = ApecMain.Instance.settingsManager.getSettingState(SettingID.INFO_BOX_ICONS);
+
+        //gi.drawRect(0 + (int) delta_position.x, sr.getScaledHeight() - 20 + (int) delta_position.y + (int)yDecremetor, sr.getScaledWidth() + (int) delta_position.x, sr.getScaledHeight() + (int) delta_position.y, 0xca0a0a0a);
+
+
+        String purseText = (UseIcons ? ApecUtils.RemoveCharSequence("Purse: ", sd.Purse) : sd.Purse);
+        String zoneText = (UseIcons ? ApecUtils.RemoveCharSequence("\u23E3", sd.Zone) : sd.Zone);
+        String defenceText = (UseIcons ? "\u00a7a" + ps.Defence : "\u00a7a" + ps.Defence + " Defence");
+        String bitText = (UseIcons ? ApecUtils.RemoveCharSequence("Bits: ",sd.Bits) : sd.Bits);
+        boolean inTheCatacombs = ApecMain.Instance.dataExtractor.isInTheCatacombs;
+        mc.fontRendererObj.drawString(
+                purseText,
+                (int) (GuiPos.x + (subComponentDeltas.get(0).getX() + (UseIcons ? 9 : 0)) / scale),
+                (int) ((GuiPos.y + subComponentDeltas.get(0).getY()) / scale),
+                0xffffff, false
+        );
+        mc.fontRendererObj.drawString(
+                bitText,
+                (int) (GuiPos.x + (subComponentDeltas.get(1).getX() + (UseIcons ? 9 : 0)) / scale + 120),
+                (int) ((GuiPos.y + subComponentDeltas.get(1).getY()) / scale),
+                0xffffff, false
+        );
+        int zoneAddX = (inTheCatacombs ? 5 : 9) ;
+        mc.fontRendererObj.drawString(
+                zoneText,
+                (int) (GuiPos.x + (subComponentDeltas.get(2).getX() + (UseIcons ? zoneAddX : 0)) / scale + 220),
+                (int) ((GuiPos.y + subComponentDeltas.get(2).getY()) / scale),
+                0xffffff, false
+        );
+        mc.fontRendererObj.drawString(
+                defenceText,
+                (int) (GuiPos.x + (subComponentDeltas.get(3).getX() + (UseIcons ? 10 : 0)) / scale + 360),
+                (int) ((GuiPos.y + subComponentDeltas.get(3).getY()) / scale),
+                0xffffff
+        );
+        PurseStringLength = mc.fontRendererObj.getStringWidth(purseText);
+        BitsLength = mc.fontRendererObj.getStringWidth(bitText);
+        ZoneStringLength = mc.fontRendererObj.getStringWidth(zoneText);
+        DefenceStringLength = mc.fontRendererObj.getStringWidth(defenceText);
+        TimeStringLength = mc.fontRendererObj.getStringWidth(sd.Date + " " + sd.Hour);
+
+        mc.fontRendererObj.drawString(
+                sd.Date + " " + sd.Hour,
+                (int) ((sr.getScaledWidth() - 15 + delta_position.x + subComponentDeltas.get(4).getX()) / scale - mc.fontRendererObj.getStringWidth(sd.Date + " " + sd.Hour)),
+                (int) ((GuiPos.y + delta_position.y + subComponentDeltas.get(4).getY()) / scale), 0xffffff, false
+        );
+        GlStateManager.scale(1, 1, 1);
+        GlStateManager.popMatrix();
 
     }
 
     @Override
     public Vector2f getAnchorPointPosition() {
-        return new Vector2f(20, g_sr.getScaledHeight() - 14);
+        return new Vector2f(20, g_sr.getScaledHeight() - 14*scale);
+    }
+
+    @Override
+    public List<Vector2f> getSubElementsAnchorPoints() {
+        return new ArrayList<Vector2f>() {{
+            add(new Vector2f(0, 0));
+            add(new Vector2f(120*scale, 0));
+            add(new Vector2f(220*scale, 0));
+            add(new Vector2f(360*scale, 0));
+            add(new Vector2f((g_sr.getScaledWidth() - 20), 0));
+        }};
+    }
+
+    @Override
+    public List<Vector2f> getSubElementsBoundingPoints() {
+        final boolean UseIcons = ApecMain.Instance.settingsManager.getSettingState(SettingID.INFO_BOX_ICONS);
+        boolean inTheCatacombs = ApecMain.Instance.dataExtractor.isInTheCatacombs;
+        final int zoneAddX = (inTheCatacombs ? 5 : 9);
+        List<Vector2f> RelativeVectors = new ArrayList<Vector2f>(4) {{
+            add(new Vector2f(PurseStringLength  + (UseIcons ? 9 : 0)*scale, 10*scale));
+            add(new Vector2f( BitsLength + (UseIcons ? 9 : 0)*scale, 10*scale));
+            add(new Vector2f(ZoneStringLength + (UseIcons ? zoneAddX : 0)*scale, 10*scale));
+            add(new Vector2f(DefenceStringLength + (UseIcons ? 10 : 0)*scale, 10*scale));
+            add(new Vector2f(-TimeStringLength-(getRealAnchorPoint().x)*scale, 10*scale));
+            // Since the x is relative to the side of the screen and not the parent's x position i removed it's relativity
+            // I can do that since the bottom bar cannot be moved so no wack shit is going to happen
+        }};
+        return ApecUtils.AddVecListToList(RelativeVectors,getSubElementsRealAnchorPoints());
     }
 }

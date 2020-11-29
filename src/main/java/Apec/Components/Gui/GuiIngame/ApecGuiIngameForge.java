@@ -171,7 +171,6 @@ public class ApecGuiIngameForge extends ApecGuiIngame {
         try {
             renderHUDText(width, height);
         } catch (Exception e) {
-            //TODO: Investigate
         }
         renderTitle(width, height, partialTicks);
 

@@ -197,4 +197,87 @@ public class ApecUtils {
             return null;
         }
     }
+
+    public static List<Vector2f> AddVecToList(List<Vector2f> vl, Vector2f vec) {
+        for (Vector2f v : vl) {
+            v = addVec(v, vec);
+        }
+        return vl;
+    }
+
+    public static List<Vector2f> AddVecListToList(List<Vector2f> vl1,List<Vector2f> vl2) {
+        assert (vl1.size() < vl2.size());
+        for (int i = 0;i < vl1.size();i++) {
+            vl1.set(i,addVec(vl1.get(i), vl2.get(i)));
+        }
+        return vl1;
+    }
+
+    // Usefull for not dealing with those pesky color codes
+    public static String RemoveCharSequence (String Seq,String s) {
+        char[] csq = Seq.toCharArray();
+        String result = "";
+        int CurrentInSequence = 0;
+        boolean SequenceEnded = false;
+        for (int i = 0;i < s.length();i++) {
+            if (!SequenceEnded) {
+                if (csq[CurrentInSequence] == s.charAt(i)) {
+                    CurrentInSequence++;
+                    if (CurrentInSequence == csq.length) SequenceEnded = true;
+                    continue;
+                }
+            }
+            result += String.valueOf(s.charAt(i));
+        }
+        return result;
+    }
+
+    public static float ReduceToTwoDecimals(float v) {
+        return (float)((int)(v*100)) / 100.0f;
+    }
+
+    /**
+     * @param string = The string you want to extract data from
+     * @param symbol = A string that will act as a pivot
+     * @param leftChar = It will copy all the character from the left of the pivot until it encounters this character
+     * @param rightChar = It will copy all the character from the right of the pivot until it encounters this character
+     * @param allowedInstancesL = How many times can it encounter the left char before it stops copying the characters
+     * @param allowedInstancesR = How many times can it encounter the right char before it stops copying the characters
+     * @param totallyExclusive = Makes so that the substring wont include the character from the left index
+     * @return Returns the string that is defined by the bounds of leftChar and rightChar encountered allowedInstacesL  respectively allowedInctancesR - 1 within it
+     *         allowedInsracesL only if totallyExclusive = false else allowedInstacesL - 1
+     */
+
+    public static String segmentString(String string,String symbol,char leftChar,char rightChar,int allowedInstancesL,int allowedInstancesR,boolean totallyExclusive) {
+
+        int leftIdx = 0,rightIdx = 0;
+
+        if (string.contains(symbol)) {
+
+            int symbolIdx = string.indexOf(symbol);
+
+            for (int i = 0; symbolIdx - i > -1; i++) {
+                leftIdx = symbolIdx - i;
+                if (string.charAt(symbolIdx - i) == leftChar) allowedInstancesL--;
+                if (allowedInstancesL == 0) {
+                    break;
+                }
+            }
+
+            symbolIdx += symbol.length() - 1;
+
+            for (int i = 0; symbolIdx + i < string.length(); i++) {
+                rightIdx = symbolIdx + i;
+                if (string.charAt(symbolIdx + i) == rightChar) allowedInstancesR--;
+                if (allowedInstancesR == 0) {
+                    break;
+                }
+            }
+
+            return string.substring(leftIdx + (totallyExclusive ? 1 : 0), rightIdx);
+        } else {
+            return null;
+        }
+
+    }
 }

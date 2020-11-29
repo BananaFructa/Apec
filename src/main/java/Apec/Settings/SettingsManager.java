@@ -35,7 +35,8 @@ public class SettingsManager {
         add(new Setting(INVENTORY_TRAFFIC,true));
         add(new Setting(SHOW_POTIONS_EFFECTS,true));
         add(new Setting(COMPACT_POTION,false));
-        add(new Setting(HIDE_NIGHT_VISION,false));
+        //add(new Setting(HIDE_NIGHT_VISION,false));//
+        add(new Setting(SHOW_EFFECTS_AS_IN_TAB,false));
         add(new Setting(SHOW_CURRENT_SERVER,false));
         add(new Setting(ITEM_HIGHLIGHT_TEXT,false));
         add(new Setting(NPC_GUI,true));
@@ -43,12 +44,14 @@ public class SettingsManager {
         add(new Setting(SHOW_ABILITY_TEXT,true));
         add(new Setting(HIDE_IN_F3,false));
         add(new Setting(SNAP_IN_EDITING,true));
-        add(new Setting(SHOW_CACHED_PURSE_IN_DUNGEONS,true));
+        //add(new Setting(SHOW_CACHED_PURSE_IN_DUNGEONS,true));
         add(new Setting(INFO_BOX_ANIMATION,true));
+        add(new Setting(INFO_BOX_ICONS,true));
         add(new Setting(BORDER_TYPE,true));
         add(new Setting(OVERWRITE_GUI,false));
         add(new Setting(SHOW_DEBUG_MESSAGES,false));
     }};
+
 
     private static HashMap<SettingID,Tuple<String,String>> settingData = new HashMap<SettingID, Tuple<String, String>>() {{
         put(AUTO_ENABLE,new Tuple<String, String>("Auto Toggle","The GUI will automatically enable/disable when you join/leave skyblock"));
@@ -62,7 +65,7 @@ public class SettingsManager {
         put(HIDE_IN_F3,new Tuple<String, String>("Hide in F3", "Hides certain elements while in f3"));
         put(SHOW_SKILL_XP,new Tuple<String, String>("Show skill xp", "When you get skill xp it will appear on the screen"));
         put(BORDER_TYPE,new Tuple<String, String>("Black border text", "When disabled the text will show without the black border"));
-        put(COMPACT_POTION,new Tuple<String, String>("Compact potion display","Shows 2 potions per line. As they are shown in the tab menu"));
+        put(COMPACT_POTION,new Tuple<String, String>("Compact potion display","Shows 2 potions per line"));
         put(ITEM_HIGHLIGHT_TEXT,new Tuple<String, String>("Normal tooltip text","Shows the tooltip text of an item centered with the hotbar"));
         put(HP_BAR,new Tuple<String, String>("Show HP Bar","Toggles on or off the hp bar"));
         put(MP_BAR,new Tuple<String, String>("Show MP Bar","Toggles on or off the mp bar"));
@@ -82,6 +85,8 @@ public class SettingsManager {
         put(SKILL_TEXT,new Tuple<String, String>("Show Skill text","Shows the skill text"));
         put(SHOW_CURRENT_SERVER,new Tuple<String, String>("Show current server","Show in which server you are in"));
         put(COLORED_SKILL_XP,new Tuple<String,String>("Colored skill xp","Shows a different colored bar for each skill xp"));
+        put(SHOW_EFFECTS_AS_IN_TAB,new Tuple<String,String>("Show tab effect","Show the one rolling effect that appears in tab"));
+        put(INFO_BOX_ICONS,new Tuple<String, String>("Bottom bar icons", "Shows icons for each stat instead of text"));
     }};
 
     public boolean getSettingState(SettingID settingID){

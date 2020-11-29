@@ -120,11 +120,15 @@ public class GUIModifier extends Component {
             GlStateManager.color(1,1,1,1);
             for (GUIComponent component : GUIComponents) {
                 if (shouldBlockF3(component)) continue;
+                GlStateManager.pushMatrix();
                 component.drawTex(ps, sd, od, sr,mc.currentScreen instanceof CustomizationGui);
+                GlStateManager.popMatrix();
             }
             for (GUIComponent component : GUIComponents) {
                 if (shouldBlockF3(component)) continue;
+                GlStateManager.pushMatrix();
                 component.draw(ps, sd, od, sr,mc.currentScreen instanceof CustomizationGui);
+                GlStateManager.popMatrix();
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -204,14 +208,26 @@ public class GUIModifier extends Component {
             while (scanner.hasNextLine()) {
                 String s = scanner.nextLine();
                 String[] tempSplit = s.split("#");
-                int idx = Integer.parseInt(tempSplit[0]);
+                int subComponent = -1;
+                int idx = 0;
+                if (tempSplit[0].contains("!")) {
+                    String[] tempSplit_ = tempSplit[0].split("!");
+                    idx = Integer.parseInt(tempSplit_[0]);
+                    subComponent = Integer.parseInt(tempSplit_[1]);
+                } else {
+                    idx = Integer.parseInt(tempSplit[0]);
+                }
                 Vector2f delta = new Vector2f(Float.parseFloat(tempSplit[1].split("@")[0]),Float.parseFloat(tempSplit[1].split("@")[1]));
                 float scale = 1f;
                 if (tempSplit[1].split("@").length == 3) {
                     scale = Float.parseFloat(tempSplit[1].split("@")[2]);
                 }
-                getGuiComponent(GUIComponentID.values()[idx]).setDelta_position(delta);
-                getGuiComponent(GUIComponentID.values()[idx]).setScale(scale);
+                if (subComponent == -1) {
+                    getGuiComponent(GUIComponentID.values()[idx]).setDelta_position(delta);
+                    getGuiComponent(GUIComponentID.values()[idx]).setScale(scale);
+                } else {
+                    getGuiComponent(GUIComponentID.values()[idx]).setSubElementDelta_position(delta,subComponent);
+                }
             }
             scanner.close();
         } catch (IOException e) {

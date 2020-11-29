@@ -72,11 +72,11 @@ public class ApecMenu extends Component {
             switch (action) {
                 case BACK:
                     if (page > 0)
-                    page = page - 1;
+                        page = page - 1;
                     break;
                 case NEXT:
                     if (page < ApecMain.Instance.settingsManager.settings.size() / 12)
-                    page = page + 1;
+                        page = page + 1;
                     break;
                 case OPEN_GUI_EDITING:
                     mc.displayGuiScreen(new CustomizationGui());
@@ -160,12 +160,12 @@ public class ApecMenu extends Component {
             boolean needsToReloadButtons = false;
             if (mouseButton == 0) for (net.minecraft.client.gui.GuiButton guiButton : this.buttonList) {
                 if (guiButton instanceof ApecMenuButton)
-                if (guiButton.mousePressed(mc, mouseX, mouseY)) ((ApecMenuButton) guiButton).ToggleSetting();
+                    if (guiButton.mousePressed(mc, mouseX, mouseY)) ((ApecMenuButton) guiButton).ToggleSetting();
                 if (guiButton instanceof ApecMenuNavigationButton)
-                if (guiButton.mousePressed(mc, mouseX, mouseY)) {
-                    ((ApecMenuNavigationButton)guiButton).ExecuteAction();
-                    needsToReloadButtons = true;
-                }
+                    if (guiButton.mousePressed(mc, mouseX, mouseY)) {
+                        ((ApecMenuNavigationButton)guiButton).ExecuteAction();
+                        needsToReloadButtons = true;
+                    }
             }
             if (needsToReloadButtons) this.loadAtPage(page);
         }

@@ -87,7 +87,7 @@ public class DataExtractor {
     private boolean hasSentATradeRequest = false;
     private boolean hasRecievedATradeRequest = false;
 
-    private boolean isInTheCatacombs = false;
+    public boolean isInTheCatacombs = false;
     private boolean wasInTheCatacombs = false;
 
     public boolean IsDeadInTheCatacombs = false;
@@ -99,7 +99,7 @@ public class DataExtractor {
 
     private PlayerStats playerStats;
     private List<String> scoreBoardLines;
-    private ScoreBoardData scoreBoardData;
+    private ScoreBoardData scoreBoardData = new ScoreBoardData();
     private OtherData otherData;
 
     public boolean isInSkyblock = false; // This flag is true if the player is in skyblock
@@ -108,12 +108,15 @@ public class DataExtractor {
     // The priority is set on highest so the data is getting parsed before it's modified by sba
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onChatMsg(ClientChatReceivedEvent event) {
-        if ((event.message.getUnformattedText().contains(String.valueOf(HpSymbol))
+        if (
+                (event.message.getUnformattedText().contains(String.valueOf(HpSymbol))
                 || event.message.getUnformattedText().contains(String.valueOf(MnSymbol))
-                || event.message.getUnformattedText().contains(reviveSymbol))
-                && !event.message.getUnformattedText().contains(":")) {
+                || event.message.getUnformattedText().contains(reviveSymbol)
+                || event.message.getUnformattedText().contains(chickenRaceSymbol)) // For some reason this race doesn't show the mana
+        ) {
             IsDeadInTheCatacombs = event.message.getUnformattedText().contains(reviveSymbol);
             actionBarData = event.message.getUnformattedText();
+            System.out.println(actionBarData);
         } else if (!event.message.getUnformattedText().contains("<") && !event.message.getUnformattedText().contains(":")){
 
             String msg = ApecUtils.removeAllCodes(event.message.getUnformattedText());
@@ -167,8 +170,9 @@ public class DataExtractor {
 
             }
 
+            ProcessScoreBoardData();
+
             this.playerStats = this.ProcessPlayerStats();
-            this.scoreBoardData = this.ProcessScoreBoardData();
 
             this.otherData = this.ProcessOtherData(this.scoreBoardData);
 
@@ -185,10 +189,6 @@ public class DataExtractor {
         }
     }
 
-    public String GetTabFooterData() {
-        return this.footerTabData;
-    }
-
     /**
      * This only includes adding missing brackets in dungeons
      */
@@ -199,6 +199,63 @@ public class DataExtractor {
         return s;
     }
 
+    public boolean ShouldHaveSpaceBefore(String s) {
+        return ApecUtils.containedByCharSequence(s,"Objective") || //Objectives
+               ApecUtils.containedByCharSequence(s,"Contest") || // Jacob's contest
+               ApecUtils.containedByCharSequence(s,"Year") || // New year and the vote thing
+               ApecUtils.containedByCharSequence(s,"Zoo") || // Traveling Zoo
+               ApecUtils.containedByCharSequence(s,"Festival") || // Spooky Festival
+               ApecUtils.containedByCharSequence(s,"Season") || // Jerry season
+               ApecUtils.containedByCharSequence(s,"Election") || // Idk at this point im just putting some things from the wiki
+               ApecUtils.containedByCharSequence(s,"Slayer") || // Slayer quest
+               ApecUtils.containedByCharSequence(s,"Keys") || // Keys in dungeons
+               ApecUtils.containedByCharSequence(s,"Time Elapsed") || // time elapsed dungeons
+               ApecUtils.containedByCharSequence(s,"Starting in:") ||
+               ApecUtils.containedByCharSequence(s,"Wave") ||
+               ApecUtils.containedByCharSequence(s,"Festival");
+    }
+
+    public boolean ShouldHaveSpaceAfter(String s) {
+        return ApecUtils.containedByCharSequence(s,"Dungeon Cleared"); // Dungeon cleared in dungeons
+    }
+
+    public boolean RepresentsIRLDate(String s) {
+        return ApecUtils.containedByCharSequence(s,"//");
+    }
+
+    public boolean RepresentsDate(String s) {
+        return (ApecUtils.containedByCharSequence(s,"Autumn") ||
+                ApecUtils.containedByCharSequence(s,"Winter") ||
+                ApecUtils.containedByCharSequence(s,"Spring") ||
+                ApecUtils.containedByCharSequence(s,"Summer")) &&
+                (ApecUtils.containedByCharSequence(s,"st") ||
+                 ApecUtils.containedByCharSequence(s,"nd") ||
+                 ApecUtils.containedByCharSequence(s,"rd") ||
+                 ApecUtils.containedByCharSequence(s,"th"));
+    }
+
+    public boolean RepresentsTime(String s) {
+        return (ApecUtils.containedByCharSequence(s,"am") ||
+                ApecUtils.containedByCharSequence(s,"pm")) &&
+                ApecUtils.containedByCharSequence(s,":");
+    }
+
+    public boolean RepresentsZone(String s) {
+        return ApecUtils.containedByCharSequence(s,"\u23E3");
+    }
+
+    public boolean RepresentsPurse(String s) {
+        return ApecUtils.containedByCharSequence(s,"Purse: ");
+    }
+
+    public boolean RepresentsPiggy(String s){
+        return ApecUtils.containedByCharSequence(s,"Piggy: ");
+    }
+
+    public boolean RepresentsBits(String s) {
+        return ApecUtils.containedByCharSequence(s,"Bits: ");
+    }
+
     /**
      * ScoreBoardData - Contains the things that used to be displayed in the scoreboard
      * -server
@@ -207,68 +264,24 @@ public class DataExtractor {
      * NOTE! Anything else that is not constant on the scoreboard and appears or disappears due to events or context are in ScoreBoardData.ExtraInfo saved as a list
      */
 
-    private ScoreBoardData ProcessScoreBoardData() {
+    private void ProcessScoreBoardData() {
         try {
-            ScoreBoardData scoreBoardData = new ScoreBoardData();
+            scoreBoardData.ExtraInfo.clear();
 
             int size = scoreBoardLines.size() - 1;
 
             isInTheCatacombs = false;
 
-            int catacombsIndex = -1;
-            int clearedIndex = -1;
-
             for (int i = 0;i < scoreBoardLines.size();i++){
                 if (ApecUtils.containedByCharSequence(scoreBoardLines.get(size-i).toLowerCase(),clearedName)) {
-                    clearedIndex = i;
                     isInTheCatacombs = true;
                 }
                 if (ApecUtils.containedByCharSequence(scoreBoardLines.get(size-i).toLowerCase(),combatZoneName) && !scoreBoardLines.get(size-i).toLowerCase().contains("to")) {
-                    catacombsIndex = i;
                     isInTheCatacombs = true;
                 }
             }
 
-            if (isInTheCatacombs) {
-                if (ApecMain.Instance.settingsManager.getSettingState(SettingID.SHOW_CACHED_PURSE_IN_DUNGEONS)) {
-                    scoreBoardData.Purse = lastPurse;
-                } else {
-                    scoreBoardData.Purse = "Purse: \u00a76Data Unavailable";
-                }
-            }
-
-            if (!scoreBoardLines.isEmpty()) {
-                if (scoreBoardLines.get(scoreBoardLines.size() - 1).contains("\u00a78") && ApecMain.Instance.settingsManager.getSettingState(SettingID.SHOW_CURRENT_SERVER)) {
-                    scoreBoardData.ExtraInfo.add("Currently in: " + segmentString(scoreBoardLines.get(scoreBoardLines.size() - 1), "\u00a78", '\u00a7', ' ', 1, 1, false));
-                }
-            }
-
-            if (isInTheCatacombs) {
-                ScoreBoardParserWhileInDungeons(scoreBoardData,clearedIndex,catacombsIndex,scoreBoardLines);
-            } else {
-
-                for (int i = 0; i < scoreBoardLines.size(); i++) {
-                    String s;
-                    switch (i) {
-                        case 2:
-                            s = scoreBoardLines.get(size - i);
-                            scoreBoardData.Date = s;
-                            break;
-                        case 3:
-                            s = scoreBoardLines.get(size - i);
-                            scoreBoardData.Hour = s;
-                            break;
-                        case 4:
-                            s = scoreBoardLines.get(size - i);
-                            scoreBoardData.Zone = s;
-                            break;
-                        default:
-                            s = scoreBoardLines.get(size - i);
-                            ScoreboardParser(scoreBoardData, s, i, scoreBoardLines);
-                            break;
-                    }
-                }
-            }
+            ScoreboardParser(scoreBoardData, scoreBoardLines);
 
             scoreBoardData.ExtraInfo.add(" ");
 
@@ -276,22 +289,12 @@ public class DataExtractor {
             lastDate = scoreBoardData.Date;
             lastZone = scoreBoardData.Zone;
             lastHour = scoreBoardData.Hour;
-            return scoreBoardData;
         } catch (Exception err) {
-            ScoreBoardData noReponse = new ScoreBoardData();
-            noReponse.Purse = "N/A";
-            noReponse.Zone = "N/A";
-            noReponse.Hour = "N/A";
-            noReponse.Date = "N/A";
-            noReponse.Server = "N/A";
-            noReponse.IRL_Date = "N/A";
             if (!alreadyShowedScrErr) {
                 ApecUtils.showMessage("[\u00A72Apec\u00A7f] There was an error processing scoreboard data!");
                 alreadyShowedScrErr = true;
             }
             err.printStackTrace();
-
-            return noReponse;
         }
     }
 
@@ -357,57 +360,39 @@ public class DataExtractor {
 
     /**
      * @param sd = Current ScoreBoardData class
-     * @param s = The current line
-     * @param idx = The index of the scoreboard line
      * @param l = All the lines of the scoreboard
      */
 
-    private void ScoreboardParser(ScoreBoardData sd,String s,int idx,List<String > l) {
-        if (s.contains("Purse") || s.contains("Piggy")) {
-            usesPiggyBank = s.contains("Piggy");
-            sd.Purse = s;
-            lastPurse = sd.Purse;
-            if (!l.get(l.size() - 1 - idx - 2).contains("www")) {
-                for (int i = idx + 2;i < l.size()-1;i++) {
-                    String _s = l.get(l.size()-i);
-                    sd.ExtraInfo.add(ApecUtils.removeFirstSpaces(_s));
+    private void ScoreboardParser(ScoreBoardData sd,List<String> l) {
+        List<String> rl = Lists.reverse(l);
+        for (String line : rl) {
+            if (RepresentsIRLDate(line)) {
+                sd.IRL_Date = ApecUtils.removeFirstSpaces(line);
+                if (line.contains("\u00a78") && ApecMain.Instance.settingsManager.getSettingState(SettingID.SHOW_CURRENT_SERVER)) {
+                    sd.ExtraInfo.add("Currently in: " + ApecUtils.segmentString(scoreBoardLines.get(scoreBoardLines.size() - 1), "\u00a78", '\u00a7', ' ', 1, 1, false));
                 }
             }
-        } else if (ApecUtils.containedByCharSequence(s,"Flight")) {
-            sd.ExtraInfo.add(ApecUtils.removeFirstSpaces(s));
-            // Detects the guesting slots
-        } else if (ApecUtils.containedByCharSequence(s,"Redstone:")) {
-            sd.ExtraInfo.add(ApecUtils.removeFirstSpaces(s));
-        } else if (s.contains("\u270c")) {
-            sd.ExtraInfo.add(ApecUtils.removeFirstSpaces(s));
+            else if (RepresentsDate(line)) sd.Date = ApecUtils.removeFirstSpaces(line);
+            else if (RepresentsTime(line)) sd.Hour = ApecUtils.removeFirstSpaces(line);
+            else if (RepresentsZone(line)) sd.Zone = ApecUtils.removeFirstSpaces(line);
+            else if (RepresentsPurse(line)) {
+                sd.Purse = ApecUtils.removeFirstSpaces(line);
+                usesPiggyBank = false;
+            }
+            else if (RepresentsPiggy(line)) {
+                sd.Purse = ApecUtils.removeFirstSpaces(line);
+                usesPiggyBank = true;
+            }
+            else if (RepresentsBits(line)) sd.Bits = ApecUtils.removeFirstSpaces(line);
+            else if (!line.contains("www")) {
+                if (line.replaceAll("[^a-zA-Z0-9]", "").length() != 0) {
+                    if (ShouldHaveSpaceBefore(line)) sd.ExtraInfo.add(" ");
+                    sd.ExtraInfo.add(ApecUtils.removeFirstSpaces(line));
+                    if (ShouldHaveSpaceAfter(line)) sd.ExtraInfo.add(" ");
+                }
+            }
         }
 
-    }
-
-    private void ScoreBoardParserWhileInDungeons(ScoreBoardData sd,int clrearedIdx,int cIdx,List<String> l) {
-        if (cIdx != -1) {
-            sd.Hour = ApecUtils.removeFirstSpaces(l.get((l.size() - 1 - cIdx + 1)));
-            sd.Date = ApecUtils.removeFirstSpaces(l.get(l.size() - 1 - cIdx + 2));
-            sd.Zone = ApecUtils.removeFirstSpaces(l.get(l.size() - 1 - cIdx));
-        } else {
-            sd.Hour = lastHour;
-            sd.Zone = lastZone;
-            sd.Date = lastDate;
-        }
-        if (clrearedIdx != -1) {
-            List<String> ei = new ArrayList<String>();
-            for (int i = clrearedIdx; i < l.size() - 2; i++) {
-                ei.add(ApecUtils.removeFirstSpaces(l.get(l.size() - 1 - i)));
-            }
-            for (int i = clrearedIdx - 1; cIdx != -1 ? i > cIdx + 1 : i > -1; i--) {
-                ei.add(0, ApecUtils.removeFirstSpaces(l.get(l.size() - 1 - i)));
-            }
-            sd.ExtraInfo.addAll(ei);
-        } else if (cIdx != -1) {
-            for (int i = cIdx + 2;i < l.size() - 2;i++) {
-                sd.ExtraInfo.add(ApecUtils.removeFirstSpaces(l.get(l.size() - 1 - i)));
-            }
-        }
     }
 
     public ScoreBoardData getScoreBoardData () {
@@ -430,7 +415,7 @@ public class DataExtractor {
         try {
             //HP
             {
-                String segmentString = segmentString(actionBarData, String.valueOf(HpSymbol), '\u00a7', HpSymbol, 1, 1, false);
+                String segmentString = ApecUtils.segmentString(actionBarData, String.valueOf(HpSymbol), '\u00a7', HpSymbol, 1, 1, false);
                 if (segmentString != null) {
                     Tuple<Integer, Integer> t = formatStringFractI(ApecUtils.removeAllCodes(segmentString));
                     playerStats.Hp = t.getFirst();
@@ -470,7 +455,7 @@ public class DataExtractor {
         try {
             // MP
             {
-                String segmentedString = segmentString(actionBarData, String.valueOf(MnSymbol), '\u00a7', MnSymbol, 1, 1, false);
+                String segmentedString = ApecUtils.segmentString(actionBarData, String.valueOf(MnSymbol), '\u00a7', MnSymbol, 1, 1, false);
                 if (segmentedString != null) {
                     Tuple<Integer, Integer> t = formatStringFractI(ApecUtils.removeAllCodes(segmentedString));
                     playerStats.Mp = t.getFirst();
@@ -489,11 +474,11 @@ public class DataExtractor {
 
         try {
             // Skill
-                String secmentedString = segmentString(actionBarData, ")", '+', ' ', 1, 1, false);
+                String secmentedString = ApecUtils.segmentString(actionBarData, ")", '+', ' ', 1, 1, false);
                 if (secmentedString != null) {
                     lastSkillXp = secmentedString;
                     String wholeString = ApecUtils.removeAllCodes(secmentedString);
-                    Tuple<Float, Float> t = formatStringFractF(segmentString(secmentedString, "(", '(', ')', 1, 1, true));
+                    Tuple<Float, Float> t = formatStringFractF(ApecUtils.segmentString(secmentedString, "(", '(', ')', 1, 1, true));
 
                     playerStats.SkillIsShown = true;
                     playerStats.SkillInfo = wholeString;
@@ -503,7 +488,7 @@ public class DataExtractor {
                 } else {
                     if (ApecMain.Instance.settingsManager.getSettingState(SettingID.ALWAYS_SHOW_SKILL) && !lastSkillXp.equals("")) {
                         String wholeString = ApecUtils.removeAllCodes(lastSkillXp);
-                        Tuple<Float, Float> t = formatStringFractF(segmentString(lastSkillXp, "(", '(', ')', 1, 1, true));
+                        Tuple<Float, Float> t = formatStringFractF(ApecUtils.segmentString(lastSkillXp, "(", '(', ')', 1, 1, true));
 
                         playerStats.SkillIsShown = true;
                         playerStats.SkillInfo = wholeString;
@@ -519,7 +504,7 @@ public class DataExtractor {
 
         try {
             // ABILITY
-            String segmentedString = segmentString(actionBarData, ")",'\u00a7',' ',3,1,false);
+            String segmentedString = ApecUtils.segmentString(actionBarData, ")",'\u00a7',' ',3,1,false);
             if (segmentedString != null) {
                 if (segmentedString.contains("-") && actionBarData.contains(String.valueOf(MnSymbol)) /* This is to make sure that the data is indeed from the action bar */ ) {
                     playerStats.IsAbilityShown = true;
@@ -533,7 +518,7 @@ public class DataExtractor {
         try {
             // DEF
             {
-                String segmentedString = segmentString(actionBarData, String.valueOf(DfSymbol), '\u00a7', DfSymbol, 2, 1, false);
+                String segmentedString = ApecUtils.segmentString(actionBarData, String.valueOf(DfSymbol), '\u00a7', DfSymbol, 2, 1, false);
                 if (segmentedString != null) {
                     playerStats.Defence = Integer.parseInt(ApecUtils.removeAllCodes(segmentedString));
                     lastDefence = playerStats.Defence;
@@ -581,16 +566,16 @@ public class DataExtractor {
 
     private OtherData ProcessOtherData (ScoreBoardData sd) {
         OtherData otherData = new OtherData();
-        String endRace = segmentString(actionBarData,endRaceSymbol,'\u00a7',' ',2,2,false);
-        String woodRacing = segmentString(actionBarData,woodRacingSymbol,'\u00a7',' ',2,2,false);
-        String dps = segmentString(actionBarData,dpsSymbol,'\u00a7',' ',1,1,false);
-        String sec = segmentString(actionBarData,secSymbol,'\u00a7',' ',1,2,false);
-        String secrets = segmentString(actionBarData,secretSymbol,'\u00a7','\u00a7',1,1,false);
-        String chickenRace = segmentString(actionBarData,chickenRaceSymbol,'\u00a7',' ',2,2,false);
-        String jump = segmentString(actionBarData,jumpSymbol,'\u00a7','P',3,1,false);
-        String crystalRace = segmentString(actionBarData,crystalRaceSymbol,'\u00a7',' ',2,2,false);
-        String mushroomRace = segmentString(actionBarData,giantMushroomSymbol,'\u00a7',' ',2,2,false);
-        String precursorRace = segmentString(actionBarData,precursorRuinsSymbol,'\u00a7',' ',2,2,false);
+        String endRace = ApecUtils.segmentString(actionBarData,endRaceSymbol,'\u00a7',' ',2,2,false);
+        String woodRacing = ApecUtils.segmentString(actionBarData,woodRacingSymbol,'\u00a7',' ',2,2,false);
+        String dps = ApecUtils.segmentString(actionBarData,dpsSymbol,'\u00a7',' ',1,1,false);
+        String sec = ApecUtils.segmentString(actionBarData,secSymbol,'\u00a7',' ',1,2,false);
+        String secrets = ApecUtils.segmentString(actionBarData,secretSymbol,'\u00a7','\u00a7',1,1,false);
+        String chickenRace = ApecUtils.segmentString(actionBarData,chickenRaceSymbol,'\u00a7',' ',2,2,false);
+        String jump = ApecUtils.segmentString(actionBarData,jumpSymbol,'\u00a7','\u00a7',3,1,false);
+        String crystalRace = ApecUtils.segmentString(actionBarData,crystalRaceSymbol,'\u00a7',' ',2,2,false);
+        String mushroomRace = ApecUtils.segmentString(actionBarData,giantMushroomSymbol,'\u00a7',' ',2,2,false);
+        String precursorRace = ApecUtils.segmentString(actionBarData,precursorRuinsSymbol,'\u00a7',' ',2,2,false);
 
         if ((endRace != null || woodRacing != null || dps != null || sec != null) && !otherData.ExtraInfo.isEmpty()) otherData.ExtraInfo.add(" ");
 
@@ -621,8 +606,6 @@ public class DataExtractor {
         }
 
         otherData.currentEvents = getEvents(sd);
-
-        //otherData.bossData = checkForBosses();
 
         return otherData;
 
@@ -671,39 +654,20 @@ public class DataExtractor {
     private List<String> getPlayerEffects () {
 
         try {
-            List<String> effects = potionFetcher.GetPotionEffects();
-            /*String[] lines = footerTabData.split("\n");
-            if (!lines[2].contains("No effects")) {
-                for (int i = 3; i < lines.length && lines[i].contains(":"); i++) {
-                    if (ApecMain.Instance.settingsManager.getSettingState(SettingID.COMPACT_POTION)) {
-                        if(ApecMain.Instance.settingsManager.getSettingState(SettingID.HIDE_NIGHT_VISION)) {
-                            String[] split = lines[i].split(" {5}");
-                            if (split.length > 1) {
-                                if (split[0].contains("Night Vision")) effects.add(split[1]);
-                                else if (split[1].contains("Night Vision")) effects.add(split[0]);
-                                else effects.add(lines[i]);
-                            } else if (!lines[i].contains("Night Vision")) {
-                                effects.add(lines[i]);
-                            }
-                        } else {
+            List<String> effects = new ArrayList<String>();
+            String[] lines = footerTabData.split("\n");
+            if (ApecMain.Instance.settingsManager.getSettingState(SettingID.SHOW_EFFECTS_AS_IN_TAB)) {
+                if (!lines[2].contains("No effects")) {
+                    for (int i = 3; i < lines.length; i++) {
+                        if (lines[i].contains(":")) {
                             effects.add(lines[i]);
+                            break;
                         }
-                    } else {
-
-                        String[] split = lines[i].split(" {5}");
-                        if (ApecMain.Instance.settingsManager.getSettingState(SettingID.HIDE_NIGHT_VISION)) {
-                            for (int j = 0; j < split.length; j++) {
-                                if (!ApecUtils.removeAllCodes(split[j]).contains("Night Vision")) {
-                                    effects.add(split[j]);
-                                }
-                            }
-                        } else {
-                            effects.addAll(Arrays.asList(split));
-                        }
-
                     }
                 }
-            }*/
+            } else {
+                effects = potionFetcher.GetPotionEffects();
+            }
             ApecUtils.orderByWidth(effects);
             return effects;
         } catch (Exception err) {
@@ -736,7 +700,7 @@ public class DataExtractor {
                     System.out.println(name);
                     if (name.toLowerCase().contains(magmaBossName)) {
                         bossData.bossId = BossId.MAGMA_BOSS;
-                        String hpBaseHp = segmentString(name, String.valueOf(HpSymbol), ' ', HpSymbol, 1, 1, true);
+                        String hpBaseHp = ApecUtils.segmentString(name, String.valueOf(HpSymbol), ' ', HpSymbol, 1, 1, true);
                         Tuple<Integer, Integer> t = formatStringFractI(hpBaseHp);
                         bossData.Hp = t.getFirst();
                         bossData.BaseHp = t.getSecond();
@@ -758,50 +722,7 @@ public class DataExtractor {
         return otherData;
     }
 
-    /**
-     * @param string = The string you want to extract data from
-     * @param symbol = A string that will act as a pivot
-     * @param leftChar = It will copy all the character from the left of the pivot until it encounters this character
-     * @param rightChar = It will copy all the character from the right of the pivot until it encounters this character
-     * @param allowedInstancesL = How many times can it encounter the left char before it stops copying the characters
-     * @param allowedInstancesR = How many times can it encounter the right char before it stops copying the characters
-     * @param totallyExclusive = Makes so that the substring wont include the character from the left index
-     * @return Returns the string that is defined by the bounds of leftChar and rightChar encountered allowedInstacesL  respectively allowedInctancesR - 1 within it
-     *         allowedInsracesL only if totallyExclusive = false else allowedInstacesL - 1
-     */
 
-    public String segmentString(String string,String symbol,char leftChar,char rightChar,int allowedInstancesL,int allowedInstancesR,boolean totallyExclusive) {
-
-        int leftIdx = 0,rightIdx = 0;
-
-        if (string.contains(symbol)) {
-
-            int symbolIdx = string.indexOf(symbol);
-
-            for (int i = 0; symbolIdx - i > -1; i++) {
-                leftIdx = symbolIdx - i;
-                if (string.charAt(symbolIdx - i) == leftChar) allowedInstancesL--;
-                if (allowedInstancesL == 0) {
-                    break;
-                }
-            }
-
-            symbolIdx += symbol.length() - 1;
-
-            for (int i = 0; symbolIdx + i < string.length(); i++) {
-                rightIdx = symbolIdx + i;
-                if (string.charAt(symbolIdx + i) == rightChar) allowedInstancesR--;
-                if (allowedInstancesR == 0) {
-                    break;
-                }
-            }
-
-            return string.substring(leftIdx + (totallyExclusive ? 1 : 0), rightIdx);
-        } else {
-            return null;
-        }
-
-    }
 
     /**
      * @param s = The string that you input
@@ -829,14 +750,15 @@ public class DataExtractor {
      */
 
     public class ScoreBoardData {
-        public String Server;
-        public String Purse;
+        public String Server = "";
+        public String Purse = "";
+        public String Bits = "";
         public List<String> ExtraInfo = new ArrayList<String>();
-        public String Zone;
-        public String Date;
-        public String Hour;
-        public String IRL_Date;
-        public String scoreBoardTitle;
+        public String Zone = "";
+        public String Date = "";
+        public String Hour = "";
+        public String IRL_Date = "";
+        public String scoreBoardTitle = "";
     }
 
     public class PlayerStats {

@@ -44,22 +44,22 @@ public class CustomizationGui extends GuiScreen {
             if (!(component instanceof InfoBox)) {
                 Vector2f v = component.getAnchorPointPosition();
                 this.buttonList.add(new CustomizationGuiButton(component, xSnapPoints, ySnapPoints));
-                if (component.scalable) this.buttonList.add(new CustomizationGuiSlider((int) v.x + 7, (int) v.y + 7,component));
+                if (component.scalable)
+                    this.buttonList.add(new CustomizationGuiSlider((int) v.x + 7, (int) v.y + 7, component));
+            }
+            if (component.hasSubComponents()) {
+                if (component instanceof InfoBox) {
+                    for (int i = 0; i < component.subComponentCount(); i++) {
+                        this.buttonList.add(new CustomizationGuiButton(component, i, xSnapPoints, ySnapPoints,true));
+                    }
+                } else {
+                    for (int i = 0; i < component.subComponentCount(); i++) {
+                        this.buttonList.add(new CustomizationGuiButton(component, i, xSnapPoints, ySnapPoints));
+                    }
+                }
             }
         }
         this.buttonList.add(new CustomizationResetButton(0,sr.getScaledWidth()/2 - 25,0,50,15));
-    }
-
-    @Override
-    public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-        final ScaledResolution sr = new ScaledResolution(mc);
-        for (GUIComponent component : components) {
-            if (!(component instanceof InfoBox)) {
-                drawRect((int) component.getRealAnchorPoint().x, (int) component.getRealAnchorPoint().y, (int) component.getBoundingPoint().x, (int) component.getBoundingPoint().y, 0x55ffffff);
-            }
-        }
-        super.drawScreen(mouseX, mouseY, partialTicks);
-
     }
 
     @Override
@@ -95,7 +95,7 @@ public class CustomizationGui extends GuiScreen {
             for (GuiButton guiButton : this.buttonList) {
                 if (guiButton.mousePressed(Minecraft.getMinecraft(), mouseX, mouseY) && guiButton instanceof CustomizationResetButton) {
                     for (GUIComponent component : components) {
-                        component.setDelta_position(new Vector2f(0,0));
+                        component.resetDeltaPositions();
                         component.setScale(1);
                     }
                 }
@@ -169,6 +169,12 @@ public class CustomizationGui extends GuiScreen {
             String s = "";
             for (int i = 0;i < components.size();i++) {
                 s += components.get(i).gUiComponentID.ordinal() + "#" + components.get(i).getDelta_position().x + "@" + components.get(i).getDelta_position().y + "@" + components.get(i).getScale();
+                if (components.get(i).hasSubComponents()) {
+                    for (int j = 0;j < components.get(i).subComponentCount();j++) {
+                        Vector2f delta = components.get(i).getSubElementsDelta_positions().get(j);
+                        s += "\n" + components.get(i).gUiComponentID.ordinal() + "!" + j + "#" + delta.x + "@" + delta.y + "@" + "1.0";
+                    }
+                }
                 if (i != components.size() - 1) s += "\n";
             }
             fw.write(s);

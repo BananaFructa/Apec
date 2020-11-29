@@ -20,7 +20,7 @@ public class ApecMenuNavigationButton extends GuiButton {
         {
             GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
             this.hovered = mouseX >= this.xPosition && mouseY >= this.yPosition && mouseX < this.xPosition + this.width && mouseY < this.yPosition + this.height;
-            drawRect(this.xPosition,this.yPosition,this.xPosition+this.width,this.yPosition+this.height,0x990a0a0a);
+            drawRect(this.xPosition,this.yPosition,this.xPosition+this.width,this.yPosition+this.height,0x99151515);
             if (this.hovered) drawRect(this.xPosition,this.yPosition,this.xPosition+this.width,this.yPosition+this.height,0x1adddddd);
             this.mouseDragged(mc, mouseX, mouseY);
             int j = 14737632;

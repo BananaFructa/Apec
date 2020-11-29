@@ -32,6 +32,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 @Mod(modid = ApecMain.modId, version = ApecMain.version, name = ApecMain.name)
@@ -47,7 +48,7 @@ public class ApecMain
 
     public static final String modId = "apec"; 
     public static final String name = "Apec";
-    public static final String version = "1.7";
+    public static final String version = "1.7.1";
 
     public static ApecMain Instance;
 
@@ -68,6 +69,8 @@ public class ApecMain
         add(new SkillViewComponent());
         add(new ActiveEffectsTransparentComponent());
     }};
+
+    public ComponentSaveManager componentSaveManager = new ComponentSaveManager(components);
 
     @EventHandler
     public void init(FMLInitializationEvent event)
@@ -93,7 +96,12 @@ public class ApecMain
 
         containerGuiManager.init();
 
-        for (Component component : components) component.init();
+        List<HashMap<Integer,String>> DataOfComponents = componentSaveManager.LoadData();
+
+        for (Component component : components){
+            if (!DataOfComponents.get(component.componentId.ordinal()).isEmpty()) component.loadSavedData(DataOfComponents.get(component.componentId.ordinal()));
+            component.init();
+        }
 
     }
 
