@@ -116,7 +116,6 @@ public class DataExtractor {
         ) {
             IsDeadInTheCatacombs = event.message.getUnformattedText().contains(reviveSymbol);
             actionBarData = event.message.getUnformattedText();
-            System.out.println(actionBarData);
         } else if (!event.message.getUnformattedText().contains("<") && !event.message.getUnformattedText().contains(":")){
 
             String msg = ApecUtils.removeAllCodes(event.message.getUnformattedText());
