@@ -368,7 +368,7 @@ public class DataExtractor {
             if (RepresentsIRLDate(line)) {
                 sd.IRL_Date = ApecUtils.removeFirstSpaces(line);
                 if (line.contains("\u00a78") && ApecMain.Instance.settingsManager.getSettingState(SettingID.SHOW_CURRENT_SERVER)) {
-                    sd.ExtraInfo.add("Currently in: " + ApecUtils.segmentString(scoreBoardLines.get(scoreBoardLines.size() - 1), "\u00a78", '\u00a7', ' ', 1, 1, false));
+                    sd.ExtraInfo.add("Currently in: " + ApecUtils.segmentString(scoreBoardLines.get(scoreBoardLines.size() - 1), "\u00a78", '\u00a7', '~', 1, 1, false,true));
                 }
             }
             else if (RepresentsDate(line)) sd.Date = ApecUtils.removeFirstSpaces(line);
@@ -414,7 +414,7 @@ public class DataExtractor {
         try {
             //HP
             {
-                String segmentString = ApecUtils.segmentString(actionBarData, String.valueOf(HpSymbol), '\u00a7', HpSymbol, 1, 1, false);
+                String segmentString = ApecUtils.segmentString(actionBarData, String.valueOf(HpSymbol), '\u00a7', HpSymbol, 1, 1, false,false);
                 if (segmentString != null) {
                     Tuple<Integer, Integer> t = formatStringFractI(ApecUtils.removeAllCodes(segmentString));
                     playerStats.Hp = t.getFirst();
@@ -454,7 +454,7 @@ public class DataExtractor {
         try {
             // MP
             {
-                String segmentedString = ApecUtils.segmentString(actionBarData, String.valueOf(MnSymbol), '\u00a7', MnSymbol, 1, 1, false);
+                String segmentedString = ApecUtils.segmentString(actionBarData, String.valueOf(MnSymbol), '\u00a7', MnSymbol, 1, 1, false,false);
                 if (segmentedString != null) {
                     Tuple<Integer, Integer> t = formatStringFractI(ApecUtils.removeAllCodes(segmentedString));
                     playerStats.Mp = t.getFirst();
@@ -473,11 +473,11 @@ public class DataExtractor {
 
         try {
             // Skill
-                String secmentedString = ApecUtils.segmentString(actionBarData, ")", '+', ' ', 1, 1, false);
+                String secmentedString = ApecUtils.segmentString(actionBarData, ")", '+', ' ', 1, 1, false,false);
                 if (secmentedString != null) {
                     lastSkillXp = secmentedString;
                     String wholeString = ApecUtils.removeAllCodes(secmentedString);
-                    Tuple<Float, Float> t = formatStringFractF(ApecUtils.segmentString(secmentedString, "(", '(', ')', 1, 1, true));
+                    Tuple<Float, Float> t = formatStringFractF(ApecUtils.segmentString(secmentedString, "(", '(', ')', 1, 1, true,false));
 
                     playerStats.SkillIsShown = true;
                     playerStats.SkillInfo = wholeString;
@@ -487,7 +487,7 @@ public class DataExtractor {
                 } else {
                     if (ApecMain.Instance.settingsManager.getSettingState(SettingID.ALWAYS_SHOW_SKILL) && !lastSkillXp.equals("")) {
                         String wholeString = ApecUtils.removeAllCodes(lastSkillXp);
-                        Tuple<Float, Float> t = formatStringFractF(ApecUtils.segmentString(lastSkillXp, "(", '(', ')', 1, 1, true));
+                        Tuple<Float, Float> t = formatStringFractF(ApecUtils.segmentString(lastSkillXp, "(", '(', ')', 1, 1, true,false));
 
                         playerStats.SkillIsShown = true;
                         playerStats.SkillInfo = wholeString;
@@ -503,7 +503,7 @@ public class DataExtractor {
 
         try {
             // ABILITY
-            String segmentedString = ApecUtils.segmentString(actionBarData, ")",'\u00a7',' ',3,1,false);
+            String segmentedString = ApecUtils.segmentString(actionBarData, ")",'\u00a7',' ',3,1,false,false);
             if (segmentedString != null) {
                 if (segmentedString.contains("-") && actionBarData.contains(String.valueOf(MnSymbol)) /* This is to make sure that the data is indeed from the action bar */ ) {
                     playerStats.IsAbilityShown = true;
@@ -517,7 +517,7 @@ public class DataExtractor {
         try {
             // DEF
             {
-                String segmentedString = ApecUtils.segmentString(actionBarData, String.valueOf(DfSymbol), '\u00a7', DfSymbol, 2, 1, false);
+                String segmentedString = ApecUtils.segmentString(actionBarData, String.valueOf(DfSymbol), '\u00a7', DfSymbol, 2, 1, false,false);
                 if (segmentedString != null) {
                     playerStats.Defence = Integer.parseInt(ApecUtils.removeAllCodes(segmentedString));
                     lastDefence = playerStats.Defence;
@@ -565,16 +565,16 @@ public class DataExtractor {
 
     private OtherData ProcessOtherData (ScoreBoardData sd) {
         OtherData otherData = new OtherData();
-        String endRace = ApecUtils.segmentString(actionBarData,endRaceSymbol,'\u00a7',' ',2,2,false);
-        String woodRacing = ApecUtils.segmentString(actionBarData,woodRacingSymbol,'\u00a7',' ',2,2,false);
-        String dps = ApecUtils.segmentString(actionBarData,dpsSymbol,'\u00a7',' ',1,1,false);
-        String sec = ApecUtils.segmentString(actionBarData,secSymbol,'\u00a7',' ',1,2,false);
-        String secrets = ApecUtils.segmentString(actionBarData,secretSymbol,'\u00a7','\u00a7',1,1,false);
-        String chickenRace = ApecUtils.segmentString(actionBarData,chickenRaceSymbol,'\u00a7',' ',2,2,false);
-        String jump = ApecUtils.segmentString(actionBarData,jumpSymbol,'\u00a7','\u00a7',3,1,false);
-        String crystalRace = ApecUtils.segmentString(actionBarData,crystalRaceSymbol,'\u00a7',' ',2,2,false);
-        String mushroomRace = ApecUtils.segmentString(actionBarData,giantMushroomSymbol,'\u00a7',' ',2,2,false);
-        String precursorRace = ApecUtils.segmentString(actionBarData,precursorRuinsSymbol,'\u00a7',' ',2,2,false);
+        String endRace = ApecUtils.segmentString(actionBarData,endRaceSymbol,'\u00a7',' ',2,2,false,false);
+        String woodRacing = ApecUtils.segmentString(actionBarData,woodRacingSymbol,'\u00a7',' ',2,2,false,false);
+        String dps = ApecUtils.segmentString(actionBarData,dpsSymbol,'\u00a7',' ',1,1,false,false);
+        String sec = ApecUtils.segmentString(actionBarData,secSymbol,'\u00a7',' ',1,2,false,false);
+        String secrets = ApecUtils.segmentString(actionBarData,secretSymbol,'\u00a7','\u00a7',1,1,false,false);
+        String chickenRace = ApecUtils.segmentString(actionBarData,chickenRaceSymbol,'\u00a7',' ',2,2,false,false);
+        String jump = ApecUtils.segmentString(actionBarData,jumpSymbol,'\u00a7','\u00a7',3,1,false,false);
+        String crystalRace = ApecUtils.segmentString(actionBarData,crystalRaceSymbol,'\u00a7',' ',2,2,false,false);
+        String mushroomRace = ApecUtils.segmentString(actionBarData,giantMushroomSymbol,'\u00a7',' ',2,2,false,false);
+        String precursorRace = ApecUtils.segmentString(actionBarData,precursorRuinsSymbol,'\u00a7',' ',2,2,false,false);
 
         if ((endRace != null || woodRacing != null || dps != null || sec != null) && !otherData.ExtraInfo.isEmpty()) otherData.ExtraInfo.add(" ");
 
@@ -699,7 +699,7 @@ public class DataExtractor {
                     System.out.println(name);
                     if (name.toLowerCase().contains(magmaBossName)) {
                         bossData.bossId = BossId.MAGMA_BOSS;
-                        String hpBaseHp = ApecUtils.segmentString(name, String.valueOf(HpSymbol), ' ', HpSymbol, 1, 1, true);
+                        String hpBaseHp = ApecUtils.segmentString(name, String.valueOf(HpSymbol), ' ', HpSymbol, 1, 1, true,false);
                         Tuple<Integer, Integer> t = formatStringFractI(hpBaseHp);
                         bossData.Hp = t.getFirst();
                         bossData.BaseHp = t.getSecond();

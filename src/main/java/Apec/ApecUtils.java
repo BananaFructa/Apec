@@ -249,7 +249,7 @@ public class ApecUtils {
      *         allowedInsracesL only if totallyExclusive = false else allowedInstacesL - 1
      */
 
-    public static String segmentString(String string,String symbol,char leftChar,char rightChar,int allowedInstancesL,int allowedInstancesR,boolean totallyExclusive) {
+    public static String segmentString(String string,String symbol,char leftChar,char rightChar,int allowedInstancesL,int allowedInstancesR,boolean totallyExclusive,boolean totallyInclusive) {
 
         int leftIdx = 0,rightIdx = 0;
 
@@ -275,7 +275,7 @@ public class ApecUtils {
                 }
             }
 
-            return string.substring(leftIdx + (totallyExclusive ? 1 : 0), rightIdx);
+            return string.substring(leftIdx + (totallyExclusive ? 1 : 0), rightIdx + (totallyInclusive ? 1 : 0));
         } else {
             return null;
         }

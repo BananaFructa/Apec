@@ -97,7 +97,7 @@ public class InfoBox extends GUIComponent {
         //gi.drawRect(0 + (int) delta_position.x, sr.getScaledHeight() - 20 + (int) delta_position.y + (int)yDecremetor, sr.getScaledWidth() + (int) delta_position.x, sr.getScaledHeight() + (int) delta_position.y, 0xca0a0a0a);
 
 
-        String purseText = (UseIcons ? ApecUtils.RemoveCharSequence("Purse: ", sd.Purse) : sd.Purse);
+        String purseText = (UseIcons ? RemovePurseText(sd.Purse) : sd.Purse);
         String zoneText = (UseIcons ? ApecUtils.RemoveCharSequence("\u23E3", sd.Zone) : sd.Zone);
         String defenceText = (UseIcons ? "\u00a7a" + ps.Defence : "\u00a7a" + ps.Defence + " Defence");
         String bitText = (UseIcons ? ApecUtils.RemoveCharSequence("Bits: ",sd.Bits) : sd.Bits);
@@ -174,5 +174,14 @@ public class InfoBox extends GUIComponent {
             // I can do that since the bottom bar cannot be moved so no wack shit is going to happen
         }};
         return ApecUtils.AddVecListToList(RelativeVectors,getSubElementsRealAnchorPoints());
+    }
+
+    private String RemovePurseText(String s) {
+        if (ApecUtils.containedByCharSequence(s,"Purse: ")) {
+            return ApecUtils.RemoveCharSequence("Purse: ",s);
+        } else if (ApecUtils.containedByCharSequence(s,"Piggy: ")) {
+            return ApecUtils.RemoveCharSequence("Piggy: ",s);
+        }
+        return "";
     }
 }
