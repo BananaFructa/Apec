@@ -34,6 +34,7 @@ public enum SettingID {
     MENU_GUI,
     COLORED_SKILL_XP,
     SHOW_EFFECTS_AS_IN_TAB,
-    INFO_BOX_ICONS
+    INFO_BOX_ICONS,
+    USE_AUTO_SCALING_BB
 
 }

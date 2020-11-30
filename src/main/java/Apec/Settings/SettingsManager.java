@@ -47,6 +47,7 @@ public class SettingsManager {
         //add(new Setting(SHOW_CACHED_PURSE_IN_DUNGEONS,true));
         add(new Setting(INFO_BOX_ANIMATION,true));
         add(new Setting(INFO_BOX_ICONS,true));
+        add(new Setting(USE_AUTO_SCALING_BB,true));
         add(new Setting(BORDER_TYPE,true));
         add(new Setting(OVERWRITE_GUI,false));
         add(new Setting(SHOW_DEBUG_MESSAGES,false));
@@ -87,6 +88,7 @@ public class SettingsManager {
         put(COLORED_SKILL_XP,new Tuple<String,String>("Colored skill xp","Shows a different colored bar for each skill xp"));
         put(SHOW_EFFECTS_AS_IN_TAB,new Tuple<String,String>("Show tab effect","Show the one rolling effect that appears in tab"));
         put(INFO_BOX_ICONS,new Tuple<String, String>("Bottom bar icons", "Shows icons for each stat instead of text"));
+        put(USE_AUTO_SCALING_BB,new Tuple<String, String>("Bottom bar autoscaling","The bottom bar auto-scales based on the gui scale"));
     }};
 
     public boolean getSettingState(SettingID settingID){
