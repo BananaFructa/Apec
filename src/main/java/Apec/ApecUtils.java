@@ -112,15 +112,16 @@ public class ApecUtils {
     }
 
     public static boolean containedByCharSequence(String s1,String s2) {
-        int lastIndex = 0;
-        for (char c : s2.toCharArray()) {
-            for ( ; lastIndex <= s1.length() ; lastIndex++) {
-                if (lastIndex == s1.length()) break;
-                if (s1.charAt(lastIndex) == c) break;
-            }
-            if (lastIndex == s1.length()) return false;
+
+        char[] c = s2.toCharArray();
+        char[] s = s1.toCharArray();
+        int cIdx = 0;
+        for (int i = 0;i < s.length && cIdx < c.length;i++) {
+            if (s[i] == c[cIdx]) cIdx++;
         }
-        return true;
+
+        return cIdx == c.length;
+
     }
 
     public static boolean doesListContainRegex(List<String> l,String regex) {
