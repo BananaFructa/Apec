@@ -134,12 +134,19 @@ public class SettingsManager {
             Scanner scanner = new Scanner(new File("config/Apec/Settings.txt"));
             while (scanner.hasNextLine()) {
                 String s = scanner.nextLine();
-                String tempSplit[] = s.split("-");
-                int idx = Integer.parseInt(tempSplit[0]);
-                boolean status = false;
-                if (tempSplit[1].equals("t")) status = true;
-                else if (tempSplit[1].equals("f")) status = false;
-                this.setSettingState(SettingID.values()[idx],status);
+                try {
+                    String tempSplit[] = s.split("-");
+                    if (tempSplit.length != 2)
+                        continue;
+                    int idx = Integer.parseInt(tempSplit[0]);
+                    boolean status = false;
+                    if (tempSplit[1].equals("t")) 
+                        status = true;
+                    this.setSettingState(SettingID.values()[idx],status);
+                }
+                catch (Exception e) {
+                    ApecUtils.showMessage("[\u00A72Apec\u00A7f] There was an error reading \"" + s + "\"!");
+                }
             }
             scanner.close();
         } catch (IOException e) {
