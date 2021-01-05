@@ -113,6 +113,10 @@ public class ApecUtils {
         Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(string));
     }
 
+    public static void showNonDebugMessage(String string) {
+        Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(string));
+    }
+
     /**
      * @brief This is made since there is this weird character in the purse text that im too lazy to see what unicode it has so now we have this
      * @return Returns a string that has all non numerical characters removed from a string

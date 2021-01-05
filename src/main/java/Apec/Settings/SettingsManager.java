@@ -150,7 +150,7 @@ public class SettingsManager {
                     this.setSettingState(SettingID.values()[idx],status);
                 }
                 catch (Exception e) {
-                    ApecUtils.showMessage("[\u00A72Apec\u00A7f] There was an error reading \"" + s + "\"!");
+                    ApecUtils.showNonDebugMessage("[\u00A72Apec\u00A7f] There was an error reading \"" + s + "\"!");
                 }
             }
             scanner.close();
