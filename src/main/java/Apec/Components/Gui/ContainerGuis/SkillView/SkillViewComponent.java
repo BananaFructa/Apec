@@ -1,17 +1,12 @@
-package Apec.Components.Gui.ContainerGuis;
+package Apec.Components.Gui.ContainerGuis.SkillView;
 
 import Apec.ApecMain;
-import Apec.Component;
 import Apec.ComponentId;
+import Apec.Components.Gui.ContainerGuis.ChestGuiComponent;
 import Apec.Settings.SettingID;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.inventory.GuiChest;
-import net.minecraft.client.gui.inventory.GuiEditSign;
 import net.minecraft.inventory.IInventory;
 import net.minecraftforge.client.event.GuiOpenEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 public class SkillViewComponent extends ChestGuiComponent {
 

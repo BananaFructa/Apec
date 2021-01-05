@@ -1,14 +1,10 @@
 package Apec.Components.Gui.Menu.CustomizationMenu;
 
-import Apec.ApecMain;
-import Apec.ApecUtils;
 import Apec.Components.Gui.GuiIngame.GuiElements.GUIComponent;
-import Apec.Settings.Setting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.util.ResourceLocation;
 import org.lwjgl.util.vector.Vector2f;
 
 public class CustomizationGuiSlider extends GuiButton {

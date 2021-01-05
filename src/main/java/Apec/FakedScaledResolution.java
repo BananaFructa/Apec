@@ -4,6 +4,10 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.util.MathHelper;
 
+/**
+ * Allows for setting a delta constant to the real scaled resolution
+ */
+
 public class FakedScaledResolution extends ScaledResolution {
 
     private final double scaledWidthD;
@@ -12,18 +16,18 @@ public class FakedScaledResolution extends ScaledResolution {
     private int scaledHeight;
     private int scaleFactor;
 
-    private int deltaX,deltaY;
+    private int X,Y;
 
-    public FakedScaledResolution(Minecraft p_i46445_1_,int deltaX,int deltaY)
+    public FakedScaledResolution(Minecraft mc,int X,int Y)
     {
-        super(p_i46445_1_);
-        this.deltaX = deltaX;
-        this.deltaY = deltaY;
-        this.scaledWidth = p_i46445_1_.displayWidth;
-        this.scaledHeight = p_i46445_1_.displayHeight;
+        super(mc);
+        this.X = X;
+        this.Y = Y;
+        this.scaledWidth = mc.displayWidth;
+        this.scaledHeight = mc.displayHeight;
         this.scaleFactor = 1;
-        boolean flag = p_i46445_1_.isUnicode();
-        int i = p_i46445_1_.gameSettings.guiScale;
+        boolean flag = mc.isUnicode();
+        int i = mc.gameSettings.guiScale;
 
         if (i == 0)
         {
@@ -48,22 +52,22 @@ public class FakedScaledResolution extends ScaledResolution {
 
     public int getScaledWidth()
     {
-        return this.scaledWidth + deltaX;
+        return X;
     }
 
     public int getScaledHeight()
     {
-        return this.scaledHeight + deltaY;
+        return Y;
     }
 
     public double getScaledWidth_double()
     {
-        return this.scaledWidthD + deltaX;
+        return X;
     }
 
     public double getScaledHeight_double()
     {
-        return this.scaledHeightD + deltaY;
+        return Y;
     }
 
     public int getScaleFactor()

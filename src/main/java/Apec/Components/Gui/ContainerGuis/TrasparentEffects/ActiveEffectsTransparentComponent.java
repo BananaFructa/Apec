@@ -1,9 +1,9 @@
-package Apec.Components.Gui.ContainerGuis;
+package Apec.Components.Gui.ContainerGuis.TrasparentEffects;
 
 import Apec.ApecMain;
 import Apec.ComponentId;
+import Apec.Components.Gui.ContainerGuis.ChestGuiComponent;
 import net.minecraft.client.Minecraft;
-import net.minecraft.inventory.ContainerChest;
 import net.minecraft.inventory.IInventory;
 import net.minecraftforge.client.event.GuiOpenEvent;
 

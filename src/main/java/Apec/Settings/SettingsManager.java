@@ -3,13 +3,12 @@ package Apec.Settings;
 import Apec.ApecUtils;
 import net.minecraft.util.Tuple;
 
-import java.io.FileReader;
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.io.File;
 import java.util.Scanner;
 
 import static Apec.Settings.SettingID.*;
@@ -35,13 +34,16 @@ public class SettingsManager {
         add(new Setting(INVENTORY_TRAFFIC,true));
         add(new Setting(SHOW_POTIONS_EFFECTS,true));
         add(new Setting(COMPACT_POTION,false));
-        //add(new Setting(HIDE_NIGHT_VISION,false));//
-        add(new Setting(SHOW_EFFECTS_AS_IN_TAB,false));
+        //add(new Setting(HIDE_NIGHT_VISION,false));
+        add(new Setting(SHOW_EFFECTS_AS_IN_TAB,true));
         add(new Setting(SHOW_CURRENT_SERVER,false));
         add(new Setting(ITEM_HIGHLIGHT_TEXT,false));
         add(new Setting(NPC_GUI,true));
         add(new Setting(MENU_GUI,true));
+        add(new Setting(GUIS_WHEN_DISABLED, false));
         add(new Setting(SHOW_ABILITY_TEXT,true));
+        add(new Setting(USE_DEFENCE_OUT_OF_BB,false));
+        add(new Setting(COMPATIBILITY_5ZIG,true));
         add(new Setting(HIDE_IN_F3,false));
         add(new Setting(SNAP_IN_EDITING,true));
         //add(new Setting(SHOW_CACHED_PURSE_IN_DUNGEONS,true));
@@ -49,12 +51,12 @@ public class SettingsManager {
         add(new Setting(INFO_BOX_ICONS,true));
         add(new Setting(USE_AUTO_SCALING_BB,true));
         add(new Setting(BORDER_TYPE,true));
-        add(new Setting(OVERWRITE_GUI,false));
+        //add(new Setting(OVERWRITE_GUI,false));
         add(new Setting(SHOW_DEBUG_MESSAGES,false));
     }};
 
 
-    private static HashMap<SettingID,Tuple<String,String>> settingData = new HashMap<SettingID, Tuple<String, String>>() {{
+    public static HashMap<SettingID,Tuple<String,String>> settingData = new HashMap<SettingID, Tuple<String, String>>() {{
         put(AUTO_ENABLE,new Tuple<String, String>("Auto Toggle","The GUI will automatically enable/disable when you join/leave skyblock"));
         put(SHOW_WARNING,new Tuple<String, String>("Show Warning Icons","Show the warning icons under the status bars"));
         put(SHOW_POTIONS_EFFECTS,new Tuple<String, String>("Show potion effects","Show potion effects on the left side of the screen"));
@@ -89,6 +91,9 @@ public class SettingsManager {
         put(SHOW_EFFECTS_AS_IN_TAB,new Tuple<String,String>("Show tab effect","Show the one rolling effect that appears in tab"));
         put(INFO_BOX_ICONS,new Tuple<String, String>("Bottom bar icons", "Shows icons for each stat instead of text"));
         put(USE_AUTO_SCALING_BB,new Tuple<String, String>("Bottom bar autoscaling","The bottom bar auto-scales based on the gui scale"));
+        put(GUIS_WHEN_DISABLED,new Tuple<String, String>("Allow GUIs when inactive","Allow GUIs when the Ingame GUI is not enabled"));
+        put(USE_DEFENCE_OUT_OF_BB,new Tuple<String, String>("Defence outside bar","Shows the defence outside the bottom bar"));
+        put(COMPATIBILITY_5ZIG,new Tuple<String, String>("5Zig Compatibility","Ensures that certain features that might break 5zig are disabled"));
     }};
 
     public boolean getSettingState(SettingID settingID){

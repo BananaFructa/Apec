@@ -1,37 +1,23 @@
 package Apec.Components.Gui.GuiIngame;
 
-import Apec.*;
+import Apec.ApecMain;
+import Apec.ComponentId;
 import Apec.Components.Gui.GuiIngame.GuiElements.GUIComponent;
 import Apec.Components.Gui.Menu.CustomizationMenu.CustomizationGui;
+import Apec.FakedScaledResolution;
 import Apec.Settings.SettingID;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.*;
-import net.minecraft.client.network.NetHandlerPlayClient;
-import net.minecraft.client.renderer.*;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.entity.boss.BossStatus;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.potion.Potion;
-import net.minecraft.scoreboard.ScoreObjective;
-import net.minecraft.scoreboard.ScorePlayerTeam;
-import net.minecraft.scoreboard.Scoreboard;
-import net.minecraft.util.*;
+import net.minecraft.client.gui.ScaledResolution;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.util.EnumChatFormatting;
 import net.minecraftforge.client.GuiIngameForge;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
-import net.minecraftforge.common.MinecraftForge;
-import org.apache.commons.lang3.reflect.FieldUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.Vector2f;
 
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.List;
+import java.lang.reflect.Method;
 
 import static net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType.*;
-import static net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType.HEALTHMOUNT;
 
 
 /**
@@ -42,230 +28,102 @@ import static net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType
 
 public class ApecGuiIngameForge extends ApecGuiIngame {
 
-    GUIModifier gUIModifier;
-
+    GUIComponent HotBar = (GUIModifier.Instance.getGuiComponent(GUIComponentID.HOT_BAR));
+    RenderGameOverlayEvent eventParent;
+    Method pre,post;
 
     public ApecGuiIngameForge  (Minecraft mc) {
         super(mc);
-        Object comp = ApecMain.Instance.getComponent(ComponentId.GUI_MODIFIER);
-        if (comp != null) gUIModifier = (GUIModifier) comp;
-        debugOverlay = new GuiOverlayDebugForge(mc);
     }
-
-    public void drawThiccBorderString(String s,int x,int y,int c) {
-        String noColorCodeS = ApecUtils.removeColorCodes(s);
-        this.getFontRenderer().drawString(noColorCodeS, x + 1,y, (c >> 24) << 24);
-        this.getFontRenderer().drawString(noColorCodeS, x - 1, y, (c >> 24) << 24);
-        this.getFontRenderer().drawString(noColorCodeS, x, y + 1, (c >> 24) << 24);
-        this.getFontRenderer().drawString(noColorCodeS, x, y - 1, (c >> 24) << 24);
-        this.getFontRenderer().drawString(s, x, y, c);
-    }
-
-    //private static final ResourceLocation VIGNETTE     = new ResourceLocation("textures/misc/vignette.png");
-    //private static final ResourceLocation WIDGITS      = new ResourceLocation("textures/gui/widgets.png");
-    //private static final ResourceLocation PUMPKIN_BLUR = new ResourceLocation("textures/misc/pumpkinblur.png");
 
     private static final int WHITE = 0xFFFFFF;
 
-    public static int left_height = 39;
-    public static int right_height = 39;
-
-    private ScaledResolution res = null;
-    private FontRenderer fontrenderer = null;
-    private RenderGameOverlayEvent eventParent;
-    //private static final String MC_VERSION = MinecraftForge.MC_VERSION;
-    private GuiOverlayDebugForge debugOverlay;
-
-
     @Override
-    public void renderGameOverlay(float partialTicks)
-    {
-        res = new ScaledResolution(mc);
-        eventParent = new RenderGameOverlayEvent(partialTicks, res);
+    public void renderGameOverlay(float partialTicks) {
         try {
-            //FieldUtils.writeField(this,"eventParent",eventParent,true);
-            Field f = GuiIngameForge.class.getDeclaredField("eventParent");
-            f.setAccessible(true);
-            f.set(this,eventParent);
-        } catch (Exception e) {
+            pre = GuiIngameForge.class.getDeclaredMethod("pre", RenderGameOverlayEvent.ElementType.class);
+            pre.setAccessible(true);
+            post = GuiIngameForge.class.getDeclaredMethod("post", RenderGameOverlayEvent.ElementType.class);
+            post.setAccessible(true);
+        } catch (NoSuchMethodException e) {
             e.printStackTrace();
         }
-        int width = res.getScaledWidth();
-        int height = res.getScaledHeight();
-        GuiIngameForge.renderJumpBar = mc.thePlayer.isRidingHorse();
-
-        right_height = 39;
-        left_height = 39;
-
-        if (pre(ALL)) return;
-
-        fontrenderer = mc.fontRendererObj;
-        mc.entityRenderer.setupOverlayRendering();
-        GlStateManager.enableBlend();
-
-        if (Minecraft.isFancyGraphicsEnabled())
-        {
-            renderVignette(mc.thePlayer.getBrightness(partialTicks), res);
-        }
-        else
-        {
-            GlStateManager.tryBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, 1, 0);
-        }
-
-        if (GuiIngameForge.renderHelmet) renderHelmet(res, partialTicks);
-
-        if (GuiIngameForge.renderPortal && !mc.thePlayer.isPotionActive(Potion.confusion))
-        {
-            renderPortal(res, partialTicks);
-        }
-
-        renderTooltip(res, partialTicks);
-
-        // This may be very bad but i can't be bothered
-        FakedScaledResolution fsr = new FakedScaledResolution(mc,0,100);
-        super.renderTooltip(fsr,partialTicks);
-
-        if (gUIModifier != null) gUIModifier.onRender(res);
-
-        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-        zLevel = -90.0F;
-        rand.setSeed((long)(updateCounter * 312871));
-
-        if (GuiIngameForge.renderCrosshairs) renderCrosshairs(width, height);
-        if (GuiIngameForge.renderBossHealth) renderBossHealth();
-
-        pre(HEALTH);
-        mc.mcProfiler.startSection("health");
-        mc.mcProfiler.endSection();
-        post(HEALTH);
-        pre(ARMOR);
-        mc.mcProfiler.startSection("armor");
-        mc.mcProfiler.endSection();
-        post(ARMOR);
-        pre(FOOD);
-        mc.mcProfiler.startSection("food");
-        mc.mcProfiler.endSection();
-        post(FOOD);
-        pre(HEALTHMOUNT);
-        mc.mcProfiler.endStartSection("mountHealth");
-        GlStateManager.disableBlend();
-        post(HEALTHMOUNT);
-        pre(AIR);
-        mc.mcProfiler.startSection("air");
-        mc.mcProfiler.endSection();
-        post(AIR);
-
-        renderSleepFade(width, height);
-
-        if (renderJumpBar)
-        {
-            renderJumpBar(width, height);
-        } else {
-            pre(EXPERIENCE);
-            mc.mcProfiler.startSection("expBar");
-            mc.mcProfiler.endSection();
-            post(EXPERIENCE);
-        }
-
-        renderToolHightlight(res);
-        try {
-            renderHUDText(width, height);
-        } catch (Exception e) {
-        }
-        renderTitle(width, height, partialTicks);
-
-
-        Scoreboard scoreboard = this.mc.theWorld.getScoreboard();
-        ScoreObjective objective = null;
-        ScorePlayerTeam scoreplayerteam = scoreboard.getPlayersTeam(mc.thePlayer.getName());
-        if (scoreplayerteam != null)
-        {
-            int slot = scoreplayerteam.getChatFormat().getColorIndex();
-            if (slot >= 0) objective = scoreboard.getObjectiveInDisplaySlot(3 + slot);
-        }
-        ScoreObjective scoreobjective1 = objective != null ? objective : scoreboard.getObjectiveInDisplaySlot(1);
-
-        GlStateManager.enableBlend();
-        GlStateManager.tryBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, 1, 0);
-        GlStateManager.disableAlpha();
-
-        renderChat(width, height);
-
-        renderPlayerList(width, height);
-
-        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-        GlStateManager.disableLighting();
-        GlStateManager.enableAlpha();
-
-        post(ALL);
+        eventParent = new RenderGameOverlayEvent(partialTicks,new ScaledResolution(mc));
+        super.renderGameOverlay(partialTicks);
     }
-
 
     protected void renderTooltip(ScaledResolution sr, float partialTicks)
     {
-        if (pre(HOTBAR)) return;
-        if (this.mc.getRenderViewEntity() instanceof EntityPlayer)
-        {
-            GUIComponent guiComponent = ((GUIModifier)ApecMain.Instance.getComponent(ComponentId.GUI_MODIFIER)).getGuiComponent(GUIComponentID.HOT_BAR);
-            Vector2f pos = ApecUtils.addVec(guiComponent.getAnchorPointPosition(),guiComponent.getDelta_position());
-            float scale = guiComponent.getScale();
+        Vector2f pos = HotBar.getRealAnchorPoint();
+        float scale = HotBar.getScale();
 
-            GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-            this.mc.getTextureManager().bindTexture(widgetsTexPath);
-            EntityPlayer entityplayer = (EntityPlayer)this.mc.getRenderViewEntity();
-            GlStateManager.pushMatrix();
-            GlStateManager.scale(scale,scale,scale);
-            float f = this.zLevel;
-            this.zLevel = -90.0F;
-            this.drawTexturedModalRect(pos.x/scale, pos.y/scale, 0, 0, 182, 22);
-            this.drawTexturedModalRect(pos.x/scale- 1 + entityplayer.inventory.currentItem * 20, pos.y/scale-1, 0, 22, 24, 22);
+        // This is for modifying the position of the hotbar
+        FakedScaledResolution fsr = new FakedScaledResolution(mc,(int)((pos.x/scale + 91)*2),(int)(pos.y/scale + 22));
 
-            GlStateManager.enableBlend();
-            GlStateManager.enableRescaleNormal();
-            GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
-            RenderHelper.enableGUIStandardItemLighting();
-
-            this.zLevel = f;
-
-            for (int j = 0; j < 9; ++j)
-            {
-                int k = (int)(pos.x/scale + 1 + j * 20 + 2);
-                int l = (int)(pos.y/scale + 3);
-                this.renderHotbarItem(j, (int)k, (int)l, partialTicks, entityplayer);
-            }
-            GlStateManager.popMatrix();
-
-            RenderHelper.disableStandardItemLighting();
-            GlStateManager.disableRescaleNormal();
-            GlStateManager.disableBlend();
-        }
-        post(HOTBAR);
+        GlStateManager.pushMatrix();
+        GlStateManager.scale(scale,scale,scale);
+        super.renderTooltip(fsr,partialTicks);
+        GlStateManager.popMatrix();
     }
 
-    public ScaledResolution getResolution()
-    {
-        return res;
+    @Override
+    protected void renderArmor(int width, int height) {
+        try {
+            if ((Boolean) pre.invoke(this,ARMOR)) return;
+            mc.mcProfiler.startSection("armor");
+            mc.mcProfiler.endSection();
+            post.invoke(this,ARMOR);
+        } catch (Exception err) {
+            err.printStackTrace();
+        }
     }
 
-    private void renderHelmet(ScaledResolution res, float partialTicks)
-    {
-        if (pre(HELMET)) return;
-
-        ItemStack itemstack = this.mc.thePlayer.inventory.armorItemInSlot(3);
-
-        if (this.mc.gameSettings.thirdPersonView == 0 && itemstack != null && itemstack.getItem() != null)
-        {
-            if (itemstack.getItem() == Item.getItemFromBlock(Blocks.pumpkin))
-            {
-                renderPumpkinOverlay(res);
-            }
-            else
-            {
-                itemstack.getItem().renderHelmetOverlay(itemstack, mc.thePlayer, res, partialTicks);
-            }
+    @Override
+    protected void renderAir(int width, int height) {
+        try {
+            if ((Boolean) pre.invoke(this,AIR)) return;
+            mc.mcProfiler.startSection("air");
+            mc.mcProfiler.endSection();
+            post.invoke(this,AIR);
+        } catch (Exception err) {
+            err.printStackTrace();
         }
+    }
 
-        post(HELMET);
+    @Override
+    public void renderHealth(int width, int height) {
+        try {
+            if ((Boolean) pre.invoke(this,HEALTH)) return;
+            mc.mcProfiler.startSection("health");
+            mc.mcProfiler.endSection();
+            post.invoke(this,HEALTH);
+        } catch (Exception err) {
+            err.printStackTrace();
+        }
+    }
+
+    @Override
+    public void renderFood(int width, int height) {
+        try {
+            if ((Boolean) pre.invoke(this,FOOD)) return;
+            mc.mcProfiler.startSection("food");
+            mc.mcProfiler.endSection();
+            post.invoke(this,FOOD);
+        } catch (Exception err) {
+            err.printStackTrace();
+        }
+    }
+
+    @Override
+    protected void renderExperience(int width, int height) {
+        try {
+            if ((Boolean) pre.invoke(this,EXPERIENCE)) return;
+            mc.mcProfiler.startSection("expBar");
+            this.mc.mcProfiler.endSection();
+            post.invoke(this,EXPERIENCE);
+        } catch (Exception err) {
+            err.printStackTrace();
+        }
     }
 
     protected void renderToolHightlight(ScaledResolution res)
@@ -318,7 +176,7 @@ public class ApecGuiIngameForge extends ApecGuiIngame {
                     }
                     x += deltaT.x/scaleH;
                     y += deltaT.y/scaleH;
-                    fontrenderer.drawStringWithShadow(name,x, y, WHITE | (opacity << 24));
+                    mc.fontRendererObj.drawStringWithShadow(name,x, y, WHITE | (opacity << 24));
                     GlStateManager.popMatrix();
                     GlStateManager.disableBlend();
                     GlStateManager.popMatrix();
@@ -333,82 +191,8 @@ public class ApecGuiIngameForge extends ApecGuiIngame {
         }
     }
 
-    protected void renderHUDText(int width, int height)
-    {
-        mc.mcProfiler.startSection("forgeHudText");
-        OpenGlHelper.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, 1, 0);
-        ArrayList<String> listL = new ArrayList<String>();
-        ArrayList<String> listR = new ArrayList<String>();
-
-        if (mc.isDemo())
-        {
-            long time = mc.theWorld.getTotalWorldTime();
-            if (time >= 120500L)
-            {
-                listR.add(I18n.format("demo.demoExpired"));
-            }
-            else
-            {
-                listR.add(I18n.format("demo.remainingTime", StringUtils.ticksToElapsedTime((int)(120500L - time))));
-            }
-        }
-
-        if (this.mc.gameSettings.showDebugInfo && !pre(DEBUG))
-        {
-            listL.addAll(debugOverlay.getLeft());
-            listR.addAll(debugOverlay.getRight());
-            post(DEBUG);
-        }
-
-        RenderGameOverlayEvent.Text event = new RenderGameOverlayEvent.Text(eventParent, listL, listR);
-        if (!MinecraftForge.EVENT_BUS.post(event))
-        {
-            int top = 2;
-            for (String msg : listL)
-            {
-                if (msg == null) continue;
-                drawRect(1, top - 1, 2 + fontrenderer.getStringWidth(msg) + 1, top + fontrenderer.FONT_HEIGHT - 1, -1873784752);
-                fontrenderer.drawString(msg, 2, top, 14737632);
-                top += fontrenderer.FONT_HEIGHT;
-            }
-
-            top = 2;
-            for (String msg : listR)
-            {
-                if (msg == null) continue;
-                int w = fontrenderer.getStringWidth(msg);
-                int left = width - 2 - w;
-                drawRect(left - 1, top - 1, left + w + 1, top + fontrenderer.FONT_HEIGHT - 1, -1873784752);
-                fontrenderer.drawString(msg, left, top, 14737632);
-                top += fontrenderer.FONT_HEIGHT;
-            }
-        }
-
-        mc.mcProfiler.endSection();
-        post(TEXT);
+    @Override
+    protected void renderRecordOverlay(int width, int height, float partialTicks) {
+        // no record
     }
-
-    //Helper macros
-    private boolean pre(RenderGameOverlayEvent.ElementType type)
-    {
-        return MinecraftForge.EVENT_BUS.post(new RenderGameOverlayEvent.Pre(eventParent, type));
-    }
-    private void post(RenderGameOverlayEvent.ElementType type)
-    {
-        MinecraftForge.EVENT_BUS.post(new RenderGameOverlayEvent.Post(eventParent, type));
-    }
-    private void bind(ResourceLocation res)
-    {
-        mc.getTextureManager().bindTexture(res);
-    }
-
-    private class GuiOverlayDebugForge extends GuiOverlayDebug
-    {
-        private GuiOverlayDebugForge(Minecraft mc){ super(mc); }
-        @Override protected void renderDebugInfoLeft(){}
-        @Override protected void renderDebugInfoRight(ScaledResolution res){}
-        private List<String> getLeft(){ return this.call(); }
-        private List<String> getRight(){ return this.getDebugInfoRight(); }
-    }
-
 }

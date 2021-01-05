@@ -1,7 +1,6 @@
-package Apec.Components.Gui.ContainerGuis;
+package Apec.Components.Gui.ContainerGuis.SkillView;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.inventory.ContainerChest;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.util.ResourceLocation;

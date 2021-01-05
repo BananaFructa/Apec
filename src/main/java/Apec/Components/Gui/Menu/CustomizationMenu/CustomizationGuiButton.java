@@ -8,15 +8,9 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.util.Tuple;
-import net.minecraftforge.fml.common.gameevent.InputEvent;
-import org.apache.commons.lang3.tuple.Triple;
-import org.lwjgl.input.Keyboard;
 import org.lwjgl.util.vector.Vector2f;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.locks.Lock;
 
 public class CustomizationGuiButton extends GuiButton {
 

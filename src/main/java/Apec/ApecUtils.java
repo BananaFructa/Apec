@@ -1,6 +1,5 @@
 package Apec;
 
-import Apec.Components.Gui.ContainerGuis.ChestGuiComponent;
 import Apec.Settings.SettingID;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -30,12 +29,40 @@ public class ApecUtils {
         put("lowerChestInventory",inFMLDebugFramework ? "lowerChestInventory" : "field_147015_w");
         put("persistantChatGUI",inFMLDebugFramework ? "persistantChatGUI" : "field_73840_e");
         put("sentMessages", inFMLDebugFramework ? "sentMessages" : "field_146248_g");
+        put("streamIndicator", inFMLDebugFramework ? "streamIndicator" : "field_152127_m");
+        put("updateCounter", inFMLDebugFramework ? "updateCounter" : "field_73837_f");
         put("chatMessages","field_146253_i");
     }};
+
+    public static Object ReadDeclaredField(Class<?> targetType,Object target,String name) {
+        try {
+            Field f = targetType.getDeclaredField(name);
+            f.setAccessible(true);
+            return f.get(target);
+        } catch (Exception err) {
+            err.printStackTrace();
+            return null;
+        }
+    }
+
+    public static void WriteDeclaredField(Class<?> targetType,Object target,String name,Object value) {
+        try {
+            Field f = targetType.getDeclaredField(name);
+            f.setAccessible(true);
+            f.set(target,value);
+        } catch (Exception err) {
+            err.printStackTrace();
+        }
+    }
 
     public static HashMap<String,String> getUnObfedMethodNames = new HashMap<String, String>() {{
         put("handleMouseClick", inFMLDebugFramework ? "handleMouseClick" : "func_146984_a");
     }};
+
+    /**
+     * @param s = Input string
+     * @return Returns a string with all the formating tags removed
+     */
 
     public static String removeAllCodes(String s) {
         while (s.contains("\u00a7")) {
@@ -44,13 +71,19 @@ public class ApecUtils {
         return s;
     }
 
-    public static float getMagnitude(Vector2f v1) {
-        return (float)Math.sqrt(Math.pow(v1.x,2) + Math.pow(v1.y,2));
-    }
+    /**
+     * @param v = An input vector
+     * @return Returns true if the specified vector has a magnitude of 0
+     */
 
     public static boolean zeroMagnitude (Vector2f v) {
         return v.x == 0 && v.y == 0;
     }
+
+    /**
+     * @param s = Input string
+     * @return Returns a string with all the color tags removed
+     */
 
     public static String removeColorCodes(String s) {
         for (String code : colorCodes) {
@@ -60,9 +93,20 @@ public class ApecUtils {
         return s;
     }
 
+    /**
+     * @param a = Vector 1
+     * @param b = Vector 2
+     * @return Returns the sum of the 2 vectors
+     */
+
     public static Vector2f addVec (Vector2f a,Vector2f b) {
         return new Vector2f(a.x+b.x,a.y+b.y);
     }
+
+    /**
+     * @brief Shown the specified message in the chat if debug messages are on
+     * @param string = Input message
+     */
 
     public static void showMessage(String string) {
         if (ApecMain.Instance.settingsManager.getSettingState(SettingID.SHOW_DEBUG_MESSAGES))
@@ -87,6 +131,11 @@ public class ApecUtils {
 
     }
 
+    /**
+     * @param l = A list of strings
+     * @return Returns the maximum display length of a string from the list
+     */
+
     public static int getMaxStringWidth(List<String> l) {
         int w = 0;
         FontRenderer fr = Minecraft.getMinecraft().fontRendererObj;
@@ -101,6 +150,9 @@ public class ApecUtils {
 
     /**
      * Usually used to ensure compatibility with other mods that replace classes with a child version of it
+     * @param fields = Any field array
+     * @param name = The name that has to be checked
+     * @return Returns true if there is a field present in the array with the specified name
      */
 
     public static boolean isNameInFieldList(Field[] fields,String name) {
@@ -110,6 +162,14 @@ public class ApecUtils {
         }
         return fieldNames.contains(name);
     }
+
+    /**
+     * @param s1 = The string in which the sequence will be searched
+     * @param s2 = The char sequence
+     * @return Returns true if the specified character sequence is present in the input string.
+     * The characters can have other characters between them only the order in which they
+     * exist matters.
+     */
 
     public static boolean containedByCharSequence(String s1,String s2) {
 
@@ -124,12 +184,23 @@ public class ApecUtils {
 
     }
 
+    /**
+     * @param l = A list of strings
+     * @param regex = A string
+     * @return Returns true if the input string is contained in a string from the list
+     */
+
     public static boolean doesListContainRegex(List<String> l,String regex) {
         for (String _l : l) {
             if (_l.contains(regex)) return true;
         }
         return false;
     }
+
+    /**
+     * @param s = Input string
+     * @return Returns a string without white spaces at the start of it, if any are present
+     */
 
     public static String removeFirstSpaces(String s) {
         if (s.equals("")) return s;
@@ -140,6 +211,11 @@ public class ApecUtils {
         return s.substring(nonSpaceIdx);
     }
 
+    /**
+     * @param l A list of strings
+     * @return Returns an ordered list of the input strings by their width
+     */
+
     public static List<String> orderByWidth (List<String> l) {
         List<Integer> arr = new ArrayList<Integer>();
         for (String s : l) {
@@ -149,8 +225,9 @@ public class ApecUtils {
         return l;
     }
 
+
     // A wise man once said bubble sort is good enough when there are not a lot of elements
-    private static void bubbleSort(List<Integer> arr,List<String> s) {
+    public static <T> void  bubbleSort(List<Integer> arr,List<T> s) {
         int n = arr.size();
         for (int i = 0; i < n - 1; i++)
             for (int j = 0; j < n - i - 1; j++)
@@ -159,12 +236,19 @@ public class ApecUtils {
                     arr.set(j, arr.get(j + 1));
                     arr.set(j + 1, temp);
 
-                    String _temp = s.get(j);
+                    T _temp = s.get(j);
                     s.set(j, s.get(j + 1));
                     s.set(j + 1, _temp);
                 }
     }
 
+    /**
+     * @brief The function used to draw all ingame gui strings
+     * @param s = String to be drawn
+     * @param x = x position
+     * @param y = y position
+     * @param c = color
+     */
     public static void drawThiccBorderString(String s,int x,int y,int c) {
         String noColorCodeS = ApecUtils.removeColorCodes(s);
         if (ApecMain.Instance.settingsManager.getSettingState(SettingID.BORDER_TYPE)) {
@@ -177,6 +261,11 @@ public class ApecUtils {
             Minecraft.getMinecraft().fontRendererObj.drawStringWithShadow(s,x,y,c);
         }
     }
+
+    /**
+     * @param event = Gui open input event
+     * @return Returns a tuple containing the lower and upper inventory of the gui linked with the event
+     */
 
     public static Tuple<IInventory,IInventory> GetUpperLowerFromGuiEvent(GuiOpenEvent event) {
         try {
@@ -199,6 +288,7 @@ public class ApecUtils {
         }
     }
 
+    // Not used right now
     public static List<Vector2f> AddVecToList(List<Vector2f> vl, Vector2f vec) {
         for (Vector2f v : vl) {
             v = addVec(v, vec);
@@ -206,6 +296,9 @@ public class ApecUtils {
         return vl;
     }
 
+    /**
+     * @return A list of vectors that represents the sum of the two inputed list of vectors
+     */
     public static List<Vector2f> AddVecListToList(List<Vector2f> vl1,List<Vector2f> vl2) {
         assert (vl1.size() < vl2.size());
         for (int i = 0;i < vl1.size();i++) {
@@ -215,6 +308,12 @@ public class ApecUtils {
     }
 
     // Usefull for not dealing with those pesky color codes
+
+    /**
+     * @param Seq = The sequence of characters
+     * @param s = The string
+     * @return Returns a string with the char sequence removed
+     */
     public static String RemoveCharSequence (String Seq,String s) {
         char[] csq = Seq.toCharArray();
         String result = "";
@@ -233,6 +332,10 @@ public class ApecUtils {
         return result;
     }
 
+    /**
+     * @param v A float value
+     * @return Cuts the decimals to only 2
+     */
     public static float ReduceToTwoDecimals(float v) {
         return (float)((int)(v*100)) / 100.0f;
     }
@@ -280,5 +383,43 @@ public class ApecUtils {
             return null;
         }
 
+    }
+
+    public static int RomanSymbolToValue(char s) {
+        switch (s) {
+            case 'I':
+                return 1;
+            case 'V':
+                return 5;
+            case 'X':
+                return 10;
+            case 'L':
+                return 50;
+        }
+        return 0;
+    }
+
+    public static int RomanStringToValue(String str) {
+        int res = 0;
+        for (int i = 0; i < str.length(); i++)
+        {
+            int s1 = RomanSymbolToValue(str.charAt(i));
+            if (i + 1 < str.length())
+            {
+                int s2 = RomanSymbolToValue(str.charAt(i + 1));
+                if (s1 >= s2) {
+                    res = res + s1;
+                }
+                else
+                {
+                    res = res + s2 - s1;
+                    i++;
+                }
+            }
+            else {
+                res = res + s1;
+            }
+        }
+        return res;
     }
 }

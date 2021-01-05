@@ -1,6 +1,5 @@
 package Apec.Components.Gui.Menu.CustomizationMenu;
 
-import Apec.Settings.Setting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;

@@ -1,13 +1,10 @@
 package Apec.Components.Gui.GuiIngame.GuiElements;
 
-import Apec.ApecMain;
 import Apec.ApecUtils;
 import Apec.Components.Gui.GuiIngame.GUIComponentID;
-import Apec.Components.Gui.GuiIngame.GUIModifier;
 import Apec.DataExtractor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import org.lwjgl.util.vector.Vector2f;
 
@@ -18,8 +15,9 @@ public class GUIComponent {
 
     protected Minecraft mc = Minecraft.getMinecraft();
 
-    protected Vector2f delta_position = new Vector2f(0,0);
+    protected Vector2f delta_position = new Vector2f(0, 0);
     protected List<Vector2f> subComponentDeltas = new ArrayList<Vector2f>();
+    protected List<Integer> DisabledSubComponents = new ArrayList<Integer>();
     protected float scale = 1;
     public GUIComponentID gUiComponentID;
     protected ScaledResolution g_sr;
@@ -31,64 +29,110 @@ public class GUIComponent {
         MinecraftForge.EVENT_BUS.register(this);
         g_sr = new ScaledResolution(mc);
     }
-    public GUIComponent(GUIComponentID gUiComponentID,int SubElementCount) {
+
+    public GUIComponent(GUIComponentID gUiComponentID, int SubElementCount) {
         this(gUiComponentID);
-        for (int i = 0;i < SubElementCount;i++) {
-            this.subComponentDeltas.add(new Vector2f(0,0));
+        for (int i = 0; i < SubElementCount; i++) {
+            this.subComponentDeltas.add(new Vector2f(0, 0));
         }
     }
 
-    public GUIComponent(GUIComponentID gUiComponentID,boolean scalable) {
+    protected void DisableSubComponent(int s) {
+        DisabledSubComponents.add(s);
+    }
+
+    protected void EnableSubComponent(int s) {
+        int DisabledCount = DisabledSubComponents.size();
+        for (int i = 0; i < DisabledCount; i++) {
+            if (DisabledSubComponents.get(i) == s) {
+                DisabledSubComponents.remove(i);
+                break;
+            }
+        }
+    }
+
+    public boolean IsSubcomponentDisabled(int s) {
+        return DisabledSubComponents.contains(s);
+    }
+
+    public GUIComponent(GUIComponentID gUiComponentID, boolean scalable) {
         this(gUiComponentID);
         this.scalable = scalable;
     }
 
-    /** For texture drawing */
-    public void drawTex(DataExtractor.PlayerStats ps, DataExtractor.ScoreBoardData sd, DataExtractor.OtherData od, ScaledResolution sr,boolean editingMode) {
-       g_sr = sr;
+    /**
+     * For texture drawing
+     */
+    public void drawTex(DataExtractor.PlayerStats ps, DataExtractor.ScoreBoardData sd, DataExtractor.OtherData od, ScaledResolution sr, boolean editingMode) {
+        g_sr = sr;
     }
 
-    /** For rendering text */
-    public void draw(DataExtractor.PlayerStats ps, DataExtractor.ScoreBoardData sd, DataExtractor.OtherData od,ScaledResolution sr,boolean editingMode) {
-       g_sr = sr;
+    /**
+     * For rendering text
+     */
+    public void draw(DataExtractor.PlayerStats ps, DataExtractor.ScoreBoardData sd, DataExtractor.OtherData od, ScaledResolution sr, boolean editingMode) {
+        g_sr = sr;
     }
 
-    /** Initialize function */
+    /**
+     * Is called before the editing menu is opened
+     */
+    public void editInit() {
+
+    }
+
+    /**
+     * Initialize function
+     */
     public void init() {
 
     }
 
-    /** Sets the delta position vector */
+    /**
+     * Sets the delta position vector
+     */
     public void setDelta_position(Vector2f dp) {
         delta_position = dp;
     }
 
-    /** The initial position point */
-    public Vector2f getAnchorPointPosition () {
-        return new Vector2f(0,0);
+    /**
+     * The initial position point
+     */
+    public Vector2f getAnchorPointPosition() {
+        return new Vector2f(0, 0);
     }
 
-    /** The point at which the object is currently situated */
+    /**
+     * The point at which the object is currently situated
+     */
     public Vector2f getRealAnchorPoint() {
-        return ApecUtils.addVec(getAnchorPointPosition(),getDelta_position());
+        return ApecUtils.addVec(getAnchorPointPosition(), getDelta_position());
     }
 
-    /** Sets the scale of the element */
+    /**
+     * Sets the scale of the element
+     */
     public void setScale(float s) {
         this.scale = s;
     }
 
-    /** Gets the distance vector between the anchor position and the current position */
+    /**
+     * Gets the distance vector between the anchor position and the current position
+     */
     public Vector2f getDelta_position() {
         return this.delta_position;
     }
 
-    /** Gives the distance vector between the position of the element and the position of the point that describes the rectangle in which the element is confined */
+    /**
+     * Gives the distance vector between the position of the element and the position of the point that describes the rectangle in which the element is confined
+     */
     public Vector2f getBoundingPoint() {
-        return new Vector2f(0,0);
+        return new Vector2f(0, 0);
     }
 
-    /** Gets the scale */
+    /**
+     * Gets the scale
+     */
     public float getScale() {
         return this.scale;
     }
@@ -101,7 +145,7 @@ public class GUIComponent {
         return ApecUtils.AddVecListToList(getSubElementsAnchorPoints(), getSubElementsDelta_positions());
     }
 
-    public List<Vector2f> getSubElementsBoundingPoints (){
+    public List<Vector2f> getSubElementsBoundingPoints() {
         return new ArrayList<Vector2f>();
     }
 
@@ -110,7 +154,7 @@ public class GUIComponent {
     }
 
     public void setSubElementDelta_position(Vector2f dp, int id) {
-        this.subComponentDeltas.set(id,dp);
+        this.subComponentDeltas.set(id, dp);
     }
 
     public boolean hasSubComponents() {
@@ -122,9 +166,9 @@ public class GUIComponent {
     }
 
     public void resetDeltaPositions() {
-        this.delta_position = new Vector2f(0,0);
-        for (int i = 0;i < this.subComponentDeltas.size();i++) {
-            this.subComponentDeltas.set(i,new Vector2f(0,0));
+        this.delta_position = new Vector2f(0, 0);
+        for (int i = 0; i < this.subComponentDeltas.size(); i++) {
+            this.subComponentDeltas.set(i, new Vector2f(0, 0));
         }
     }
 

@@ -1,18 +1,19 @@
-package Apec.Components.Gui.Menu;
+package Apec.Components.Gui.Menu.SettingsMenu;
 
 import Apec.ApecMain;
+import Apec.ApecUtils;
 import Apec.Component;
 import Apec.ComponentId;
 import Apec.Components.Gui.Menu.CustomizationMenu.CustomizationGui;
 import Apec.Settings.Setting;
+import Apec.Settings.SettingsManager;
+import com.google.common.collect.Lists;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
-import org.lwjgl.LWJGLException;
-import org.lwjgl.Sys;
-import org.lwjgl.input.Mouse;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -35,6 +36,8 @@ public class ApecMenu extends Component {
                 return ">";
             case OPEN_GUI_EDITING:
                 return "Customize Gui";
+            case SEARCH:
+                return "Open Seach Bar";
             default:
                 return "N/A";
         }
@@ -48,9 +51,19 @@ public class ApecMenu extends Component {
     }
 
 
-    public static class ApecMenuGui extends GuiScreen {
+    public class ApecMenuGui extends GuiScreen {
 
         Integer page;
+        GuiTextField SearchBox;
+        ApecMenuNavigationButton ShowSearchBoxButton;
+        boolean ShowSearchBox = false;
+
+        /** Separate list of settings so it can be used for sorting search results */
+        List<Setting> Settings = new ArrayList<Setting>();
+
+        int SearchBoxAnimationStartingWidth = 30;
+        /** Used for the sole reason that the width is stored as an int and decimal increments are needed for it to be smooth*/
+        float WidthAnimationValue = SearchBoxAnimationStartingWidth;
 
         public ApecMenuGui(Integer pageCounter) {
             this.page = pageCounter;
@@ -66,6 +79,13 @@ public class ApecMenu extends Component {
             this.buttonList.add(new ApecMenuNavigationButton(0,w-265,h-130,20,250,NavigationAction.BACK));
             this.buttonList.add(new ApecMenuNavigationButton(0,w+245,h-130,20,250,NavigationAction.NEXT));
             this.buttonList.add(new ApecMenuNavigationButton(0,5,5,85,23,NavigationAction.OPEN_GUI_EDITING));
+            ShowSearchBoxButton = new ApecMenuNavigationButton(0,w-265,h-145,120,15,NavigationAction.SEARCH);
+            this.buttonList.add(ShowSearchBoxButton);
+            SearchBox = new GuiTextField(0,mc.fontRendererObj,w-265,h-150,SearchBoxAnimationStartingWidth,15);//150
+
+            // Initiating the setting list
+            Settings.addAll(ApecMain.Instance.settingsManager.settings);
+
         }
 
         public void executeNavigation(NavigationAction action) {
@@ -81,7 +101,15 @@ public class ApecMenu extends Component {
                 case OPEN_GUI_EDITING:
                     mc.displayGuiScreen(new CustomizationGui());
                     break;
+                case SEARCH:
+                    OpenSearchBox();
+                    break;
             }
+        }
+
+        private void OpenSearchBox() {
+            ShowSearchBox = true;
+            ShowSearchBoxButton.visible = false;
         }
 
         @Override
@@ -91,9 +119,9 @@ public class ApecMenu extends Component {
             int w = sr.getScaledWidth()/2;
             final int spaceBetweenLines = 60, spaceBetweenRows = 160;
             drawRect(w-245,h-130,w+245,h+120,0x990a0a0a);
-            for (int i = page*12;i < ApecMain.Instance.settingsManager.settings.size() && i < (page+1)*12;i++) {
-                Setting s = ApecMain.Instance.settingsManager.settings.get(i);
-                boolean enabled = ApecMain.Instance.settingsManager.settings.get(i).enabled;
+            for (int i = page*12;i < Settings.size() && i < (page+1)*12;i++) {
+                Setting s = Settings.get(i);
+                boolean enabled = Settings.get(i).enabled;
 
                 int x = w-235+((i%12)%3)*160;
                 int y = h-120 + spaceBetweenLines * ((i%12)/3);
@@ -113,7 +141,18 @@ public class ApecMenu extends Component {
 
                 GlStateManager.popMatrix();
             }
+            if (ShowSearchBox) {
+                if(SearchBox.width < 150) {
+                    float fps = Minecraft.getDebugFPS();
+                    float DeltaTime = 120.0f/fps;
+                    WidthAnimationValue += 3f * DeltaTime;
+                    SearchBox.width = (int)WidthAnimationValue;
+                }
+                if (SearchBox.width > 150) SearchBox.width = 150;
+                SearchBox.drawTextBox();
+            }
             super.drawScreen(mouseX, mouseY, partialTicks);
+
         }
 
         public void drawWrappedString(String s,int x,int y,int c) {
@@ -128,6 +167,70 @@ public class ApecMenu extends Component {
             for (int i = 0;i < lines.size();i++) {
                 mc.fontRendererObj.drawString(lines.get(i),x,y + (int)(i*10/0.8f),c);
             }
+        }
+
+        private void SearchFor(String searchTerm) {
+            if (searchTerm.length() != 0) {
+                Integer[] Scores = new Integer[Settings.size()];
+                int SettingCount = Settings.size();
+                String[] SearchWords = searchTerm.split(" ");
+                for (int i = 0; i < SettingCount; i++) {
+                    String[] SettingWords = SettingsManager.settingData.get(Settings.get(i).settingID).getFirst().toLowerCase().split(" ");
+
+                    int TotalScore = 0;
+                    for (int w = 0;w < SearchWords.length;w++) {
+                        char[] SearchTermC = SearchWords[w].toCharArray();
+                        for (int j = 0; j < SettingWords.length; j++) {
+                            char[] Word = SettingWords[j].toCharArray();
+                            int Score = 0;
+                            int CharactersFound = 0;
+                            boolean LastChracterVald = false;
+                            for (int l = 0; l < Word.length; l++) {
+                                if (Word[l] == SearchTermC[CharactersFound]) {
+                                    // Give a large score to names that match portions of the exact sequence
+                                    Score += 1 + (LastChracterVald ? 99 : 0);
+                                    // Gives a bonus if it's the start
+                                    if (l == 0) {
+                                        Score += Math.max(10 - j, 0);
+                                    }
+                                    CharactersFound++;
+                                    LastChracterVald = true;
+                                } else {
+                                    LastChracterVald = false;
+                                    Score--;
+                                }
+                                if (CharactersFound == SearchTermC.length) break;
+                            }
+                            TotalScore += Score;
+                        }
+                    }
+                    Scores[i] = TotalScore;
+                }
+
+                ApecUtils.bubbleSort(Lists.newArrayList(Scores), Settings);
+
+            } else {
+                // Resets the order
+                Settings.clear();
+                Settings.addAll(ApecMain.Instance.settingsManager.settings);
+            }
+
+            loadAtPage(0);
+        }
+
+        @Override
+        protected void keyTyped(char typedChar, int keyCode) throws IOException {
+            super.keyTyped(typedChar, keyCode);
+            if (ShowSearchBox) {
+                this.SearchBox.textboxKeyTyped(typedChar,keyCode);
+                SearchFor(this.SearchBox.getText().toLowerCase());
+            }
+        }
+
+        @Override
+        public void updateScreen() {
+            if (ShowSearchBox) this.SearchBox.updateCursorCounter();
+            super.updateScreen();
         }
 
         @Override
@@ -157,6 +260,7 @@ public class ApecMenu extends Component {
         @Override
         protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
             super.mouseClicked(mouseX, mouseY, mouseButton);
+            if (ShowSearchBox) SearchBox.mouseClicked(mouseX,mouseY,mouseButton);
             boolean needsToReloadButtons = false;
             if (mouseButton == 0) for (net.minecraft.client.gui.GuiButton guiButton : this.buttonList) {
                 if (guiButton instanceof ApecMenuButton)
@@ -181,8 +285,8 @@ public class ApecMenu extends Component {
             for (GuiButton guiButton : buttonToRemove) {
                 this.buttonList.remove(guiButton);
             }
-            for (int i = page*12;i < ApecMain.Instance.settingsManager.settings.size() && i < (page+1)*12;i++) {
-                buttonList.add(new ApecMenuButton(i,w-235+((i%12)%3)*160,h-120 + 60*((i%12)/3),15*10,5*10, ApecMain.Instance.settingsManager.settings.get(i)));
+            for (int i = page*12;i < Settings.size() && i < (page+1)*12;i++) {
+                buttonList.add(new ApecMenuButton(i,w-235+((i%12)%3)*160,h-120 + 60*((i%12)/3),15*10,5*10, Settings.get(i)));
             }
         }
 

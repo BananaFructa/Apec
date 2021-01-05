@@ -10,31 +10,44 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.event.ClickEvent;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.IChatComponent;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.GuiIngameForge;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
-import org.apache.commons.lang3.reflect.FieldUtils;
-import org.lwjgl.Sys;
 import org.lwjgl.util.vector.Vector2f;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Field;
-import java.text.Format;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+
+import static net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType.*;
 
 
 public class GUIModifier extends Component {
 
     private  Minecraft mc = Minecraft.getMinecraft();
 
+    public static GUIModifier Instance;
 
-    public ArrayList<GUIComponent> GUIComponents = new ArrayList<GUIComponent>() {{
+    boolean alreadyAutoEnabled = false;
+    boolean alreadyAutoDisabled = false;
+    public boolean shouldTheGuiAppear = false;
+
+    ApecGuiIngame AGIInstance = null;
+
+    final List<RenderGameOverlayEvent.ElementType> EventsToCancel = new ArrayList<RenderGameOverlayEvent.ElementType>() {{
+        add(FOOD);
+        add(HEALTH);
+        add(ARMOR);
+        add(AIR);
+        add(EXPERIENCE);
+    }};
+
+    /** All components that have to be redered */
+    public List<GUIComponent> GUIComponents = new ArrayList<GUIComponent>() {{
         add(new InfoBox()); // The block box with the things that used to be in the scoreboard
         add(new HpBar());
         add(new HpText());
@@ -46,16 +59,19 @@ public class GUIModifier extends Component {
         add(new AirText());
         add(new SkillBar()); // The bar that shows the skill progression
         add(new SkillText());
+        add(new DefenceText());
         add(new InventoryTraffic()); // The thing that shows the inventory traffic
         add(new ExtraInfo()); // The other things that used to be in the scoreboard
         //add(new BossHealthBar());
         add(new HotBar());
         add(new ToolTipText());
         add(new EventLister());
+        add(new AbilityText());
     }};
 
     public GUIModifier() {
         super(ComponentId.GUI_MODIFIER);
+        Instance = this;
     }
 
     @Override
@@ -65,15 +81,15 @@ public class GUIModifier extends Component {
         }
     }
 
-    boolean alreadyAutoEnabled = false;
-    boolean alreadyAutoDisabled = false;
-    public boolean shouldTheGuiAppear = false;
-    static boolean cancelNextHotbar = false;
-
-    ApecGuiIngame Instance = null;
+    public void CustomizationMenuOpened() {
+        for (GUIComponent component : GUIComponents) {
+            component.editInit();
+        }
+    }
 
     @SubscribeEvent
     public void onTick(TickEvent.ClientTickEvent event) {
+        // The script for the auto enabling
         if (!ApecMain.Instance.dataExtractor.isInSkyblock) alreadyAutoEnabled = false;
         if (ApecMain.Instance.dataExtractor.isInSkyblock) alreadyAutoDisabled = false;
         if (ApecMain.Instance.settingsManager.getSettingState(SettingID.AUTO_ENABLE)) {
@@ -92,11 +108,25 @@ public class GUIModifier extends Component {
 
     @SubscribeEvent(priority = EventPriority.LOW)
     public void onTickLowest(TickEvent.ClientTickEvent event) {
+        // This is for the compatibility with sidebar mod
         if (shouldTheGuiAppear && !(mc.ingameGUI instanceof ApecGuiIngame)) {
-            if (Instance != null) mc.ingameGUI = Instance;
+            if (AGIInstance != null) mc.ingameGUI = AGIInstance;
         }
     }
 
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    public void onRenderHelmet(RenderGameOverlayEvent.Pre event) {
+        if (event.type == RenderGameOverlayEvent.ElementType.HELMET && getEnableState()) {
+            GuiIngameForge.renderObjective = false;
+            onRender(event.resolution);
+        }
+
+    }
+
+    /**
+     * @param guiComponentID = Gui Component Id
+     * @return Returns the component with the matching component id, null if none is found
+     */
     public GUIComponent getGuiComponent(GUIComponentID guiComponentID) {
         for (GUIComponent component : GUIComponents) {
             if (component.gUiComponentID == guiComponentID) return component;
@@ -104,10 +134,16 @@ public class GUIModifier extends Component {
         return null;
     }
 
+    /**
+     * @param component = Inout gui component
+     * @return Returns true if a component should not be rendered wile F3 menu is opened, false if otherwise
+     */
     private boolean shouldBlockF3(GUIComponent component) {
-        return ApecMain.Instance.settingsManager.getSettingState(SettingID.HIDE_IN_F3) && mc.gameSettings.showDebugInfo && component.getRealAnchorPoint().y < 150;
+        return ApecMain.Instance.settingsManager.getSettingState(SettingID.HIDE_IN_F3) &&
+               mc.gameSettings.showDebugInfo && component.getRealAnchorPoint().y < 150;
     }
 
+    /** Main function for rendering */
     public void onRender(ScaledResolution sr) {
         DataExtractor.PlayerStats ps;
         DataExtractor.ScoreBoardData sd;
@@ -118,6 +154,7 @@ public class GUIModifier extends Component {
         try {
             GlStateManager.enableBlend();
             GlStateManager.color(1,1,1,1);
+            // Draws the screen components
             for (GUIComponent component : GUIComponents) {
                 if (shouldBlockF3(component)) continue;
                 GlStateManager.pushMatrix();
@@ -135,70 +172,59 @@ public class GUIModifier extends Component {
         }
     }
 
-    @Override
-    protected void onEnable() {
-        IChatComponent header = null,footer = null;
-        GuiNewChat guiNewChat = null;
-        List<ChatLine> chatLines = null;
-        List<String> sentMessages = null;
+    private void SwitchDataBetweenGuis(GuiIngame from,GuiIngame to) {
         try {
-            guiNewChat = (GuiNewChat) FieldUtils.readField((GuiIngame)this.mc.ingameGUI, ApecUtils.unObfedFieldNames.get("persistantChatGUI"), true);
-            header = (IChatComponent) FieldUtils.readField(this.mc.ingameGUI.getTabList(), ApecUtils.unObfedFieldNames.get("header"), true);
-            footer = (IChatComponent) FieldUtils.readField(this.mc.ingameGUI.getTabList(), ApecUtils.unObfedFieldNames.get("footer"), true);
-        } catch (Exception e) {
-            e.printStackTrace();
-            ApecUtils.showMessage("[\u00A72Apec\u00A7f] There was an error switching gui interfaces!");
-        }
+            IChatComponent header, footer;
+            GuiNewChat guiNewChat;
+            GuiStreamIndicator guiStreamIndicator;
+            Integer updateCounter;
 
-        boolean modeV = ApecMain.Instance.settingsManager.getSettingState(SettingID.OVERWRITE_GUI);
+            guiNewChat = (GuiNewChat) ApecUtils.ReadDeclaredField(GuiIngame.class, from, ApecUtils.unObfedFieldNames.get("persistantChatGUI"));
+            guiStreamIndicator = (GuiStreamIndicator) ApecUtils.ReadDeclaredField(GuiIngame.class, from, ApecUtils.unObfedFieldNames.get("streamIndicator"));
+            updateCounter = (Integer) ApecUtils.ReadDeclaredField(GuiIngame.class, from, ApecUtils.unObfedFieldNames.get("updateCounter"));
 
-        if (modeV) {
-            ApecUtils.showMessage("[\u00A72Apec\u00A7f] Opening GUI! MODE = VANILLA");
-            Instance = new ApecGuiIngameVanilla(mc);
-            mc.ingameGUI = Instance;
-        } else {
-            ApecUtils.showMessage("[\u00A72Apec\u00A7f] Opening GUI! MODE = FORGE");
-            Instance = new ApecGuiIngameForge(mc);
-            mc.ingameGUI = Instance;
-        }
+            header = (IChatComponent) ApecUtils.ReadDeclaredField(GuiPlayerTabOverlay.class, from.getTabList(), ApecUtils.unObfedFieldNames.get("header"));
+            footer = (IChatComponent) ApecUtils.ReadDeclaredField(GuiPlayerTabOverlay.class, from.getTabList(), ApecUtils.unObfedFieldNames.get("footer"));
 
-        try {
-            FieldUtils.writeField(this.mc.ingameGUI, ApecUtils.unObfedFieldNames.get("persistantChatGUI"), guiNewChat, true);
+            ApecUtils.WriteDeclaredField(GuiIngame.class, to, ApecUtils.unObfedFieldNames.get("persistantChatGUI"), guiNewChat);
+            ApecUtils.WriteDeclaredField(GuiIngame.class, to, ApecUtils.unObfedFieldNames.get("streamIndicator"), guiStreamIndicator);
+            ApecUtils.WriteDeclaredField(GuiIngame.class, to, ApecUtils.unObfedFieldNames.get("updateCounter"), updateCounter);
+
             mc.ingameGUI.getTabList().setHeader(header);
             mc.ingameGUI.getTabList().setFooter(footer);
-            this.ApplyDeltas();
-            if (!ApecMain.version.equals(ApecMain.Instance.newestVersion)) {
-                ChatComponentText msg = new ChatComponentText("[\u00A72Apec\u00A7f] There is a new version of Apec available! Click on this message to go to the CurseForge page.");
-                msg.getChatStyle().setChatClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL,"https://www.curseforge.com/minecraft/mc-mods/apec"));
-                Minecraft.getMinecraft().thePlayer.addChatMessage(msg);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (Exception err) {
+            err.printStackTrace();
+            ApecUtils.showMessage("[\u00A72Apec\u00A7f] There was an error switching gui interfaces!");
         }
+    }
+
+    @Override
+    protected void onEnable() {
+
+        AGIInstance = new ApecGuiIngameForge(mc);
+        SwitchDataBetweenGuis(mc.ingameGUI,AGIInstance);
+        mc.ingameGUI = AGIInstance;
+
+        this.ApplyDeltas();
+
+        if (!ApecMain.version.equals(ApecMain.Instance.newestVersion)) {
+            ChatComponentText msg = new ChatComponentText("[\u00A72Apec\u00A7f] There is a new version of Apec available! Click on this message to go to the CurseForge page.");
+            msg.getChatStyle().setChatClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL,"https://www.curseforge.com/minecraft/mc-mods/apec"));
+            Minecraft.getMinecraft().thePlayer.addChatMessage(msg);
+        }
+
         shouldTheGuiAppear = true;
     }
 
     @Override
     protected void onDisable() {
-        IChatComponent header = null,footer = null;
-        GuiNewChat guiNewChat = null;
-        try {
-            guiNewChat = (GuiNewChat) FieldUtils.readField(this.mc.ingameGUI, ApecUtils.unObfedFieldNames.get("persistantChatGUI"), true);
-            header = (IChatComponent) FieldUtils.readField(this.mc.ingameGUI.getTabList(), ApecUtils.unObfedFieldNames.get("header"), true);
-            footer = (IChatComponent) FieldUtils.readField(this.mc.ingameGUI.getTabList(), ApecUtils.unObfedFieldNames.get("footer"), true);
-        } catch (Exception e) {
-            ApecUtils.showMessage("[\u00A72Apec\u00A7f] There was an error switching gui interfaces!");
-        }
 
-        mc.ingameGUI = new GuiIngameForge(mc);
+        GuiIngame normalInterface = new GuiIngameForge(mc);
+        SwitchDataBetweenGuis(mc.ingameGUI,normalInterface);
+        mc.ingameGUI = normalInterface;
 
-        try {
-            FieldUtils.writeField(this.mc.ingameGUI, ApecUtils.unObfedFieldNames.get("persistantChatGUI"), guiNewChat, true);
-            mc.ingameGUI.getTabList().setHeader(header);
-            mc.ingameGUI.getTabList().setFooter(footer);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        GuiIngameForge.renderObjective = true;
+
         shouldTheGuiAppear = false;
     }
 

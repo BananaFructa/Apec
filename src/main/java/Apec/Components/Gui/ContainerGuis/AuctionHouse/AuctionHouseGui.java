@@ -1,4 +1,4 @@
-package Apec.Components.Gui.ContainerGuis;
+package Apec.Components.Gui.ContainerGuis.AuctionHouse;
 
 import Apec.ApecMain;
 import Apec.ComponentId;

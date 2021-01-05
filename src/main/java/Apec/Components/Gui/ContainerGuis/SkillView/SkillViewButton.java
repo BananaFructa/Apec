@@ -1,4 +1,4 @@
-package Apec.Components.Gui.ContainerGuis;
+package Apec.Components.Gui.ContainerGuis.SkillView;
 
 import Apec.ApecMain;
 import net.minecraft.client.Minecraft;

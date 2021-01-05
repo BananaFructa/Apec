@@ -5,11 +5,8 @@ import Apec.ApecUtils;
 import Apec.Components.Gui.GuiIngame.GUIComponentID;
 import Apec.DataExtractor;
 import Apec.Settings.SettingID;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiIngame;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.util.ResourceLocation;
 import org.lwjgl.util.vector.Vector2f;
 
 public class HpText extends GUIComponent {

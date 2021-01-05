@@ -1,6 +1,5 @@
-package Apec.Components.Gui.Menu;
+package Apec.Components.Gui.Menu.SettingsMenu;
 
-import Apec.Settings.Setting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.renderer.GlStateManager;

@@ -1,9 +1,7 @@
-package Apec.Components.Gui.ContainerGuis;
+package Apec.Components.Gui.ContainerGuis.AuctionHouse;
 
 import Apec.ApecMain;
 import Apec.ComponentId;
-import Apec.Components.Gui.Menu.ApecMenu;
-import Apec.Settings.Setting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
@@ -16,7 +14,6 @@ public class AuctionHouseToggleButton extends GuiButton {
 
     public AuctionHouseToggleButton(int buttonId, int x, int y, int widthIn, int heightIn, String s, AuctionHouseComponent.CategoryID categoryID) {
         super(buttonId, x, y, widthIn, heightIn, s);
-        this.state = categoryID == ((AuctionHouseComponent)ApecMain.Instance.getComponent(ComponentId.AUCTION_HOUSE_MENU)).currentCategory;
         this.categoryID = categoryID;
     }
 
@@ -35,6 +32,10 @@ public class AuctionHouseToggleButton extends GuiButton {
 
             this.drawCenteredString(fontrenderer, this.displayString, this.xPosition + this.width / 2, this.yPosition + (this.height - 8) / 2,  14737632);
         }
+    }
+
+    public void LoadState() {
+        this.state = categoryID == ((AuctionHouseComponent)ApecMain.Instance.getComponent(ComponentId.AUCTION_HOUSE_MENU)).currentCategory;
     }
 
     public void Toggle() {

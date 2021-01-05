@@ -5,9 +5,8 @@ import Apec.ComponentId;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
-import net.minecraft.server.MinecraftServer;
 
-public abstract class ApecGuiOpenCommand extends CommandBase {
+public class ApecGuiOpenCommand extends CommandBase {
 
     @Override
     public void processCommand(ICommandSender sender, String[] params) throws CommandException {

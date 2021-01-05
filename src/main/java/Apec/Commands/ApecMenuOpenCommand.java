@@ -2,7 +2,6 @@ package Apec.Commands;
 
 import Apec.ApecMain;
 import Apec.ComponentId;
-import Apec.Components.Gui.Menu.ApecMenu;
 import net.minecraft.client.Minecraft;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
@@ -11,7 +10,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 
-public abstract class ApecMenuOpenCommand extends CommandBase {
+public class ApecMenuOpenCommand extends CommandBase {
 
     public static boolean shouldOpenGui = false;
 

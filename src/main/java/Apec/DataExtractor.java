@@ -1,34 +1,25 @@
 package Apec;
 
-import Apec.Components.Gui.GuiIngame.ApecGuiIngameForge;
-import Apec.Components.Gui.GuiIngame.ApecGuiIngameVanilla;
 import Apec.Components.Gui.GuiIngame.GUIModifier;
 import Apec.Settings.SettingID;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.scoreboard.Score;
 import net.minecraft.scoreboard.ScoreObjective;
 import net.minecraft.scoreboard.ScorePlayerTeam;
 import net.minecraft.scoreboard.Scoreboard;
-import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.IChatComponent;
 import net.minecraft.util.Tuple;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.InputEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import org.apache.commons.lang3.reflect.FieldUtils;
-import org.lwjgl.Sys;
-import org.lwjgl.input.Mouse;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -191,12 +182,18 @@ public class DataExtractor {
     /**
      * This only includes adding missing brackets in dungeons
      */
+
     public List<String> addDataFixesScoreboard(List<String> s) {
         for (String _s: s) {
             if (_s.contains("[") && !_s.contains("]")) _s.concat("\u00a7]");
         }
         return s;
     }
+
+    /**
+     * @param s = Input string
+     * @return Return true if the specific text should have an empty line before in the left side display
+     */
 
     public boolean ShouldHaveSpaceBefore(String s) {
         return ApecUtils.containedByCharSequence(s,"Objective") || //Objectives
@@ -214,13 +211,28 @@ public class DataExtractor {
                ApecUtils.containedByCharSequence(s,"Festival");
     }
 
+    /**
+     * @param s = Input string
+     * @return Return true if the specific text should have an empty line after in the left side display
+     */
+
     public boolean ShouldHaveSpaceAfter(String s) {
         return ApecUtils.containedByCharSequence(s,"Dungeon Cleared"); // Dungeon cleared in dungeons
     }
 
+    /**
+     * @param s = Input string
+     * @return Return true if the input string represents the real life date
+     */
+
     public boolean RepresentsIRLDate(String s) {
         return ApecUtils.containedByCharSequence(s,"//");
     }
+
+    /**
+     * @param s = Input string
+     * @return Return true if the input string represents the date
+     */
 
     public boolean RepresentsDate(String s) {
         return (ApecUtils.containedByCharSequence(s,"Autumn") ||
@@ -233,24 +245,50 @@ public class DataExtractor {
                  ApecUtils.containedByCharSequence(s,"th"));
     }
 
+    /**
+     * @param s = Input string
+     * @return Return true if the input string represents the time
+     */
+
     public boolean RepresentsTime(String s) {
         return (ApecUtils.containedByCharSequence(s,"am") ||
                 ApecUtils.containedByCharSequence(s,"pm")) &&
-                ApecUtils.containedByCharSequence(s,":");
+                ApecUtils.containedByCharSequence(s,":") &&
+                (ApecUtils.containedByCharSequence(s,"\u263d") || // The moon
+                ApecUtils.containedByCharSequence(s,"\u2600")); // The sun
     }
+
+    /**
+     * @param s = Input string
+     * @return Return true if the input string represents the zone
+     */
 
     public boolean RepresentsZone(String s) {
         return ApecUtils.containedByCharSequence(s,"\u23E3");
     }
 
+    /**
+     * @param s = Input string
+     * @return Return true if the input string represents the purse
+     */
+
     public boolean RepresentsPurse(String s) {
         return ApecUtils.containedByCharSequence(s,"Purse: ");
     }
+
+    /**
+     * @param s = Input string
+     * @return Return true if the input string represents the purse with a piggy equipped
+     */
 
     public boolean RepresentsPiggy(String s){
         return ApecUtils.containedByCharSequence(s,"Piggy: ");
     }
 
+    /**
+     * @param s = Input string
+     * @return Return true if the input string represents the bits counter
+     */
     public boolean RepresentsBits(String s) {
         return ApecUtils.containedByCharSequence(s,"Bits: ");
     }
@@ -347,6 +385,10 @@ public class DataExtractor {
         return lines;
     }
 
+    /**
+     * @return The title string of the scoreboard
+     */
+
     public String getScoreBoardTitle() {
         try {
             Scoreboard scoreboard = Minecraft.getMinecraft().theWorld.getScoreboard();
@@ -363,6 +405,8 @@ public class DataExtractor {
      */
 
     private void ScoreboardParser(ScoreBoardData sd,List<String> l) {
+
+        boolean BitsHaveBeenSet = false;
         List<String> rl = Lists.reverse(l);
         for (String line : rl) {
             if (RepresentsIRLDate(line)) {
@@ -382,7 +426,10 @@ public class DataExtractor {
                 sd.Purse = ApecUtils.removeFirstSpaces(line);
                 usesPiggyBank = true;
             }
-            else if (RepresentsBits(line)) sd.Bits = ApecUtils.removeFirstSpaces(line);
+            else if (RepresentsBits(line)) {
+                sd.Bits = ApecUtils.removeFirstSpaces(line);
+                BitsHaveBeenSet = true;
+            }
             else if (!line.contains("www")) {
                 if (line.replaceAll("[^a-zA-Z0-9]", "").length() != 0) {
                     if (ShouldHaveSpaceBefore(line)) sd.ExtraInfo.add(" ");
@@ -390,6 +437,9 @@ public class DataExtractor {
                     if (ShouldHaveSpaceAfter(line)) sd.ExtraInfo.add(" ");
                 }
             }
+        }
+        if (!BitsHaveBeenSet && !isInTheCatacombs) {
+            sd.Bits = "Bits: \u00a7b0";
         }
 
     }
@@ -687,40 +737,12 @@ public class DataExtractor {
     }
 
     /**
-     * @return The data of the current boss , if there is none then bossId = BossId.NONE
+     * @return Returns the the data in the other data class
      */
-
-    private BossData checkForBosses() {
-        try {
-            BossData bossData = new BossData();
-            for (Entity entity : mc.theWorld.loadedEntityList) {
-                if (!(entity instanceof EntityPlayer)) {
-                    String name = ApecUtils.removeAllCodes(entity.getCustomNameTag());
-                    System.out.println(name);
-                    if (name.toLowerCase().contains(magmaBossName)) {
-                        bossData.bossId = BossId.MAGMA_BOSS;
-                        String hpBaseHp = ApecUtils.segmentString(name, String.valueOf(HpSymbol), ' ', HpSymbol, 1, 1, true,false);
-                        Tuple<Integer, Integer> t = formatStringFractI(hpBaseHp);
-                        bossData.Hp = t.getFirst();
-                        bossData.BaseHp = t.getSecond();
-                        System.out.println(name + " " + bossData.Hp + " " + bossData.BaseHp);
-                        break;
-                    }
-                }
-            }
-            if (bossData.bossId == null) bossData.bossId = BossId.NONE;
-            return bossData;
-        } catch (Exception e) {
-            BossData bossData = new BossData();
-            bossData.bossId = BossId.NONE;
-            return bossData;
-        }
-    }
 
     public OtherData getOtherData() {
         return otherData;
     }
-
 
 
     /**
@@ -750,8 +772,8 @@ public class DataExtractor {
 
     public class ScoreBoardData {
         public String Server = "";
-        public String Purse = "";
-        public String Bits = "";
+        public String Purse = "Purse: \u00a760";
+        public String Bits = "Bits: \u00a7b0";
         public List<String> ExtraInfo = new ArrayList<String>();
         public String Zone = "";
         public String Date = "";
@@ -773,20 +795,14 @@ public class DataExtractor {
         public float BaseSkillExp;
         public boolean SkillIsShown;
         public boolean IsAbilityShown;
-        public String AbilityText;
+        public String AbilityText = "\u00a7b-00 Mana (\u00a76Some Ability\u00a7b)";
     }
 
     public class OtherData {
 
         public ArrayList<String> ExtraInfo  = new ArrayList<String>();
         public ArrayList<EventIDs> currentEvents = new ArrayList<EventIDs>();
-        public BossData bossData = new BossData();
 
-    }
-
-    public class BossData {
-        public BossId bossId;
-        public int Hp = 0,BaseHp = 0;
     }
 
 }

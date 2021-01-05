@@ -9,12 +9,10 @@ import Apec.Components.Gui.GuiIngame.GUIModifier;
 import Apec.Components.Gui.GuiIngame.GuiElements.GUIComponent;
 import Apec.Components.Gui.GuiIngame.GuiElements.InfoBox;
 import Apec.Components.Gui.GuiIngame.GuiElements.ToolTipText;
-import Apec.Settings.SettingID;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
-import org.lwjgl.Sys;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.util.vector.Vector2f;
 
@@ -23,7 +21,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 
 public class CustomizationGui extends GuiScreen {
 
@@ -33,6 +30,7 @@ public class CustomizationGui extends GuiScreen {
 
     @Override
     public void initGui() {
+        GUIModifier.Instance.CustomizationMenuOpened();
         super.initGui();
         final ScaledResolution sr = new ScaledResolution(mc);
         if (mc.ingameGUI instanceof ApecGuiIngame) {
@@ -50,10 +48,12 @@ public class CustomizationGui extends GuiScreen {
             if (component.hasSubComponents()) {
                 if (component instanceof InfoBox) {
                     for (int i = 0; i < component.subComponentCount(); i++) {
+                        if (!component.IsSubcomponentDisabled(i))
                         this.buttonList.add(new CustomizationGuiButton(component, i, xSnapPoints, ySnapPoints,true));
                     }
                 } else {
                     for (int i = 0; i < component.subComponentCount(); i++) {
+                        if (!component.IsSubcomponentDisabled(i))
                         this.buttonList.add(new CustomizationGuiButton(component, i, xSnapPoints, ySnapPoints));
                     }
                 }

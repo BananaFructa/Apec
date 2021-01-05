@@ -1,7 +1,6 @@
-package Apec.Components.Gui.ContainerGuis;
+package Apec.Components.Gui.ContainerGuis.AuctionHouse;
 
 import Apec.ApecMain;
-import Apec.ComponentId;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;

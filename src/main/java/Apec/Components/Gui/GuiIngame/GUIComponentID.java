@@ -17,5 +17,7 @@ public enum GUIComponentID {
     XP_TEXT,
     SKILL_TEXT,
     AIR_TEXT,
-    TOOL_TIP_TEXT
+    TOOL_TIP_TEXT,
+    ABILITY_TEXT,
+    DEFENCE_TEXT
 }

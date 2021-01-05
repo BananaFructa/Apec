@@ -3,7 +3,6 @@ package Apec.Components.Gui.GuiIngame.GuiElements;
 import Apec.ApecMain;
 import Apec.ApecUtils;
 import Apec.Components.Gui.GuiIngame.GUIComponentID;
-import Apec.Components.Gui.GuiIngame.GUIModifier;
 import Apec.DataExtractor;
 import Apec.Settings.SettingID;
 import net.minecraft.client.Minecraft;
@@ -12,15 +11,14 @@ import net.minecraft.client.gui.GuiIngame;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent;
-import org.lwjgl.Sys;
 import org.lwjgl.util.vector.Vector2f;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class InfoBox extends GUIComponent {
+
+    // TODO: Maybe create an enum for subcomponents
 
     float yDecremetor = 0;
 
@@ -38,7 +36,6 @@ public class InfoBox extends GUIComponent {
         mc.renderEngine.bindTexture(new ResourceLocation(ApecMain.modId, "gui/bottomBar.png"));
         int DrawCounts = (int)(sr.getScaledWidth()/256) + 1;
         for (int i = 0;i < DrawCounts;i++) {
-            // TODO: This is terrible please do something in the future
             gi.drawTexturedModalRect((int) delta_position.x + i * 256, sr.getScaledHeight() - 20*scale + (int) delta_position.y + (int)yDecremetor,0,0,256,(int)(20.0f));
             if (mc.gameSettings.guiScale == 1) {
                 gi.drawTexturedModalRect((int) delta_position.x + i * 256, sr.getScaledHeight() - 7*scale + (int) delta_position.y + (int)yDecremetor,0,0,256,(int)(20.0f));
@@ -57,7 +54,9 @@ public class InfoBox extends GUIComponent {
             } else {
                 gi.drawTexturedModalRect((int) (GuiPos.x + (subComponentDeltas.get(2).getX())/scale + 220), (int) ((GuiPos.y + subComponentDeltas.get(2).getY())/scale -1 ), 236, 84, 9, 9);
             }
-            gi.drawTexturedModalRect((int)(GuiPos.x + (subComponentDeltas.get(3).getX())/scale + 360), (int)((GuiPos.y+ subComponentDeltas.get(3).getY())/scale -1),222,84,7,10);
+            if (!ApecMain.Instance.settingsManager.getSettingState(SettingID.USE_DEFENCE_OUT_OF_BB) || editingMode) {
+                gi.drawTexturedModalRect((int) (GuiPos.x + (subComponentDeltas.get(3).getX()) / scale + 360), (int) ((GuiPos.y + subComponentDeltas.get(3).getY()) / scale - 1), 222, 84, 7, 10);
+            }
         }
         GlStateManager.scale(1,1,1);
     }
@@ -98,9 +97,6 @@ public class InfoBox extends GUIComponent {
 
         boolean UseIcons = ApecMain.Instance.settingsManager.getSettingState(SettingID.INFO_BOX_ICONS);
 
-        //gi.drawRect(0 + (int) delta_position.x, sr.getScaledHeight() - 20 + (int) delta_position.y + (int)yDecremetor, sr.getScaledWidth() + (int) delta_position.x, sr.getScaledHeight() + (int) delta_position.y, 0xca0a0a0a);
-
-
         String purseText = (UseIcons ? RemovePurseText(sd.Purse) : sd.Purse);
         String zoneText = (UseIcons ? ApecUtils.RemoveCharSequence("\u23E3", sd.Zone) : sd.Zone);
         String defenceText = (UseIcons ? "\u00a7a" + ps.Defence : "\u00a7a" + ps.Defence + " Defence");
@@ -125,12 +121,16 @@ public class InfoBox extends GUIComponent {
                 (int) ((GuiPos.y + subComponentDeltas.get(2).getY()) / scale),
                 0xffffff, false
         );
-        mc.fontRendererObj.drawString(
-                defenceText,
-                (int) (GuiPos.x + (subComponentDeltas.get(3).getX() + (UseIcons ? 10 : 0)) / scale + 360),
-                (int) ((GuiPos.y + subComponentDeltas.get(3).getY()) / scale),
-                0xffffff
-        );
+
+        if (!ApecMain.Instance.settingsManager.getSettingState(SettingID.USE_DEFENCE_OUT_OF_BB) || editingMode) {
+            mc.fontRendererObj.drawString(
+                    defenceText,
+                    (int) (GuiPos.x + (subComponentDeltas.get(3).getX() + (UseIcons ? 10 : 0)) / scale + 360),
+                    (int) ((GuiPos.y + subComponentDeltas.get(3).getY()) / scale),
+                    0xffffff
+            );
+        }
+
         PurseStringLength = mc.fontRendererObj.getStringWidth(purseText);
         BitsLength = mc.fontRendererObj.getStringWidth(bitText);
         ZoneStringLength = mc.fontRendererObj.getStringWidth(zoneText);

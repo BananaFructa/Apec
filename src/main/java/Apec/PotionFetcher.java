@@ -1,6 +1,6 @@
 package Apec;
 
-import Apec.Components.Gui.ContainerGuis.ActiveEffectsTransparentGui;
+import Apec.Components.Gui.ContainerGuis.TrasparentEffects.ActiveEffectsTransparentGui;
 import Apec.Settings.SettingID;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiChest;
@@ -17,16 +17,17 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class PotionFetcher {
 
     Minecraft mc = Minecraft.getMinecraft();
 
-    public boolean ShouldAwaitThreadsExist = false;
     public boolean IsInitilized = false;
     public boolean NeedsInitialFetch = true;
     public boolean ShouldRun = false;
+    public boolean InLoadingProcess = false;
     private GuiOpenEvent CurrentEvent;
 
     DataExtractor dataExtractor;
@@ -88,19 +89,42 @@ public class PotionFetcher {
         }
     }
     private void CreateNewPotionEffect(String name,String[] UnregularSplitedTime) {
+        int h = 0, m = 0, s = 0;
+        int I =  1;
+        if (UnregularSplitedTime.length == 3) {
+            h = Integer.parseInt(ApecUtils.removeNonNumericalChars(UnregularSplitedTime[0]));
+            I = 0;
+        }
+        m = Integer.parseInt(ApecUtils.removeNonNumericalChars(UnregularSplitedTime[1 - I]));
+        s = Integer.parseInt(ApecUtils.removeNonNumericalChars(UnregularSplitedTime[2 - I]));
+
         PotionEffect potionEffect = new PotionEffect();
         potionEffect.effectName = name;
-        // Removing the non numerical characters because there is this random crap in it with all these backslashes
-        if (UnregularSplitedTime.length == 3) {
-            potionEffect.hoursRemaining = Integer.parseInt(ApecUtils.removeNonNumericalChars(UnregularSplitedTime[0]));
-            potionEffect.minutesRemaining = Integer.parseInt(ApecUtils.removeNonNumericalChars(UnregularSplitedTime[1]));
-            potionEffect.secondsRemaining =  Integer.parseInt(ApecUtils.removeNonNumericalChars(UnregularSplitedTime[2]));
-            PotionEffects.add(potionEffect);
-        } else if (UnregularSplitedTime.length == 2){
-            potionEffect.minutesRemaining = Integer.parseInt(ApecUtils.removeNonNumericalChars(UnregularSplitedTime[0]));
-            potionEffect.secondsRemaining =  Integer.parseInt(ApecUtils.removeNonNumericalChars(UnregularSplitedTime[1]));
-            PotionEffects.add(potionEffect);
+        potionEffect.hoursRemaining = h;
+        potionEffect.minutesRemaining = m;
+        potionEffect.secondsRemaining = s;
+
+        String[] WordSplit = name.split(" ");
+        String GenericName = ApecUtils.removeAllCodes(name.replace(" " + WordSplit[WordSplit.length-1],""));
+        int EffectTier = ApecUtils.RomanStringToValue(ApecUtils.removeAllCodes(WordSplit[WordSplit.length-1]));
+        int Duration = s + m * 60 + h * 60 * 60;
+        System.out.println(GenericName + " " + EffectTier + " " + Duration);
+
+        for (int i = 0;i < PotionEffects.size();i++) {
+            String[] WordSplit_ = PotionEffects.get(i).effectName.split(" ");
+            String GenericName_ = ApecUtils.removeAllCodes(PotionEffects.get(i).effectName.replace(" " + WordSplit_[WordSplit_.length-1],""));
+            int EffectTier_ = ApecUtils.RomanStringToValue(ApecUtils.removeAllCodes(WordSplit_[WordSplit_.length-1]));
+            int Duration_ = PotionEffects.get(i).secondsRemaining + PotionEffects.get(i).minutesRemaining * 60 + PotionEffects.get(i).hoursRemaining * 60 * 60;
+            System.out.println(GenericName_ + " " + EffectTier_ + " " + Duration_);
+            if (GenericName.equals(GenericName_)) {
+                if (EffectTier > EffectTier_ || Duration > Duration_) {
+                    PotionEffects.set(i,potionEffect);
+                    return;
+                }
+            }
         }
+
+        PotionEffects.add(potionEffect);
     }
 
     public List<String> GetPotionEffects (){
@@ -143,8 +167,12 @@ public class PotionFetcher {
 
     @SubscribeEvent
     public void OnTick(TickEvent.ClientTickEvent tickEvent) {
-        ShouldRun = ApecMain.Instance.settingsManager.getSettingState(SettingID.SHOW_POTIONS_EFFECTS) && !ApecMain.Instance.settingsManager.getSettingState(SettingID.SHOW_EFFECTS_AS_IN_TAB);
+        ShouldRun = ApecMain.Instance.settingsManager.getSettingState(SettingID.SHOW_POTIONS_EFFECTS) &&
+                    !ApecMain.Instance.settingsManager.getSettingState(SettingID.SHOW_EFFECTS_AS_IN_TAB) &&
+                     ApecMain.Instance.dataExtractor.isInSkyblock;
+
         if (ShouldRun) {
+
             if (dataExtractor.isInSkyblock && !IsInitilized) init();
             if (!dataExtractor.isInSkyblock && IsInitilized) ClearAll();
             if (System.currentTimeMillis() - LastSystemTime >= 995 && !dataExtractor.IsDeadInTheCatacombs) {
@@ -170,7 +198,53 @@ public class PotionFetcher {
                 EffectsToRemove.clear();
                 LastSystemTime = System.currentTimeMillis();
             }
+
+            try {
+
+                if (mc.currentScreen instanceof ActiveEffectsTransparentGui && InLoadingProcess) {
+
+                    GuiContainer Container = (GuiContainer) CurrentEvent.gui;
+
+                    if (
+                            Container.inventorySlots.inventorySlots.get(0).inventory.getStackInSlot(0) != null ||
+                                    Container.inventorySlots.inventorySlots.get(53).inventory.getStackInSlot(53) != null
+                    ) {
+                        boolean FullBreak = false;
+                        for (int i = 0; i < 3 && !FullBreak; i++) {
+                            for (int j = 10 + i * 9; j < i * 9 + 17; j++) {
+                                if (Container.inventorySlots.inventorySlots.get(j).inventory.getStackInSlot(j) == null) {
+                                    FullBreak = true;
+                                    break;
+                                }
+                                String name = Container.inventorySlots.inventorySlots.get(j).inventory.getStackInSlot(j).getDisplayName();
+                                String time = "";
+                                for (String string : Container.inventorySlots.inventorySlots.get(j).inventory.getStackInSlot(j).getTooltip(mc.thePlayer, false)) {
+                                    if (string.contains("Remaining:")) {
+                                        time = ApecUtils.removeAllCodes(string.replace("Remaining:", ""));
+                                        break;
+                                    }
+                                }
+                                CreateNewPotionEffect(name, time.split(":"));
+                            }
+                        }
+
+                        InLoadingProcess = false;
+
+                        if (Container.inventorySlots.inventorySlots.get(53).inventory.getStackInSlot(53).getItem() == Items.arrow) {
+                            HandleMouseClickMethod.invoke(Container, Container.inventorySlots.inventorySlots.get(53), 53, 0, 0);
+                        } else {
+                            mc.displayGuiScreen(null);
+                            NeedsInitialFetch = false;
+                        }
+
+                    }
+                }
+            } catch (Exception err) {
+                err.printStackTrace();
+                InLoadingProcess = false;
+            }
         }
+
     }
 
     @SubscribeEvent
@@ -189,63 +263,10 @@ public class PotionFetcher {
     public void OnGuiOpen (final GuiOpenEvent event) {
         if (ShouldRun) {
             if (event.gui instanceof ActiveEffectsTransparentGui && NeedsInitialFetch) {
-                Tuple<IInventory, IInventory> UpperLower = ApecUtils.GetUpperLowerFromGuiEvent(event);
-                if (UpperLower == null) return;
                 CurrentEvent = event;
-                if (UpperLower.getSecond().getDisplayName().getUnformattedText().contains("Active Effects")) {
-                    Thread AwaitThread = new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            try {
-                                GuiContainer Container;
-                                do {
-                                    Container = (GuiContainer) CurrentEvent.gui;
-                                    assert !ShouldAwaitThreadsExist;
-                                } while ((Container.inventorySlots.inventorySlots.get(0).inventory.getStackInSlot(0) == null
-                                        || Container.inventorySlots.inventorySlots.get(53).inventory.getStackInSlot(53) == null)
-                                        && ShouldAwaitThreadsExist && mc.currentScreen instanceof GuiChest);
-                                boolean FullBreak = false;
-                                for (int i = 0; i < 3 && !FullBreak; i++) {
-                                    for (int j = 10 + i * 9; j < i * 9 + 17; j++) {
-                                        if (Container.inventorySlots.inventorySlots.get(j).inventory.getStackInSlot(j) == null) {
-                                            FullBreak = true;
-                                            break;
-                                        }
-                                        String name = Container.inventorySlots.inventorySlots.get(j).inventory.getStackInSlot(j).getDisplayName();
-                                        String time = "";
-                                        for (String string : Container.inventorySlots.inventorySlots.get(j).inventory.getStackInSlot(j).getTooltip(mc.thePlayer, false)) {
-                                            if (string.contains("Remaining:")) {
-                                                time = ApecUtils.removeAllCodes(string.replace("Remaining:", ""));
-                                                break;
-                                            }
-                                        }
-                                        CreateNewPotionEffect(name, time.split(":"));
-                                    }
-                                }
-                                if (Container.inventorySlots.inventorySlots.get(53).inventory.getStackInSlot(53).getItem() == Items.arrow) {
-                                    HandleMouseClickMethod.invoke(Container, Container.inventorySlots.inventorySlots.get(53), 53, 0, 0);
-                                } else {
-                                    mc.displayGuiScreen(null);
-                                    NeedsInitialFetch = false;
-                                }
-                                ShouldAwaitThreadsExist = false;
-                                ApecMain.logger.info("Effect fetch thread exited without errors!");
-                                Thread.currentThread().interrupt();
-                            } catch (Exception e) {
-                                ApecMain.logger.info("An error occured in the effect fetch thread, below it's the stack trace hopefully!");
-                                e.printStackTrace();
-                                ShouldAwaitThreadsExist = false;
-                                Thread.currentThread().interrupt();
-                            }
-                        }
-                    });
-
-                    ShouldAwaitThreadsExist = true;
-                    AwaitThread.start();
-                }
+                InLoadingProcess = true;
             }
         }
-
     }
 
 }
