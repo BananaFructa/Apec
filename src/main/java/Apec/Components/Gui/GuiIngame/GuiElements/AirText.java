@@ -3,7 +3,7 @@ package Apec.Components.Gui.GuiIngame.GuiElements;
 import Apec.ApecMain;
 import Apec.ApecUtils;
 import Apec.Components.Gui.GuiIngame.GUIComponentID;
-import Apec.DataExtractor;
+import Apec.DataInterpretation.DataExtractor;
 import Apec.Settings.SettingID;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;

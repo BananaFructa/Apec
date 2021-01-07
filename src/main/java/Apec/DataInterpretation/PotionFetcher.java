@@ -1,13 +1,15 @@
-package Apec;
+/**
+ * Fetches the potions from the /effects menu
+ */
+package Apec.DataInterpretation;
 
+import Apec.ApecMain;
+import Apec.ApecUtils;
 import Apec.Components.Gui.ContainerGuis.TrasparentEffects.ActiveEffectsTransparentGui;
 import Apec.Settings.SettingID;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.init.Items;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.util.Tuple;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.common.MinecraftForge;

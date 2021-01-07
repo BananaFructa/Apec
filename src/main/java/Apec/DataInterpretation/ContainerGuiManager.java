@@ -1,5 +1,11 @@
-package Apec;
+/**
+ * Manages custom guis
+ */
+package Apec.DataInterpretation;
 
+import Apec.ApecMain;
+import Apec.ApecUtils;
+import Apec.ComponentId;
 import Apec.Components.Gui.ContainerGuis.ChestGuiComponent;
 import Apec.Settings.SettingID;
 import net.minecraft.client.gui.inventory.GuiChest;

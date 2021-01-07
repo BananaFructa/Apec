@@ -6,7 +6,7 @@ import Apec.ComponentId;
 import Apec.Components.Gui.GuiIngame.GUIComponentID;
 import Apec.Components.Gui.GuiIngame.GUIModifier;
 import Apec.Components.Gui.GuiIngame.SkillType;
-import Apec.DataExtractor;
+import Apec.DataInterpretation.DataExtractor;
 import Apec.Settings.SettingID;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;

@@ -1,6 +1,13 @@
-package Apec;
+/**
+ * Takes care of parsing data from scoreboard, action bar and chat data
+ */
+package Apec.DataInterpretation;
 
+import Apec.ApecMain;
+import Apec.ApecUtils;
+import Apec.ComponentId;
 import Apec.Components.Gui.GuiIngame.GUIModifier;
+import Apec.EventIDs;
 import Apec.Settings.SettingID;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
@@ -137,7 +144,7 @@ public class DataExtractor {
                 }
             }
         } catch (Exception e) { }
-        if (((GUIModifier)ApecMain.Instance.getComponent(ComponentId.GUI_MODIFIER)).shouldTheGuiAppear) {
+        if (((GUIModifier) ApecMain.Instance.getComponent(ComponentId.GUI_MODIFIER)).shouldTheGuiAppear) {
             try {
                 IChatComponent icc = (IChatComponent) FieldUtils.readField(mc.ingameGUI.getTabList(), ApecUtils.unObfedFieldNames.get("footer"), true);
                 if (icc == null) {

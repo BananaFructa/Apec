@@ -3,6 +3,7 @@ package Apec.Components.Gui.GuiIngame;
 import Apec.*;
 import Apec.Components.Gui.GuiIngame.GuiElements.*;
 import Apec.Components.Gui.Menu.CustomizationMenu.CustomizationGui;
+import Apec.DataInterpretation.DataExtractor;
 import Apec.Settings.SettingID;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.*;

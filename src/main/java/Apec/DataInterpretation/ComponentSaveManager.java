@@ -1,4 +1,9 @@
-package Apec;
+/**
+ * Saves data on disk for all the components
+ */
+package Apec.DataInterpretation;
+
+import Apec.Component;
 
 import java.io.File;
 import java.io.FileWriter;

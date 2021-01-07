@@ -5,7 +5,7 @@ import Apec.ApecUtils;
 import Apec.ComponentId;
 import Apec.Components.Gui.GuiIngame.GUIComponentID;
 import Apec.Components.Gui.GuiIngame.GUIModifier;
-import Apec.DataExtractor;
+import Apec.DataInterpretation.DataExtractor;
 import Apec.Settings.SettingID;
 import net.minecraft.client.gui.ScaledResolution;
 import org.lwjgl.util.vector.Vector2f;

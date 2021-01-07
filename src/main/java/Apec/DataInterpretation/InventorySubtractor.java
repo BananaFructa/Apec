@@ -1,4 +1,7 @@
-package Apec;
+/**
+ * Detects changes in the player inventory
+ */
+package Apec.DataInterpretation;
 
 import Apec.Components.Gui.ContainerGuis.AuctionHouse.AuctionHouseGui;
 import net.minecraft.client.Minecraft;
