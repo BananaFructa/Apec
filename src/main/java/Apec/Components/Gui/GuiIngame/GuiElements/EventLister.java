@@ -55,22 +55,22 @@ public class EventLister extends GUIComponent {
                 (ApecMain.Instance.settingsManager.getSettingState(SettingID.SHOW_AIR_BAR))) y += 17;
         switch (eventID) {
             case INV_FULL:
-                gi.drawTexturedModalRect(x,y,241,0,15,13);
+                gi.drawTexturedModalRect(x,y,1,226,14,13);
                 break;
             case TRADE_OUT:
-                gi.drawTexturedModalRect(x,y,241,13,15,13);
+                gi.drawTexturedModalRect(x,y,16,226,15,13);
                 break;
             case TRADE_IN:
-                gi.drawTexturedModalRect(x,y,241,26,15,13);
+                gi.drawTexturedModalRect(x,y,32,226,15,13);
                 break;
             case COIN_COUNT:
-                gi.drawTexturedModalRect(x,y,241,39,15,13);
+                gi.drawTexturedModalRect(x,y,48,226,13,13);
                 break;
             case SERVER_REBOOT:
-                gi.drawTexturedModalRect(x,y,241,52,15,13);
+                gi.drawTexturedModalRect(x,y,62,226,15,13);
                 break;
             case HIGH_PING:
-                gi.drawTexturedModalRect(x,y,241,65,15,13);
+                gi.drawTexturedModalRect(x,y,78,226,15,13);
                 break;
         }
     }

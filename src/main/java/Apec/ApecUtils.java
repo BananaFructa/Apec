@@ -31,6 +31,8 @@ public class ApecUtils {
         put("sentMessages", inFMLDebugFramework ? "sentMessages" : "field_146248_g");
         put("streamIndicator", inFMLDebugFramework ? "streamIndicator" : "field_152127_m");
         put("updateCounter", inFMLDebugFramework ? "updateCounter" : "field_73837_f");
+        put("overlayPlayerList", inFMLDebugFramework ? "overlayPlayerList" : "field_175196_v");
+        put("guiIngame",inFMLDebugFramework ? "guiIngame" : "field_175251_g");
         put("chatMessages","field_146253_i");
     }};
 

@@ -47,15 +47,15 @@ public class InfoBox extends GUIComponent {
 
             GuiPos.y += yDecremetor;
             mc.renderEngine.bindTexture(new ResourceLocation(ApecMain.modId, "gui/statBars.png"));
-            gi.drawTexturedModalRect((int)(GuiPos.x + (subComponentDeltas.get(0).getX())/scale), (int)((GuiPos.y+ subComponentDeltas.get(0).getY())/scale -1),250,84,6,9);
-            gi.drawTexturedModalRect((int)(GuiPos.x + (subComponentDeltas.get(1).getX())/scale + 120), (int)((GuiPos.y+ subComponentDeltas.get(1).getY())/scale -1),245,84,5,9);
+            gi.drawTexturedModalRect((int)(GuiPos.x + (subComponentDeltas.get(0).getX())/scale), (int)((GuiPos.y+ subComponentDeltas.get(0).getY())/scale -1),1,216,6,9);
+            gi.drawTexturedModalRect((int)(GuiPos.x + (subComponentDeltas.get(1).getX())/scale + 120), (int)((GuiPos.y+ subComponentDeltas.get(1).getY())/scale -1),8,216,5,9);
             if (ApecMain.Instance.dataExtractor.isInTheCatacombs) {
-                gi.drawTexturedModalRect((int) (GuiPos.x + (subComponentDeltas.get(2).getX())/scale + 220 - 1), (int) ((GuiPos.y + subComponentDeltas.get(2).getY())/scale -1), 229, 84, 7, 9);
+                gi.drawTexturedModalRect((int) (GuiPos.x + (subComponentDeltas.get(2).getX())/scale + 220 - 1), (int) ((GuiPos.y + subComponentDeltas.get(2).getY())/scale -1), 24, 216, 7, 8);
             } else {
-                gi.drawTexturedModalRect((int) (GuiPos.x + (subComponentDeltas.get(2).getX())/scale + 220), (int) ((GuiPos.y + subComponentDeltas.get(2).getY())/scale -1 ), 236, 84, 9, 9);
+                gi.drawTexturedModalRect((int) (GuiPos.x + (subComponentDeltas.get(2).getX())/scale + 220), (int) ((GuiPos.y + subComponentDeltas.get(2).getY())/scale -1 ), 14, 216, 9, 9);
             }
             if (!ApecMain.Instance.settingsManager.getSettingState(SettingID.USE_DEFENCE_OUT_OF_BB) || editingMode) {
-                gi.drawTexturedModalRect((int) (GuiPos.x + (subComponentDeltas.get(3).getX()) / scale + 360), (int) ((GuiPos.y + subComponentDeltas.get(3).getY()) / scale - 1), 222, 84, 7, 10);
+                gi.drawTexturedModalRect((int) (GuiPos.x + (subComponentDeltas.get(3).getX()) / scale + 360), (int) ((GuiPos.y + subComponentDeltas.get(3).getY()) / scale - 1), 32, 215, 7, 10);
             }
         }
         GlStateManager.scale(1,1,1);

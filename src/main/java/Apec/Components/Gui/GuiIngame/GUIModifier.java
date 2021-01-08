@@ -184,15 +184,14 @@ public class GUIModifier extends Component {
             guiStreamIndicator = (GuiStreamIndicator) ApecUtils.ReadDeclaredField(GuiIngame.class, from, ApecUtils.unObfedFieldNames.get("streamIndicator"));
             updateCounter = (Integer) ApecUtils.ReadDeclaredField(GuiIngame.class, from, ApecUtils.unObfedFieldNames.get("updateCounter"));
 
-            header = (IChatComponent) ApecUtils.ReadDeclaredField(GuiPlayerTabOverlay.class, from.getTabList(), ApecUtils.unObfedFieldNames.get("header"));
-            footer = (IChatComponent) ApecUtils.ReadDeclaredField(GuiPlayerTabOverlay.class, from.getTabList(), ApecUtils.unObfedFieldNames.get("footer"));
-
             ApecUtils.WriteDeclaredField(GuiIngame.class, to, ApecUtils.unObfedFieldNames.get("persistantChatGUI"), guiNewChat);
             ApecUtils.WriteDeclaredField(GuiIngame.class, to, ApecUtils.unObfedFieldNames.get("streamIndicator"), guiStreamIndicator);
             ApecUtils.WriteDeclaredField(GuiIngame.class, to, ApecUtils.unObfedFieldNames.get("updateCounter"), updateCounter);
 
-            mc.ingameGUI.getTabList().setHeader(header);
-            mc.ingameGUI.getTabList().setFooter(footer);
+            GuiPlayerTabOverlay tab = (GuiPlayerTabOverlay) ApecUtils.ReadDeclaredField(GuiIngame.class,from,ApecUtils.unObfedFieldNames.get("overlayPlayerList"));
+            ApecUtils.WriteDeclaredField(GuiPlayerTabOverlay.class,tab,ApecUtils.unObfedFieldNames.get("guiIngame"),to);
+            ApecUtils.WriteDeclaredField(GuiIngame.class,to,ApecUtils.unObfedFieldNames.get("overlayPlayerList"),tab);
+
         } catch (Exception err) {
             err.printStackTrace();
             ApecUtils.showMessage("[\u00A72Apec\u00A7f] There was an error switching gui interfaces!");

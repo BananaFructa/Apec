@@ -27,16 +27,16 @@ public class AuctionHouseButton extends GuiButton {
 
             switch (action) {
                 case SEARCH:
-                    this.drawTexturedModalRect(this.xPosition, this.yPosition, 226, 0, 15, 15);
+                    this.drawTexturedModalRect(this.xPosition, this.yPosition, 1, 240, 15, 15);
                     break;
                 case NEXT:
-                    this.drawTexturedModalRect(this.xPosition, this.yPosition, 226, 15, 15, 15);
+                    this.drawTexturedModalRect(this.xPosition, this.yPosition, 17, 240, 15, 15);
                     break;
                 case BACK:
-                    this.drawTexturedModalRect(this.xPosition, this.yPosition, 226, 30, 15, 15);
+                    this.drawTexturedModalRect(this.xPosition, this.yPosition, 33, 240, 15, 15);
                     break;
                 case CLOSE:
-                    this.drawTexturedModalRect(this.xPosition, this.yPosition, 226, 45, 15, 15);
+                    this.drawTexturedModalRect(this.xPosition, this.yPosition, 49, 240, 15, 15);
                     break;
             }
 
