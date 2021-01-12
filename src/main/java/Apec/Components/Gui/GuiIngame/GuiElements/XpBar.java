@@ -26,13 +26,12 @@ public class XpBar extends GUIComponent {
         if (ApecMain.Instance.settingsManager.getSettingState(SettingID.XP_BAR)) {
             GuiIngame gi = Minecraft.getMinecraft().ingameGUI;
 
-            Vector2f StatBar = this.getAnchorPointPosition();
-            StatBar = ApecUtils.addVec(StatBar, delta_position);
+            Vector2f StatBar = ApecUtils.scalarMultiply(getRealAnchorPoint(),oneOverScale);
 
             mc.renderEngine.bindTexture(new ResourceLocation(ApecMain.modId, "gui/statBars.png"));
 
-            gi.drawTexturedModalRect((int) StatBar.x/scale, (int) StatBar.y/scale, 0, 30, 182, 5);
-            gi.drawTexturedModalRect((int) StatBar.x/scale, (int) StatBar.y/scale, 0, 35, (int) (this.mc.thePlayer.experience * 182f), 5);
+            gi.drawTexturedModalRect((int) StatBar.x, (int) StatBar.y, 0, 30, 182, 5);
+            gi.drawTexturedModalRect((int) StatBar.x, (int) StatBar.y, 0, 35, (int) (this.mc.thePlayer.experience * 182f), 5);
         }
         GlStateManager.popMatrix();
     }

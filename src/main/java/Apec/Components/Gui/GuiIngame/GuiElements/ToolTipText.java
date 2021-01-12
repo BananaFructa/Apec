@@ -31,14 +31,14 @@ public class ToolTipText extends GUIComponent {
          float x = 0f;
          float y = 0f;
         if (!ApecMain.Instance.settingsManager.getSettingState(SettingID.ITEM_HIGHLIGHT_TEXT)) {
-            Vector2f posH = hotBar.getRealAnchorPoint();
-            x = (int) (posH.x/hotBar.scale) + 1;
-            y = (int) (posH.y/hotBar.scale) - 10;
+            Vector2f posH = ApecUtils.scalarMultiply( hotBar.getRealAnchorPoint(),hotBar.oneOverScale);
+            x = (int) (posH.x) + 1;
+            y = (int) (posH.y) - 10;
         } else {
-            x = (- mc.fontRendererObj.getStringWidth(CurrentText) / 2f) - 92/hotBar.scale + g_sr.getScaledWidth()/hotBar.scale;
-            y = g_sr.getScaledHeight()/scale - 67/hotBar.scale;
-            x += hotBar.delta_position.x/hotBar.scale;
-            y += hotBar.delta_position.y/hotBar.scale;
+            x = (- mc.fontRendererObj.getStringWidth(CurrentText) * 0.5f) - 92 + g_sr.getScaledWidth()*hotBar.oneOverScale;
+            y = g_sr.getScaledHeight()*oneOverScale - 67*hotBar.oneOverScale;
+            x += hotBar.delta_position.x*hotBar.oneOverScale;
+            y += hotBar.delta_position.y*hotBar.oneOverScale;
         }
         return new Vector2f(x,y);
     }

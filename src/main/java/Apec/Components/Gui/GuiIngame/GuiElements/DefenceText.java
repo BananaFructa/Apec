@@ -25,12 +25,13 @@ public class DefenceText extends GUIComponent{
         if (ApecMain.Instance.settingsManager.getSettingState(SettingID.USE_DEFENCE_OUT_OF_BB) || editingMode) {
 
             mc.renderEngine.bindTexture(new ResourceLocation(ApecMain.modId, "gui/statBars.png"));
-            Vector2f Pos = this.getRealAnchorPoint();
+            Vector2f Pos = ApecUtils.scalarMultiply(this.getRealAnchorPoint(),oneOverScale);
+
             String s = "\u00a7aDefence " + ps.Defence;
 
             StringWidth = mc.fontRendererObj.getStringWidth(s);
 
-            ApecUtils.drawThiccBorderString("\u00a7aDefence " + ps.Defence, (int)(Pos.x/scale)+1,(int)(Pos.y/scale)+1 ,0xffffffff);
+            ApecUtils.drawThiccBorderString("\u00a7aDefence " + ps.Defence, (int)(Pos.x)+1,(int)(Pos.y)+1 ,0xffffffff);
 
         }
         GlStateManager.popMatrix();

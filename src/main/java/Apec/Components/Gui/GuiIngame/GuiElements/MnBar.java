@@ -26,15 +26,14 @@ public class MnBar extends GUIComponent {
         if (ApecMain.Instance.settingsManager.getSettingState(SettingID.MP_BAR)) {
             GuiIngame gi = Minecraft.getMinecraft().ingameGUI;
 
-            Vector2f StatBar = this.getAnchorPointPosition();
-            StatBar = ApecUtils.addVec(StatBar, delta_position);
+            Vector2f StatBar = ApecUtils.scalarMultiply(getRealAnchorPoint(),oneOverScale);
 
             float mpFactor = ps.Mp > ps.BaseMp ? 1 :(float) ps.Mp / (float) ps.BaseMp;
 
             mc.renderEngine.bindTexture(new ResourceLocation(ApecMain.modId, "gui/statBars.png"));
 
-            gi.drawTexturedModalRect((int) StatBar.x/scale, (int) StatBar.y/scale, 0, 10, 182, 5);
-            gi.drawTexturedModalRect((int) StatBar.x/scale, (int) StatBar.y/scale, 0, 15, (int) (mpFactor * 182f), 5);
+            gi.drawTexturedModalRect((int) StatBar.x, (int) StatBar.y, 0, 10, 182, 5);
+            gi.drawTexturedModalRect((int) StatBar.x, (int) StatBar.y, 0, 15, (int) (mpFactor * 182f), 5);
         }
         GlStateManager.popMatrix();
     }

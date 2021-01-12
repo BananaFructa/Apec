@@ -26,8 +26,7 @@ public class HpBar extends GUIComponent {
         if (ApecMain.Instance.settingsManager.getSettingState(SettingID.HP_BAR)) {
             GuiIngame gi = Minecraft.getMinecraft().ingameGUI;
 
-            Vector2f StatBar = this.getAnchorPointPosition();
-            StatBar = ApecUtils.addVec(StatBar, delta_position);
+            Vector2f StatBar = ApecUtils.scalarMultiply(getRealAnchorPoint(),oneOverScale);
 
             float hpFactor = (ps.Hp > ps.BaseHp) ? 1 : (float) ps.Hp / (float) ps.BaseHp;
 
@@ -35,12 +34,12 @@ public class HpBar extends GUIComponent {
 
             boolean showAP = ApecMain.Instance.settingsManager.getSettingState(SettingID.SHOW_ABSORPTION_BAR);
             if (ps.Ap != 0 && showAP) {
-                gi.drawTexturedModalRect((int) StatBar.x / scale, (int) StatBar.y / scale, 0, 60, 182, 5);
-                gi.drawTexturedModalRect((int) StatBar.x / scale, (int) StatBar.y / scale, 0, 65, (int) (((float) ps.Ap / (float) ps.BaseAp) * 49f), 5);
-                gi.drawTexturedModalRect((int) StatBar.x / scale + 51, (int) StatBar.y / scale, 51, 65, (int) (hpFactor * 131f), 5);
+                gi.drawTexturedModalRect((int) StatBar.x , (int) StatBar.y , 0, 60, 182, 5);
+                gi.drawTexturedModalRect((int) StatBar.x , (int) StatBar.y , 0, 65, (int) (((float) ps.Ap / (float) ps.BaseAp) * 49f), 5);
+                gi.drawTexturedModalRect((int) StatBar.x  + 51, (int) StatBar.y , 51, 65, (int) (hpFactor * 131f), 5);
             } else {
-                gi.drawTexturedModalRect((int) StatBar.x / scale, (int) StatBar.y / scale, 0, 0, 182, 5);
-                gi.drawTexturedModalRect((int) StatBar.x / scale, (int) StatBar.y / scale, 0, 5, (int) (hpFactor * 182f), 5);
+                gi.drawTexturedModalRect((int) StatBar.x , (int) StatBar.y , 0, 0, 182, 5);
+                gi.drawTexturedModalRect((int) StatBar.x , (int) StatBar.y , 0, 5, (int) (hpFactor * 182f), 5);
             }
         }
         GlStateManager.popMatrix();

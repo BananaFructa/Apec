@@ -21,6 +21,7 @@ public class ComponentSaveManager {
         this.ComponentList = components;
     }
 
+    /** Saves the component data */
     public void IssueSave() {
         try {
             new File("config/Apec").mkdirs();
@@ -47,6 +48,7 @@ public class ComponentSaveManager {
         }
     }
 
+    /** Loads the component data */
     public List<HashMap<Integer,String>> LoadData() {
         List<HashMap<Integer,String>> Data = new ArrayList<HashMap<Integer, String>>();
         for (int i = 0;i < ComponentList.size();i++) Data.add(new HashMap<Integer, String>());

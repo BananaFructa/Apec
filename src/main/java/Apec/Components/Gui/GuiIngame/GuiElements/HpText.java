@@ -26,19 +26,17 @@ public class HpText extends GUIComponent {
 
             boolean showAP = ApecMain.Instance.settingsManager.getSettingState(SettingID.SHOW_ABSORPTION_BAR);
 
-            Vector2f StatBar = this.getAnchorPointPosition();
-
-            StatBar = ApecUtils.addVec(StatBar, delta_position);
+            Vector2f StatBar = ApecUtils.scalarMultiply(getRealAnchorPoint(),oneOverScale);
 
             int addedHp = ps.Hp + ps.Ap;
             String HPString = (!showAP && ps.Ap != 0 ? "\u00a7e" + addedHp + "\u00a7r" : ps.Hp) + "/" + ps.BaseHp + " HP";
-            ApecUtils.drawThiccBorderString(HPString, (int) (StatBar.x / scale - mc.fontRendererObj.getStringWidth(HPString)), (int) (StatBar.y / scale - 10), 0xd10808);
+            ApecUtils.drawThiccBorderString(HPString, (int) (StatBar.x - mc.fontRendererObj.getStringWidth(HPString)), (int) (StatBar.y - 10), 0xd10808);
             stringWidth = mc.fontRendererObj.getStringWidth(HPString);
 
 
             if (ps.Ap != 0 && showAP) {
                 String APString = ps.Ap + "/" + ps.BaseAp + " AP";
-                ApecUtils.drawThiccBorderString(APString, (int) (StatBar.x / scale - 5 - mc.fontRendererObj.getStringWidth(APString) - mc.fontRendererObj.getStringWidth(HPString)), (int) (StatBar.y / scale - 10), 0xC8AC35);
+                ApecUtils.drawThiccBorderString(APString, (int) (StatBar.x - 5 - mc.fontRendererObj.getStringWidth(APString) - mc.fontRendererObj.getStringWidth(HPString)), (int) (StatBar.y - 10), 0xC8AC35);
             }
         }
         GlStateManager.popMatrix();

@@ -112,6 +112,14 @@ public class SettingsManager {
         }
         this.SaveSettings();
     }
+    public void setSettingStateWithNoSaveing(SettingID settingID,boolean state) {
+        for (Setting s : settings) {
+            if (s.settingID == settingID) {
+                s.enabled = state;
+                break;
+            }
+        }
+    }
 
     public static Tuple<String,String> getNameAndDesc (SettingID settingID) {
         return settingData.get(settingID);
@@ -147,10 +155,10 @@ public class SettingsManager {
                     boolean status = false;
                     if (tempSplit[1].equals("t")) 
                         status = true;
-                    this.setSettingState(SettingID.values()[idx],status);
+                    this.setSettingStateWithNoSaveing(SettingID.values()[idx],status);
                 }
                 catch (Exception e) {
-                    ApecUtils.showNonDebugMessage("[\u00A72Apec\u00A7f] There was an error reading \"" + s + "\"!");
+                    ApecUtils.showMessage("[\u00A72Apec\u00A7f] There was an error reading \"" + s + "\"!");
                 }
             }
             scanner.close();

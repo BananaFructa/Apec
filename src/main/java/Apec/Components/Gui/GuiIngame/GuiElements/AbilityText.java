@@ -9,6 +9,7 @@ import Apec.Settings.SettingID;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
 import org.lwjgl.util.vector.Vector2f;
+import org.apache.commons.lang3.BooleanUtils;
 
 public class AbilityText extends GUIComponent{
 
@@ -38,11 +39,11 @@ public class AbilityText extends GUIComponent{
         }
         if ((ApecMain.Instance.settingsManager.getSettingState(SettingID.SHOW_ABILITY_TEXT) && ps.IsAbilityShown) || editingMode) {
             stringWidth = mc.fontRendererObj.getStringWidth(ps.AbilityText);
-            Vector2f rap = getRealAnchorPoint();
+            Vector2f rap = ApecUtils.scalarMultiply(getRealAnchorPoint(),oneOverScale);
             ApecUtils.drawThiccBorderString(
                     ps.AbilityText,
-                    (int)(rap.x/scale - mc.fontRendererObj.getStringWidth(ps.AbilityText)),
-                    (int)(rap.y/scale-10),
+                    (int)(rap.x - mc.fontRendererObj.getStringWidth(ps.AbilityText)),
+                    (int)(rap.y - 10),
                     0xffffffff
             );
         }

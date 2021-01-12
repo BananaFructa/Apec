@@ -24,12 +24,10 @@ public class MpText extends GUIComponent {
         if (ApecMain.Instance.settingsManager.getSettingState(SettingID.MP_TEXT)) {
             GlStateManager.pushMatrix();
             GlStateManager.scale(scale, scale, scale);
-            Vector2f StatBar = this.getAnchorPointPosition();
-
-            StatBar = ApecUtils.addVec(StatBar, delta_position);
+            Vector2f StatBar = ApecUtils.scalarMultiply(getRealAnchorPoint(),oneOverScale);
 
             String MPString = ps.Mp + "/" + ps.BaseMp + " MP";
-            ApecUtils.drawThiccBorderString(MPString, (int) (StatBar.x / scale - mc.fontRendererObj.getStringWidth(MPString)), (int) (StatBar.y / scale - 10), 0x1139bd);
+            ApecUtils.drawThiccBorderString(MPString, (int) (StatBar.x - mc.fontRendererObj.getStringWidth(MPString)), (int) (StatBar.y - 10), 0x1139bd);
             stringWidth = Minecraft.getMinecraft().fontRendererObj.getStringWidth(MPString);
 
             GlStateManager.popMatrix();

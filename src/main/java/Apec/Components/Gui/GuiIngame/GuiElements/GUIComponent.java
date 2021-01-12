@@ -19,6 +19,7 @@ public class GUIComponent {
     protected List<Vector2f> subComponentDeltas = new ArrayList<Vector2f>();
     protected List<Integer> DisabledSubComponents = new ArrayList<Integer>();
     protected float scale = 1;
+    protected float oneOverScale = 1;
     public GUIComponentID gUiComponentID;
     protected ScaledResolution g_sr;
 
@@ -114,6 +115,7 @@ public class GUIComponent {
      */
     public void setScale(float s) {
         this.scale = s;
+        this.oneOverScale = 1f/scale;
     }
 
     /**

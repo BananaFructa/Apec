@@ -21,21 +21,25 @@ public class AirBar extends GUIComponent {
 
     @Override
     public void drawTex(DataExtractor.PlayerStats ps, DataExtractor.ScoreBoardData sd, DataExtractor.OtherData od, ScaledResolution sr,boolean editingMode) {
+
         GlStateManager.pushMatrix();
         GlStateManager.scale(scale,scale,scale);
-        if (ApecMain.Instance.settingsManager.getSettingState(SettingID.SHOW_AIR_BAR)) {
-            GuiIngame gi = Minecraft.getMinecraft().ingameGUI;
 
-            Vector2f StatBar = this.getAnchorPointPosition();
-            StatBar = ApecUtils.addVec(StatBar, delta_position);
+        if (ApecMain.Instance.settingsManager.getSettingState(SettingID.SHOW_AIR_BAR)) {
+
+            GuiIngame gi = Minecraft.getMinecraft().ingameGUI;
+            Vector2f StatBar = ApecUtils.scalarMultiply(this.getRealAnchorPoint(),oneOverScale);
 
             mc.renderEngine.bindTexture(new ResourceLocation(ApecMain.modId, "gui/statBars.png"));
 
             if (mc.thePlayer.isInsideOfMaterial(Material.water) || editingMode) {
-                float airPrec = mc.thePlayer.getAir() / 300f;
+
+                float airPrec = mc.thePlayer.getAir() * 0.0333f;
                 if (airPrec < 0) airPrec = 0;
-                gi.drawTexturedModalRect((int) StatBar.x/scale, (int) StatBar.y/scale, 0, 40, 182, 5);
-                gi.drawTexturedModalRect((int) StatBar.x/scale, (int) StatBar.y/scale, 0, 45, (int) (182f * airPrec), 5);
+
+                gi.drawTexturedModalRect((int) StatBar.x, (int) StatBar.y, 0, 40, 182, 5);
+                gi.drawTexturedModalRect((int) StatBar.x, (int) StatBar.y, 0, 45, (int) (182f * airPrec), 5);
+
             }
 
         }

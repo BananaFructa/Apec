@@ -105,6 +105,10 @@ public class ApecUtils {
         return new Vector2f(a.x+b.x,a.y+b.y);
     }
 
+    public static Vector2f scalarMultiply (Vector2f v, float s) {
+        return new Vector2f(v.x*s,v.y*s);
+    }
+
     /**
      * @brief Shown the specified message in the chat if debug messages are on
      * @param string = Input message

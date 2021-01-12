@@ -25,15 +25,13 @@ public class AirText extends GUIComponent {
         GlStateManager.pushMatrix();
         if (ApecMain.Instance.settingsManager.getSettingState(SettingID.AIR_TEXT)) {
             GlStateManager.scale(scale, scale, scale);
-            Vector2f StatBar = this.getAnchorPointPosition();
-
-            StatBar = ApecUtils.addVec(StatBar, delta_position);
+            Vector2f StatBar = ApecUtils.scalarMultiply(this.getRealAnchorPoint(),oneOverScale);
 
             if (mc.thePlayer.isInsideOfMaterial(Material.water) || editingMode) {
                 float airPrec = (mc.thePlayer.getAir() / 300f) * 100;
                 if (airPrec < 0) airPrec = 0;
                 String ARString = (int) airPrec + "% Air";
-                ApecUtils.drawThiccBorderString(ARString, (int) (StatBar.x / scale - mc.fontRendererObj.getStringWidth(ARString)), (int) (StatBar.y / scale - 10), 0x8ba6b2);
+                ApecUtils.drawThiccBorderString(ARString, (int) (StatBar.x - mc.fontRendererObj.getStringWidth(ARString)), (int) (StatBar.y - 10), 0x8ba6b2);
                 stringWidth = Minecraft.getMinecraft().fontRendererObj.getStringWidth(ARString);
             }
         }

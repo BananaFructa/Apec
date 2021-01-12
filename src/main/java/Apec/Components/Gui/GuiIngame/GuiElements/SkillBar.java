@@ -28,59 +28,59 @@ public class SkillBar extends GUIComponent {
         GlStateManager.scale(scale,scale,scale);
         if (ApecMain.Instance.settingsManager.getSettingState(SettingID.SHOW_SKILL_XP) || editingMode) {
             GuiIngame gi = Minecraft.getMinecraft().ingameGUI;
-            Vector2f SkillBarPos = getAnchorPointPosition();
-
-            SkillBarPos = ApecUtils.addVec(SkillBarPos, delta_position);
+            Vector2f SkillBarPos = ApecUtils.scalarMultiply(getRealAnchorPoint(),oneOverScale);
 
             if (ps.SkillIsShown) {
                 mc.renderEngine.bindTexture(new ResourceLocation(ApecMain.modId, "gui/statBars.png"));
                 float factor;
                 if (ps.BaseSkillExp == 0) factor = 0;
-                else factor = (float) ps.SkillExp / (float) ps.BaseSkillExp * 182f;
+                else factor = (float) ps.SkillExp / (float) ps.BaseSkillExp;
+                if (factor > 1f) factor = 1f;
+                factor *= 182f;
                 if (ps.SkillInfo.contains("Rune")) {
-                    gi.drawTexturedModalRect((int) SkillBarPos.x/scale, (int) SkillBarPos.y/scale, 0, 50, 182, 5);
-                    gi.drawTexturedModalRect((int) SkillBarPos.x/scale, (int) SkillBarPos.y/scale, 0, 55, (int) factor, 5);
+                    gi.drawTexturedModalRect((int) SkillBarPos.x, (int) SkillBarPos.y, 0, 50, 182, 5);
+                    gi.drawTexturedModalRect((int) SkillBarPos.x, (int) SkillBarPos.y, 0, 55, (int) factor, 5);
                 } else {
                     SkillType skillType =  SkillType.GetSkillType(ps.SkillInfo);
                     if (ApecMain.Instance.settingsManager.getSettingState(SettingID.COLORED_SKILL_XP) && skillType != SkillType.NONE) {
                         mc.renderEngine.bindTexture(new ResourceLocation(ApecMain.modId, "gui/coloredSkillBars.png"));
                         switch (skillType) {
                             case FARMING:
-                                gi.drawTexturedModalRect((int) SkillBarPos.x / scale, (int) SkillBarPos.y / scale, 0, 0, 182, 5);
-                                gi.drawTexturedModalRect((int) SkillBarPos.x / scale, (int) SkillBarPos.y / scale, 0, 5, (int) factor, 5);
+                                gi.drawTexturedModalRect((int) SkillBarPos.x, (int) SkillBarPos.y, 0, 0, 182, 5);
+                                gi.drawTexturedModalRect((int) SkillBarPos.x, (int) SkillBarPos.y, 0, 5, (int) factor, 5);
                                 break;
                             case COMBAT:
-                                gi.drawTexturedModalRect((int) SkillBarPos.x / scale, (int) SkillBarPos.y / scale, 0, 10, 182, 5);
-                                gi.drawTexturedModalRect((int) SkillBarPos.x / scale, (int) SkillBarPos.y / scale, 0, 15, (int) factor, 5);
+                                gi.drawTexturedModalRect((int) SkillBarPos.x, (int) SkillBarPos.y, 0, 10, 182, 5);
+                                gi.drawTexturedModalRect((int) SkillBarPos.x, (int) SkillBarPos.y, 0, 15, (int) factor, 5);
                                 break;
                             case MINING:
-                                gi.drawTexturedModalRect((int) SkillBarPos.x / scale, (int) SkillBarPos.y / scale, 0, 20, 182, 5);
-                                gi.drawTexturedModalRect((int) SkillBarPos.x / scale, (int) SkillBarPos.y / scale, 0, 25, (int) factor, 5);
+                                gi.drawTexturedModalRect((int) SkillBarPos.x, (int) SkillBarPos.y, 0, 20, 182, 5);
+                                gi.drawTexturedModalRect((int) SkillBarPos.x, (int) SkillBarPos.y, 0, 25, (int) factor, 5);
                                 break;
                             case FORAGING:
-                                gi.drawTexturedModalRect((int) SkillBarPos.x / scale, (int) SkillBarPos.y / scale, 0, 30, 182, 5);
-                                gi.drawTexturedModalRect((int) SkillBarPos.x / scale, (int) SkillBarPos.y / scale, 0, 35, (int) factor, 5);
+                                gi.drawTexturedModalRect((int) SkillBarPos.x, (int) SkillBarPos.y, 0, 30, 182, 5);
+                                gi.drawTexturedModalRect((int) SkillBarPos.x, (int) SkillBarPos.y, 0, 35, (int) factor, 5);
                                 break;
                             case ENCHANTING:
-                                gi.drawTexturedModalRect((int) SkillBarPos.x / scale, (int) SkillBarPos.y / scale, 0, 40, 182, 5);
-                                gi.drawTexturedModalRect((int) SkillBarPos.x / scale, (int) SkillBarPos.y / scale, 0, 45, (int) factor, 5);
+                                gi.drawTexturedModalRect((int) SkillBarPos.x, (int) SkillBarPos.y, 0, 40, 182, 5);
+                                gi.drawTexturedModalRect((int) SkillBarPos.x, (int) SkillBarPos.y, 0, 45, (int) factor, 5);
                                 break;
                             case FISHING:
-                                gi.drawTexturedModalRect((int) SkillBarPos.x / scale, (int) SkillBarPos.y / scale, 0, 50, 182, 5);
-                                gi.drawTexturedModalRect((int) SkillBarPos.x / scale, (int) SkillBarPos.y / scale, 0, 55, (int) factor, 5);
+                                gi.drawTexturedModalRect((int) SkillBarPos.x, (int) SkillBarPos.y, 0, 50, 182, 5);
+                                gi.drawTexturedModalRect((int) SkillBarPos.x, (int) SkillBarPos.y, 0, 55, (int) factor, 5);
                                 break;
                             case ALCHEMY:
-                                gi.drawTexturedModalRect((int) SkillBarPos.x / scale, (int) SkillBarPos.y / scale, 0, 60, 182, 5);
-                                gi.drawTexturedModalRect((int) SkillBarPos.x / scale, (int) SkillBarPos.y / scale, 0, 65, (int) factor, 5);
+                                gi.drawTexturedModalRect((int) SkillBarPos.x, (int) SkillBarPos.y, 0, 60, 182, 5);
+                                gi.drawTexturedModalRect((int) SkillBarPos.x, (int) SkillBarPos.y, 0, 65, (int) factor, 5);
                                 break;
                         }
                     } else {
-                        gi.drawTexturedModalRect((int) SkillBarPos.x / scale, (int) SkillBarPos.y / scale, 0, 20, 182, 5);
-                        gi.drawTexturedModalRect((int) SkillBarPos.x / scale, (int) SkillBarPos.y / scale, 0, 25, (int) factor, 5);
+                        gi.drawTexturedModalRect((int) SkillBarPos.x, (int) SkillBarPos.y, 0, 20, 182, 5);
+                        gi.drawTexturedModalRect((int) SkillBarPos.x, (int) SkillBarPos.y, 0, 25, (int) factor, 5);
                     }
                 }
             } else if (editingMode) {
-                gi.drawTexturedModalRect((int) SkillBarPos.x/scale, (int) SkillBarPos.y/scale, 0, 25, 182, 5);
+                gi.drawTexturedModalRect((int) SkillBarPos.x, (int) SkillBarPos.y, 0, 25, 182, 5);
             }
         }
         GlStateManager.popMatrix();

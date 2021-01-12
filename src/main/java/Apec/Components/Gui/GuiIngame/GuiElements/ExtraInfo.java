@@ -20,9 +20,7 @@ public class ExtraInfo extends GUIComponent {
         super.draw(ps,sd,od,sr,editingMode);
         GlStateManager.pushMatrix();
         GlStateManager.scale(scale,scale,scale);
-        Vector2f ExtraScoreInfo = getAnchorPointPosition();
-
-        ExtraScoreInfo = ApecUtils.addVec(ExtraScoreInfo,delta_position);
+        Vector2f ExtraScoreInfo = ApecUtils.scalarMultiply(getRealAnchorPoint(),oneOverScale);
 
         ArrayList<String> ei = new ArrayList<String>();
         ei.addAll(sd.ExtraInfo);
@@ -34,7 +32,7 @@ public class ExtraInfo extends GUIComponent {
 
         if (!ei.isEmpty()) {
             for (int i = 0;i < ei.size();i++) {
-                ApecUtils.drawThiccBorderString(ei.get(i), (int)(ExtraScoreInfo.x/scale), (int) (ExtraScoreInfo.y/scale + i * 11), 0x0ffffff);
+                ApecUtils.drawThiccBorderString(ei.get(i), (int)(ExtraScoreInfo.x), (int) (ExtraScoreInfo.y + i * 11), 0x0ffffff);
             }
         }
         GlStateManager.popMatrix();

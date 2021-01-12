@@ -28,12 +28,11 @@ public class SkillText extends GUIComponent {
         GlStateManager.pushMatrix();
         if (ApecMain.Instance.settingsManager.getSettingState(SettingID.SKILL_TEXT)) {
             GlStateManager.scale(scale, scale, scale);
-            Vector2f p = this.getAnchorPointPosition();
-            p = ApecUtils.addVec(p, this.delta_position);
+            Vector2f p = ApecUtils.scalarMultiply(getRealAnchorPoint(),oneOverScale);
             if (ps.SkillIsShown) {
                 stringWidth = Minecraft.getMinecraft().fontRendererObj.getStringWidth(ps.SkillInfo);
                 if (ps.SkillInfo.contains("Rune")) {
-                    ApecUtils.drawThiccBorderString(ps.SkillInfo, (int) (p.x / scale), (int) (p.y / scale - 10), 0x6B3694);
+                    ApecUtils.drawThiccBorderString(ps.SkillInfo, (int) (p.x), (int) (p.y), 0x6B3694);
                 } else {
                     SkillType skillType =  SkillType.GetSkillType(ps.SkillInfo);
                     int color = 0x4ca7a8;
@@ -63,11 +62,11 @@ public class SkillText extends GUIComponent {
                                 break;
                         }
                     }
-                    ApecUtils.drawThiccBorderString(ps.SkillInfo, (int) (p.x / scale), (int) (p.y / scale - 10), color);
+                    ApecUtils.drawThiccBorderString(ps.SkillInfo, (int) (p.x), (int) (p.y - 10), color);
                 }
             } else if (editingMode) {
                 stringWidth = Minecraft.getMinecraft().fontRendererObj.getStringWidth("+0.0 Farming (0/0)");
-                ApecUtils.drawThiccBorderString("+0.0 Farming (0/0)", (int) (p.x / scale), (int) (p.y / scale - 10), 0x4ca7a8);
+                ApecUtils.drawThiccBorderString("+0.0 Farming (0/0)", (int) (p.x), (int) (p.y - 10), 0x4ca7a8);
             }
         }
         GlStateManager.popMatrix();
@@ -75,12 +74,11 @@ public class SkillText extends GUIComponent {
 
     @Override
     public Vector2f getAnchorPointPosition() {
-        return new Vector2f((int) (g_sr.getScaledWidth() / 2 ) - stringWidth/2f, g_sr.getScaledHeight() - 30 + 20 * (1 - ((GUIModifier) ApecMain.Instance.getComponent(ComponentId.GUI_MODIFIER)).getGuiComponent(GUIComponentID.INFO_BOX).scale));
+        return new Vector2f((int) (g_sr.getScaledWidth() * 0.5f ) - stringWidth * 0.5f, g_sr.getScaledHeight() - 30 + 20 * (1 - ((GUIModifier) ApecMain.Instance.getComponent(ComponentId.GUI_MODIFIER)).getGuiComponent(GUIComponentID.INFO_BOX).scale));
     }
 
     @Override
     public Vector2f getBoundingPoint() {
-        ScaledResolution sr = new ScaledResolution(Minecraft.getMinecraft());
         return ApecUtils.addVec(getRealAnchorPoint(),new Vector2f(stringWidth*scale,-11*scale));
     }
 

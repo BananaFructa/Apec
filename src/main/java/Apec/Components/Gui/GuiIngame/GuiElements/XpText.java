@@ -24,16 +24,15 @@ public class XpText extends GUIComponent {
         GlStateManager.pushMatrix();
         if (ApecMain.Instance.settingsManager.getSettingState(SettingID.XP_TEXT)) {
             GlStateManager.scale(scale, scale, scale);
-            Vector2f StatBar = this.getAnchorPointPosition();
+            Vector2f StatBar = ApecUtils.scalarMultiply(getRealAnchorPoint(),oneOverScale);
 
-            StatBar = ApecUtils.addVec(StatBar, delta_position);
             String XPString;
             if (ApecMain.Instance.dataExtractor.isInTheCatacombs && ApecMain.Instance.settingsManager.getSettingState(SettingID.XP_BAR)) {
                 XPString = "Ultimate Cooldown " + ApecUtils.ReduceToTwoDecimals(this.mc.thePlayer.experience * 100 + 0.1f) + "%";
             } else {
                 XPString = "Lvl " + this.mc.thePlayer.experienceLevel + " XP";
             }
-            ApecUtils.drawThiccBorderString(XPString, (int) (StatBar.x / scale - mc.fontRendererObj.getStringWidth(XPString)), (int) (StatBar.y / scale - 10), 0x80ff20);
+            ApecUtils.drawThiccBorderString(XPString, (int) (StatBar.x - mc.fontRendererObj.getStringWidth(XPString)), (int) (StatBar.y - 10), 0x80ff20);
             stringWidth = Minecraft.getMinecraft().fontRendererObj.getStringWidth(XPString);
         }
         GlStateManager.popMatrix();
