@@ -131,58 +131,62 @@ public class DataExtractor {
     }
 
     // The priority is on lowest since the gui swapping that happens if sidebar mod swiched it happens on priority low
+    boolean UpdateThisTick = false;
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public void onTick(TickEvent.ClientTickEvent event) {
-
-        try {
-            String s = getScoreBoardTitle();
-            if (!s.equals("")) {
-                this.isInSkyblock = ApecUtils.removeAllCodes(s).toLowerCase().contains("skyblock");
-                if (wasInTheCatacombs ^ isInTheCatacombs) {
-                    wasInTheCatacombs = isInTheCatacombs;
-                    potionFetcher.ClearAll();
-                }
-            }
-        } catch (Exception e) { }
-        if (((GUIModifier) ApecMain.Instance.getComponent(ComponentId.GUI_MODIFIER)).shouldTheGuiAppear) {
+        UpdateThisTick = !UpdateThisTick;
+        if (UpdateThisTick) {
             try {
-                IChatComponent icc = (IChatComponent) FieldUtils.readField(mc.ingameGUI.getTabList(), ApecUtils.unObfedFieldNames.get("footer"), true);
-                if (icc == null) {
-                    this.footerTabData = "";
+                String s = getScoreBoardTitle();
+                if (!s.equals("")) {
+                    this.isInSkyblock = ApecUtils.removeAllCodes(s).toLowerCase().contains("skyblock");
+                    if (wasInTheCatacombs ^ isInTheCatacombs) {
+                        wasInTheCatacombs = isInTheCatacombs;
+                        potionFetcher.ClearAll();
+                    }
+                }
+            } catch (Exception e) {
+            }
+            if (((GUIModifier) ApecMain.Instance.getComponent(ComponentId.GUI_MODIFIER)).shouldTheGuiAppear) {
+                try {
+                    IChatComponent icc = (IChatComponent) FieldUtils.readField(mc.ingameGUI.getTabList(), ApecUtils.unObfedFieldNames.get("footer"), true);
+                    if (icc == null) {
+                        this.footerTabData = "";
+                    } else {
+                        this.footerTabData = icc.getFormattedText();
+                        alreadyShowedTabError = false;
+                    }
+                } catch (Exception e) {
+                    if (!alreadyShowedTabError) {
+                        ApecUtils.showMessage("[\u00A72Apec\u00A7f] There was an error processing tab footer data!");
+                        alreadyShowedTabError = true;
+                    }
+                }
+
+                try {
+                    this.scoreBoardLines = getSidebarLines();
+                    this.scoreBoardLines = addDataFixesScoreboard(this.scoreBoardLines);
+                } catch (Exception e) {
+
+                }
+
+                ProcessScoreBoardData();
+
+                this.playerStats = this.ProcessPlayerStats();
+
+                this.otherData = this.ProcessOtherData(this.scoreBoardData);
+
+                if (hasRecievedATradeRequest || hasSentATradeRequest) {
+                    tradeTicks++;
+                    if (tradeTicks == 600) {
+                        hasSentATradeRequest = false;
+                        hasRecievedATradeRequest = false;
+                    }
                 } else {
-                    this.footerTabData = icc.getFormattedText();
-                    alreadyShowedTabError = false;
+                    tradeTicks = 0;
                 }
-            } catch (Exception e) {
-                if (!alreadyShowedTabError) {
-                    ApecUtils.showMessage("[\u00A72Apec\u00A7f] There was an error processing tab footer data!");
-                    alreadyShowedTabError = true;
-                }
-            }
-
-            try {
-                this.scoreBoardLines = getSidebarLines();
-                this.scoreBoardLines = addDataFixesScoreboard(this.scoreBoardLines);
-            } catch (Exception e) {
 
             }
-
-            ProcessScoreBoardData();
-
-            this.playerStats = this.ProcessPlayerStats();
-
-            this.otherData = this.ProcessOtherData(this.scoreBoardData);
-
-            if (hasRecievedATradeRequest || hasSentATradeRequest) {
-                tradeTicks++;
-                if (tradeTicks == 600){
-                    hasSentATradeRequest = false;
-                    hasRecievedATradeRequest = false;
-                }
-            } else {
-                tradeTicks = 0;
-            }
-
         }
     }
 

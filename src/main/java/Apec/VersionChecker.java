@@ -5,6 +5,9 @@ import java.util.Scanner;
 
 public class VersionChecker {
 
+    /**
+     * @return Returns the latest version tag of the mod
+     */
     public static String getVersion() {
         try {
             URL url = new URL("https://dl.dropboxusercontent.com/s/onll3kv3ijjmjdn/apecVersion.txt"); // A dropbox link that shows the file apecVersion.txt

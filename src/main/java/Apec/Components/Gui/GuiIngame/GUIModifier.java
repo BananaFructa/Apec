@@ -37,7 +37,7 @@ public class GUIModifier extends Component {
     boolean alreadyAutoDisabled = false;
     public boolean shouldTheGuiAppear = false;
 
-    ApecGuiIngame AGIInstance = null;
+    ApecGuiIngameForge AGIInstance = null;
 
     final List<RenderGameOverlayEvent.ElementType> EventsToCancel = new ArrayList<RenderGameOverlayEvent.ElementType>() {{
         add(FOOD);
@@ -110,7 +110,7 @@ public class GUIModifier extends Component {
     @SubscribeEvent(priority = EventPriority.LOW)
     public void onTickLowest(TickEvent.ClientTickEvent event) {
         // This is for the compatibility with sidebar mod
-        if (shouldTheGuiAppear && !(mc.ingameGUI instanceof ApecGuiIngame)) {
+        if (shouldTheGuiAppear && !(mc.ingameGUI instanceof ApecGuiIngameForge)) {
             if (AGIInstance != null) mc.ingameGUI = AGIInstance;
         }
     }
@@ -144,7 +144,9 @@ public class GUIModifier extends Component {
                mc.gameSettings.showDebugInfo && component.getRealAnchorPoint().y < 150;
     }
 
-    /** Main function for rendering */
+    /**
+     * @brief Main function for rendering
+     */
     public void onRender(ScaledResolution sr) {
         DataExtractor.PlayerStats ps;
         DataExtractor.ScoreBoardData sd;
@@ -173,6 +175,11 @@ public class GUIModifier extends Component {
         }
     }
 
+    /**
+     * @brief Switches important data from a guiingame object to another
+     * @param from = Old gui
+     * @param to = New gui
+     */
     private void SwitchDataBetweenGuis(GuiIngame from,GuiIngame to) {
         try {
             IChatComponent header, footer;
@@ -228,6 +235,9 @@ public class GUIModifier extends Component {
         shouldTheGuiAppear = false;
     }
 
+    /**
+     * @brief Sets the delta positions of each gui element
+     */
     private void ApplyDeltas() {
         try {
             Scanner scanner = new Scanner(new File("config/Apec/GuiDeltas.txt"));

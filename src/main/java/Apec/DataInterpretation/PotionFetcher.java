@@ -22,20 +22,31 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
+/** All the code in this class is used only if the full potion effects list is shown */
 public class PotionFetcher {
 
     Minecraft mc = Minecraft.getMinecraft();
 
+    /** Was the effects list fetched */
     public boolean IsInitilized = false;
+    /** True if the initial fetch was not done */
     public boolean NeedsInitialFetch = true;
+    /** True if potion effects are displayed */
     public boolean ShouldRun = false;
+    /** True if the effects are being currently fetched from the effects menu */
     public boolean InLoadingProcess = false;
+    /** Last gui open event that was triggered */
     private GuiOpenEvent CurrentEvent;
 
+    /** The data extractor */
     DataExtractor dataExtractor;
 
+    /** Method got from reflection from the GuiScreen class of the function handleMouseClick */
     private Method HandleMouseClickMethod;
 
+    /**
+     * Class which holds the data of a potion effect
+     */
     class PotionEffect {
 
         public String effectName;
@@ -47,6 +58,9 @@ public class PotionFetcher {
 
     List<PotionEffect> PotionEffects = new ArrayList<PotionEffect>();
 
+    /**
+     * @param dataExtractor = The main data extractor
+     */
     public PotionFetcher(DataExtractor dataExtractor) {
         this.dataExtractor = dataExtractor;
         MinecraftForge.EVENT_BUS.register(this);
@@ -142,7 +156,7 @@ public class PotionFetcher {
     }
 
     /**
-     * @returnReturns a list of all the potion effects in text form
+     * @return Returns a list of all the potion effects in text form
      */
     public List<String> GetPotionEffects (){
         List<String> Effects = new ArrayList<String>();
@@ -275,6 +289,9 @@ public class PotionFetcher {
 
     }
 
+    /**
+     * @brief Used to detect when the player drinks milk so that the potion list is deleted
+     */
     @SubscribeEvent
     public void OnDrink(PlayerUseItemEvent.Finish event) {
         if (ShouldRun) {
@@ -286,7 +303,6 @@ public class PotionFetcher {
 
 
     // For initial Fetch
-    // I know i can make some public functions in the custom gui class instead of doing reflection but i guess it's better when it comes to future modifications
     @SubscribeEvent
     public void OnGuiOpen (final GuiOpenEvent event) {
         if (ShouldRun) {

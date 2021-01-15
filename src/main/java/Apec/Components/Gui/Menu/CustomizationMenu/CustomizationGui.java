@@ -3,7 +3,7 @@ package Apec.Components.Gui.Menu.CustomizationMenu;
 import Apec.ApecMain;
 import Apec.ApecUtils;
 import Apec.ComponentId;
-import Apec.Components.Gui.GuiIngame.ApecGuiIngame;
+import Apec.Components.Gui.GuiIngame.ApecGuiIngameForge;
 import Apec.Components.Gui.GuiIngame.GUIComponentID;
 import Apec.Components.Gui.GuiIngame.GUIModifier;
 import Apec.Components.Gui.GuiIngame.GuiElements.GUIComponent;
@@ -33,8 +33,8 @@ public class CustomizationGui extends GuiScreen {
         GUIModifier.Instance.CustomizationMenuOpened();
         super.initGui();
         final ScaledResolution sr = new ScaledResolution(mc);
-        if (mc.ingameGUI instanceof ApecGuiIngame) {
-            ApecGuiIngame guiIngame = (ApecGuiIngame)mc.ingameGUI;
+        if (mc.ingameGUI instanceof ApecGuiIngameForge) {
+            ApecGuiIngameForge guiIngame = (ApecGuiIngameForge)mc.ingameGUI;
             ((ToolTipText)((GUIModifier)ApecMain.Instance.getComponent(ComponentId.GUI_MODIFIER)).getGuiComponent(GUIComponentID.TOOL_TIP_TEXT)).SetText(guiIngame.GetHighlightText());
         }
         refreshSnapPoints();

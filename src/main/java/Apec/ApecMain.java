@@ -20,6 +20,7 @@ import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent;
 import org.apache.logging.log4j.Logger;
@@ -46,25 +47,40 @@ public class ApecMain
 
     public static ApecMain Instance;
 
+    /** Key for toggling the gui */
     KeyBinding guiKey = new KeyBinding("Apec Gui", Keyboard.KEY_RCONTROL, "Apec");
+    /** Key for toggling the menu*/
     KeyBinding menuKey = new KeyBinding("Apec Settings Menu", Keyboard.KEY_M, "Apec");
 
+    /** Data parser */
     public DataExtractor dataExtractor = new DataExtractor();
+    /** Keeps track of changes in the inventory */
     public InventorySubtractor inventorySubtractor = new InventorySubtractor();
+    /** Keeps track of setting states */
     public SettingsManager settingsManager = new SettingsManager();
+    /** Manages custom guis for container like interfaces */
     public ContainerGuiManager containerGuiManager = new ContainerGuiManager();
 
+    /** The newest version number set */
     public String newestVersion = "";
 
+    /** List of all the components present, removing any of these removes the feature from the mod */
     public List<Component> components = new ArrayList<Component>() {{
-        add(new GUIModifier());
-        add(new ApecMenu());
-        add(new AuctionHouseComponent());
-        add(new SkillViewComponent());
-        add(new ActiveEffectsTransparentComponent());
+        add(new GUIModifier()); // The gui ingame interface
+        add(new ApecMenu()); // The settings menu
+        add(new AuctionHouseComponent()); // The auction house ui
+        add(new SkillViewComponent()); // Skill view ui
+        add(new ActiveEffectsTransparentComponent()); // The transparent /effects screen
     }};
 
+    /** Manages the saving and loading of component save data */
     public ComponentSaveManager componentSaveManager = new ComponentSaveManager(components);
+
+    @EventHandler
+    public void preInit(FMLPreInitializationEvent event) {
+        ClientCommandHandler.instance.registerCommand(new ApecMenuOpenCommand());
+        ClientCommandHandler.instance.registerCommand(new ApecGuiOpenCommand());
+    }
 
     @EventHandler
     public void init(FMLInitializationEvent event)
@@ -81,9 +97,6 @@ public class ApecMain
             MinecraftForge.EVENT_BUS.register(component);
         }
 
-        ClientCommandHandler.instance.registerCommand(new ApecMenuOpenCommand());
-        ClientCommandHandler.instance.registerCommand(new ApecGuiOpenCommand());
-
         newestVersion = VersionChecker.getVersion();
 
         this.settingsManager.LoadSettings();
@@ -92,6 +105,7 @@ public class ApecMain
 
         List<HashMap<Integer,String>> DataOfComponents = componentSaveManager.LoadData();
 
+        // Sets the saved data for each component
         for (Component component : components){
             if (!DataOfComponents.get(component.componentId.ordinal()).isEmpty()) component.loadSavedData(DataOfComponents.get(component.componentId.ordinal()));
             component.init();
@@ -108,6 +122,10 @@ public class ApecMain
         }
     }
 
+    /**
+     * @param componentId = The id of component which has to be found
+     * @return Returns the component with the same id, null if none was found
+     */
     public Component getComponent(ComponentId componentId) {
         for (Component component : components) {
             if (component.componentId == componentId) return component;

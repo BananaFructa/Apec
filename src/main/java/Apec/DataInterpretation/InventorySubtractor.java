@@ -17,13 +17,20 @@ import java.util.HashMap;
 public class InventorySubtractor {
 
     private Minecraft mc = Minecraft.getMinecraft();
+
+    /** The player inventory in the previous tick */
     private InventoryPlayer lastPlayerInv = new InventoryPlayer(null);
+
+    /** The item stack held in the cursor in the last tick */
     private ItemStack lastItemStack;
 
     public ArrayList<SubtractionListElem> subtractionListElems = new ArrayList<SubtractionListElem>();
 
+    /**
+     * @brief Main logic for detecting changes in the inventory
+     */
     @SubscribeEvent
-    public void onWorldTickEvent(TickEvent.ClientTickEvent event) {
+    public void onTick(TickEvent.ClientTickEvent event) {
 
         ArrayList<SubtractionListElem> elemtsToRemove = new ArrayList<SubtractionListElem>();
         for (SubtractionListElem sle : subtractionListElems) {
@@ -78,6 +85,9 @@ public class InventorySubtractor {
         }
     }
 
+    /**
+     * @brief Adds a subtraction element to the history list
+     */
     private void addToList(SubtractionListElem sle) {
         for (SubtractionListElem _sle : subtractionListElems) {
             if (_sle.text.equals(sle.text)) {
@@ -89,6 +99,11 @@ public class InventorySubtractor {
         subtractionListElems.add(sle);
     }
 
+    /**
+     * @brief Adds an item to the hash map, if the item already exists it adds the quantity
+     * @param is = Items stack to be added
+     * @param hm = The hashpmap in which the quatity has to be added
+     */
     private void addItemToHashMap(ItemStack is, HashMap<String ,Integer> hm) {
         if (!hm.containsKey(is.getDisplayName())) {
             hm.put(is.getDisplayName(), is.stackSize);

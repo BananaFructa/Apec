@@ -18,8 +18,6 @@ import java.util.List;
 
 public class InfoBox extends GUIComponent {
 
-    // TODO: Maybe create an enum for subcomponents
-
     float yDecremetor = 0;
 
     public InfoBox() {
@@ -36,9 +34,9 @@ public class InfoBox extends GUIComponent {
         mc.renderEngine.bindTexture(new ResourceLocation(ApecMain.modId, "gui/bottomBar.png"));
         int DrawCounts = (int)(sr.getScaledWidth()/256) + 1;
         for (int i = 0;i < DrawCounts;i++) {
-            gi.drawTexturedModalRect((int) delta_position.x + i * 256, sr.getScaledHeight() - 20*scale + (int) delta_position.y + (int)yDecremetor,0,0,256,(int)(20.0f));
+            gi.drawTexturedModalRect((int) delta_position.x + i * 256, sr.getScaledHeight() - (int)(20*scale) + (int) delta_position.y + (int)yDecremetor,0,0,256,20);
             if (mc.gameSettings.guiScale == 1) {
-                gi.drawTexturedModalRect((int) delta_position.x + i * 256, sr.getScaledHeight() - 7*scale + (int) delta_position.y + (int)yDecremetor,0,0,256,(int)(20.0f));
+                gi.drawTexturedModalRect((int) delta_position.x + i * 256, sr.getScaledHeight() - (int)(7*scale) + (int) delta_position.y + (int)yDecremetor,0,0,256,20);
             }
         }
         GlStateManager.scale(scale,scale,1);
@@ -47,15 +45,15 @@ public class InfoBox extends GUIComponent {
 
             GuiPos.y += yDecremetor;
             mc.renderEngine.bindTexture(new ResourceLocation(ApecMain.modId, "gui/statBars.png"));
-            gi.drawTexturedModalRect((int)(GuiPos.x + (subComponentDeltas.get(0).getX())/scale), (int)((GuiPos.y+ subComponentDeltas.get(0).getY())/scale -1),1,216,6,9);
-            gi.drawTexturedModalRect((int)(GuiPos.x + (subComponentDeltas.get(1).getX())/scale + 120), (int)((GuiPos.y+ subComponentDeltas.get(1).getY())/scale -1),8,216,5,9);
+            gi.drawTexturedModalRect((int)(GuiPos.x + (subComponentDeltas.get(0).getX())*oneOverScale), (int)((GuiPos.y+ subComponentDeltas.get(0).getY())*oneOverScale -1),1,216,6,9);
+            gi.drawTexturedModalRect((int)(GuiPos.x + (subComponentDeltas.get(1).getX())*oneOverScale + 120), (int)((GuiPos.y+ subComponentDeltas.get(1).getY())*oneOverScale -1),8,216,5,9);
             if (ApecMain.Instance.dataExtractor.isInTheCatacombs) {
-                gi.drawTexturedModalRect((int) (GuiPos.x + (subComponentDeltas.get(2).getX())/scale + 220 - 1), (int) ((GuiPos.y + subComponentDeltas.get(2).getY())/scale -1), 24, 216, 7, 8);
+                gi.drawTexturedModalRect((int) (GuiPos.x + (subComponentDeltas.get(2).getX())*oneOverScale + 220 - 1), (int) ((GuiPos.y + subComponentDeltas.get(2).getY())*oneOverScale -1), 24, 216, 7, 8);
             } else {
-                gi.drawTexturedModalRect((int) (GuiPos.x + (subComponentDeltas.get(2).getX())/scale + 220), (int) ((GuiPos.y + subComponentDeltas.get(2).getY())/scale -1 ), 14, 216, 9, 9);
+                gi.drawTexturedModalRect((int) (GuiPos.x + (subComponentDeltas.get(2).getX())*oneOverScale + 220), (int) ((GuiPos.y + subComponentDeltas.get(2).getY())*oneOverScale -1 ), 14, 216, 9, 9);
             }
             if (!ApecMain.Instance.settingsManager.getSettingState(SettingID.USE_DEFENCE_OUT_OF_BB) || editingMode) {
-                gi.drawTexturedModalRect((int) (GuiPos.x + (subComponentDeltas.get(3).getX()) / scale + 360), (int) ((GuiPos.y + subComponentDeltas.get(3).getY()) / scale - 1), 32, 215, 7, 10);
+                gi.drawTexturedModalRect((int) (GuiPos.x + (subComponentDeltas.get(3).getX()) * oneOverScale + 360), (int) ((GuiPos.y + subComponentDeltas.get(3).getY()) *oneOverScale - 1), 32, 215, 7, 10);
             }
         }
         GlStateManager.scale(1,1,1);
@@ -104,29 +102,29 @@ public class InfoBox extends GUIComponent {
         boolean inTheCatacombs = ApecMain.Instance.dataExtractor.isInTheCatacombs;
         mc.fontRendererObj.drawString(
                 purseText,
-                (int) (GuiPos.x + (subComponentDeltas.get(0).getX() + (UseIcons ? 9 : 0)) / scale),
-                (int) ((GuiPos.y + subComponentDeltas.get(0).getY()) / scale),
+                (int) (GuiPos.x + (subComponentDeltas.get(0).getX() + (UseIcons ? 9 : 0)) * oneOverScale),
+                (int) ((GuiPos.y + subComponentDeltas.get(0).getY()) * oneOverScale),
                 0xffffff, false
         );
         mc.fontRendererObj.drawString(
                 bitText,
-                (int) (GuiPos.x + (subComponentDeltas.get(1).getX() + (UseIcons ? 9 : 0)) / scale + 120),
-                (int) ((GuiPos.y + subComponentDeltas.get(1).getY()) / scale),
+                (int) (GuiPos.x + (subComponentDeltas.get(1).getX() + (UseIcons ? 9 : 0)) * oneOverScale + 120),
+                (int) ((GuiPos.y + subComponentDeltas.get(1).getY()) * oneOverScale),
                 0xffffff, false
         );
         int zoneAddX = (inTheCatacombs ? 5 : 9) ;
         mc.fontRendererObj.drawString(
                 zoneText,
-                (int) (GuiPos.x + (subComponentDeltas.get(2).getX() + (UseIcons ? zoneAddX : 0)) / scale + 220),
-                (int) ((GuiPos.y + subComponentDeltas.get(2).getY()) / scale),
+                (int) (GuiPos.x + (subComponentDeltas.get(2).getX() + (UseIcons ? zoneAddX : 0)) * oneOverScale + 220),
+                (int) ((GuiPos.y + subComponentDeltas.get(2).getY()) * oneOverScale),
                 0xffffff, false
         );
 
         if (!ApecMain.Instance.settingsManager.getSettingState(SettingID.USE_DEFENCE_OUT_OF_BB) || editingMode) {
             mc.fontRendererObj.drawString(
                     defenceText,
-                    (int) (GuiPos.x + (subComponentDeltas.get(3).getX() + (UseIcons ? 10 : 0)) / scale + 360),
-                    (int) ((GuiPos.y + subComponentDeltas.get(3).getY()) / scale),
+                    (int) (GuiPos.x + (subComponentDeltas.get(3).getX() + (UseIcons ? 10 : 0)) * oneOverScale + 360),
+                    (int) ((GuiPos.y + subComponentDeltas.get(3).getY()) * oneOverScale),
                     0xffffff
             );
         }
@@ -139,8 +137,8 @@ public class InfoBox extends GUIComponent {
 
         mc.fontRendererObj.drawString(
                 sd.Date + " " + sd.Hour,
-                (int) ((sr.getScaledWidth() - 15 + delta_position.x + subComponentDeltas.get(4).getX()) / scale - mc.fontRendererObj.getStringWidth(sd.Date + " " + sd.Hour)),
-                (int) ((GuiPos.y + delta_position.y + subComponentDeltas.get(4).getY()) / scale), 0xffffff, false
+                (int) ((sr.getScaledWidth() - 15 + delta_position.x + subComponentDeltas.get(4).getX()) * oneOverScale - mc.fontRendererObj.getStringWidth(sd.Date + " " + sd.Hour)),
+                (int) ((GuiPos.y + delta_position.y + subComponentDeltas.get(4).getY()) * oneOverScale), 0xffffff, false
         );
         GlStateManager.scale(1, 1, 1);
         GlStateManager.popMatrix();

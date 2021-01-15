@@ -11,6 +11,7 @@ import org.apache.commons.lang3.reflect.FieldUtils;
 import org.lwjgl.util.vector.Vector2f;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -54,6 +55,17 @@ public class ApecUtils {
             f.set(target,value);
         } catch (Exception err) {
             err.printStackTrace();
+        }
+    }
+
+    public static Method GetDeclaredMethod(Class<?> targetClass,String name,Class<?>... parameters) {
+        try {
+            Method m = targetClass.getDeclaredMethod(name,parameters);
+            m.setAccessible(true);
+            return m;
+        } catch (Exception err) {
+            err.printStackTrace();
+            return null;
         }
     }
 

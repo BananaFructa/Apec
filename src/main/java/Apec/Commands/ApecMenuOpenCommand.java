@@ -28,6 +28,7 @@ public class ApecMenuOpenCommand extends CommandBase {
 
     @Override
     public void processCommand(ICommandSender sender, String[] args) throws CommandException {
+        ApecMenuOpenCommand.shouldOpenGui = true;
         // TODO: awful in any way possible, there has to be a better method. Too bad!
         Thread awaitThread = new Thread(new Runnable() {
             @Override
@@ -38,7 +39,7 @@ public class ApecMenuOpenCommand extends CommandBase {
 
             }
         });
-        awaitThread.start();
+        //awaitThread.start();
     }
 
     @Override

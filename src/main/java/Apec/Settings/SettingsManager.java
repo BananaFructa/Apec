@@ -15,6 +15,7 @@ import static Apec.Settings.SettingID.*;
 
 public class SettingsManager {
 
+    /** List which contains all settings */
     public List<Setting> settings = new ArrayList<Setting>() {{
         add(new Setting(AUTO_ENABLE,true));
         add(new Setting(SettingID.HP_BAR,true));
@@ -55,7 +56,7 @@ public class SettingsManager {
         add(new Setting(SHOW_DEBUG_MESSAGES,false));
     }};
 
-
+    /** Hashmap that holds the titles and descriptions of each setting */
     public static HashMap<SettingID,Tuple<String,String>> settingData = new HashMap<SettingID, Tuple<String, String>>() {{
         put(AUTO_ENABLE,new Tuple<String, String>("Auto Toggle","The GUI will automatically enable/disable when you join/leave skyblock"));
         put(SHOW_WARNING,new Tuple<String, String>("Show Warning Icons","Show the warning icons under the status bars"));
@@ -96,6 +97,10 @@ public class SettingsManager {
         put(COMPATIBILITY_5ZIG,new Tuple<String, String>("5Zig Compatibility","Ensures that certain features that might break 5zig are disabled"));
     }};
 
+    /**
+     * @param settingID = The setting id of the referred setting
+     * @return Returns the enable state of the setting
+     */
     public boolean getSettingState(SettingID settingID){
         for (Setting s : settings) {
             if (s.settingID == settingID) return s.enabled;
@@ -103,6 +108,11 @@ public class SettingsManager {
         return false;
     }
 
+    /**
+     * @brief Sets the enable state of a setting
+     * @param settingID = The setting id of the referred setting
+     * @param state = The new state of the setting
+     */
     public void setSettingState(SettingID settingID,boolean state) {
         for (Setting s : settings) {
             if (s.settingID == settingID) {
@@ -112,6 +122,12 @@ public class SettingsManager {
         }
         this.SaveSettings();
     }
+
+    /**
+     * @brief Sets the enable state of a setting without overwriting the save data, used on initial load
+     * @param settingID = The setting id of the referred setting
+     * @param state = The new state of the setting
+     */
     public void setSettingStateWithNoSaveing(SettingID settingID,boolean state) {
         for (Setting s : settings) {
             if (s.settingID == settingID) {
@@ -121,10 +137,17 @@ public class SettingsManager {
         }
     }
 
+    /**
+     * @param settingID = The setting id of the referred setting
+     * @return Returns a string,string tuple that contains the title and the description of the setting
+     */
     public static Tuple<String,String> getNameAndDesc (SettingID settingID) {
         return settingData.get(settingID);
     }
 
+    /**
+     * @brief Saves the setting data to disk
+     */
     public void SaveSettings() {
         try {
             new File("config/Apec").mkdirs();
@@ -142,6 +165,9 @@ public class SettingsManager {
         }
     }
 
+    /**
+     * @brief Loads and sets the setting data from disk
+     */
     public void LoadSettings() {
         try {
             Scanner scanner = new Scanner(new File("config/Apec/Settings.txt"));

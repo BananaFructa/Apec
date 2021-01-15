@@ -1,5 +1,6 @@
 package Apec.Settings;
 
+/** Enums used to identify settings */
 public enum SettingID {
 
     AUTO_ENABLE,

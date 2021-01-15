@@ -7,9 +7,12 @@ import java.util.HashMap;
 public class Component {
 
 
+    /** Holds the enable state */
     private boolean Enabled = false;
 
+    /** The component id */
     public ComponentId componentId;
+    /** Data that has to be saved on disk */
     public HashMap<Integer,String> DataToSave = new HashMap<Integer, String>();
 
     /**

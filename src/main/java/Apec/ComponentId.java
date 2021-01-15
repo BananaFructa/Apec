@@ -1,5 +1,6 @@
 package Apec;
 
+/** Enum to identify components */
 public enum ComponentId {
     GUI_MODIFIER,
     SETTINGS_MENU,
