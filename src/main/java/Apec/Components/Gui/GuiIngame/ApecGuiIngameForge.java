@@ -21,8 +21,6 @@ import static net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType
 
 
 /**
- * The scoreboard and the auction bar has been disabled, all of their data is being processed and displayed in a different manner
- * This is a modified copy of the original GuiIngameForge.class file , used to make other mods compatible
  * And this kids is the story of how banana gone insane
  */
 
@@ -54,7 +52,7 @@ public class ApecGuiIngameForge extends GuiIngameForge {
         Vector2f pos = HotBar.getRealAnchorPoint();
         float scale = HotBar.getScale();
 
-        // This is for modifying the position of the hotbar, the faked scale resolution class is used instead of glTranslate so it doesn't affect 5zig
+        // This is for modifying the position of the hotbar, the faked scale resolution class is used instead of glTranslate so it doesn't affect 5zig and other mods
         FakedScaledResolution fsr = new FakedScaledResolution(mc,(int)((pos.x/scale + 91)*2),(int)(pos.y/scale + 22));
 
         GlStateManager.pushMatrix();
@@ -80,6 +78,7 @@ public class ApecGuiIngameForge extends GuiIngameForge {
             name = this.highlightingItemStack.getDisplayName();
             if (this.highlightingItemStack.hasDisplayName())
                 name = EnumChatFormatting.ITALIC + name;
+            name = this.highlightingItemStack.getItem().getHighlightTip(this.highlightingItemStack, name);
         }
 
 
@@ -111,7 +110,7 @@ public class ApecGuiIngameForge extends GuiIngameForge {
                 Rx = (res.getScaledWidth() - mc.fontRendererObj.getStringWidth(name)) / 2;
             }
 
-            GlStateManager.translate(Rx - x, Ry - y, 0);
+            GlStateManager.translate(x - Rx, y - Ry, 0);
             GlStateManager.scale(scaleH, scaleH, scaleH);
 
         }
@@ -120,7 +119,7 @@ public class ApecGuiIngameForge extends GuiIngameForge {
         // Makes the tooltip show when the customization ui is opened
         if (mc.currentScreen instanceof CustomizationGui) {
             this.remainingHighlightTicks = 10;
-            if (this.highlightingItemStack != null) {
+            if (this.highlightingItemStack == null) {
                 // Draws the tooltip texture when the highlight stack is null when the customization menu is opened
                 mc.fontRendererObj.drawStringWithShadow(name, x, y, 0xffffffff);
             }
@@ -141,7 +140,7 @@ public class ApecGuiIngameForge extends GuiIngameForge {
 
     /**
      * Removing rendering is done this done this way in the case other mods might use the render game overlay events
-     * Note the methods from the supper class are not called
+     * Note the methods from the outer class are not called
      */
 
     @Override

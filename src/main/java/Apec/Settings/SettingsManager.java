@@ -44,7 +44,7 @@ public class SettingsManager {
         add(new Setting(GUIS_WHEN_DISABLED, false));
         add(new Setting(SHOW_ABILITY_TEXT,true));
         add(new Setting(USE_DEFENCE_OUT_OF_BB,false));
-        add(new Setting(COMPATIBILITY_5ZIG,true));
+        add(new Setting(COMPATIBILITY_SAFETY,true));
         add(new Setting(HIDE_IN_F3,false));
         add(new Setting(SNAP_IN_EDITING,true));
         //add(new Setting(SHOW_CACHED_PURSE_IN_DUNGEONS,true));
@@ -94,7 +94,7 @@ public class SettingsManager {
         put(USE_AUTO_SCALING_BB,new Tuple<String, String>("Bottom bar autoscaling","The bottom bar auto-scales based on the gui scale"));
         put(GUIS_WHEN_DISABLED,new Tuple<String, String>("Allow GUIs when inactive","Allow GUIs when the Ingame GUI is not enabled"));
         put(USE_DEFENCE_OUT_OF_BB,new Tuple<String, String>("Defence outside bar","Shows the defence outside the bottom bar"));
-        put(COMPATIBILITY_5ZIG,new Tuple<String, String>("5Zig Compatibility","Ensures that certain features that might break 5zig are disabled"));
+        put(COMPATIBILITY_SAFETY,new Tuple<String, String>("Compatibility Safety","Ensures that certain features that might break some mods are disabled"));
     }};
 
     /**

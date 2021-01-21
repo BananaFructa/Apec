@@ -64,13 +64,13 @@ public class InfoBox extends GUIComponent {
         GlStateManager.pushMatrix();
         if (ApecMain.Instance.settingsManager.getSettingState(SettingID.USE_AUTO_SCALING_BB)) {
             if (mc.gameSettings.guiScale == 0) {
-                this.scale = 0.72f;
+                this.setScale(0.72f);
             } else if (mc.gameSettings.guiScale == 3) {
-                this.scale = 0.8f;
+                this.setScale(0.8f);
             } else if (mc.gameSettings.guiScale == 2) {
-                this.scale = 1f;
+                this.setScale(1f);
             } else if (mc.gameSettings.guiScale == 1) {
-                this.scale = 1.5f;
+                this.setScale(1.5f);
             }
         } else {
             scale = 1;

@@ -34,7 +34,7 @@ public class AirBar extends GUIComponent {
 
             if (mc.thePlayer.isInsideOfMaterial(Material.water) || editingMode) {
 
-                float airPrec = mc.thePlayer.getAir() * 0.0333f;
+                float airPrec = mc.thePlayer.getAir() * 0.00333f;
                 if (airPrec < 0) airPrec = 0;
 
                 gi.drawTexturedModalRect((int) StatBar.x, (int) StatBar.y, 0, 40, 182, 5);

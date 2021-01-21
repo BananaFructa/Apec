@@ -29,32 +29,21 @@ public class ApecMenuOpenCommand extends CommandBase {
     @Override
     public void processCommand(ICommandSender sender, String[] args) throws CommandException {
         ApecMenuOpenCommand.shouldOpenGui = true;
-        // TODO: awful in any way possible, there has to be a better method. Too bad!
-        Thread awaitThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-
-                while (Minecraft.getMinecraft().currentScreen != null);
-                ApecMenuOpenCommand.shouldOpenGui = true;
-
-            }
-        });
-        //awaitThread.start();
     }
 
     @Override
-    public int getRequiredPermissionLevel() {
-        return 0;
+    public boolean canCommandSenderUseCommand(ICommandSender sender) {
+        return true;
     }
 
     @Override
     public String getCommandName() {
-        return "apecMenu";
+        return "apecmenu";
     }
 
     @Override
     public String getCommandUsage(ICommandSender sender) {
-        return "";
+        return "/apecmenu";
     }
 
 }

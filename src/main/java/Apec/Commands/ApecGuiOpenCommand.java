@@ -14,18 +14,18 @@ public class ApecGuiOpenCommand extends CommandBase {
     }
 
     @Override
-    public int getRequiredPermissionLevel() {
-        return 0;
+    public boolean canCommandSenderUseCommand(ICommandSender sender) {
+        return true;
     }
 
     @Override
     public String getCommandName() {
-        return "apecToggle";
+        return "apectoggle";
     }
 
     @Override
     public String getCommandUsage(ICommandSender sender) {
-        return "";
+        return "/apectoggle";
     }
 
 }

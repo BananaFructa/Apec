@@ -18,7 +18,7 @@ public class HotBar extends GUIComponent {
 
     @Override
     public void editInit() {
-        this.scalable = !ApecMain.Instance.settingsManager.getSettingState(SettingID.COMPATIBILITY_5ZIG);
+        this.scalable = !ApecMain.Instance.settingsManager.getSettingState(SettingID.COMPATIBILITY_SAFETY);
     }
 
     @Override

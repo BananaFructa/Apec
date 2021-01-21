@@ -34,7 +34,7 @@ public class GUIModifier extends Component {
     public static GUIModifier Instance;
 
     boolean alreadyAutoEnabled = false;
-    boolean alreadyAutoDisabled = false;
+    boolean alreadyAutoDisabled = true;
     public boolean shouldTheGuiAppear = false;
 
     ApecGuiIngameForge AGIInstance = null;

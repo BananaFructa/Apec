@@ -51,10 +51,11 @@ public class ApecMenu extends Component {
     }
 
 
-    public class ApecMenuGui extends GuiScreen {
+    public static class ApecMenuGui extends GuiScreen {
 
         Integer page;
         GuiTextField SearchBox;
+        ApecMenuNavigationButton GuiCustomizationButton;
         ApecMenuNavigationButton ShowSearchBoxButton;
         boolean ShowSearchBox = false;
 
@@ -63,7 +64,8 @@ public class ApecMenu extends Component {
 
         int SearchBoxAnimationStartingWidth = 30;
         /** Used for the sole reason that the width is stored as an int and decimal increments are needed for it to be smooth*/
-        float WidthAnimationValue = SearchBoxAnimationStartingWidth;
+        float WidthSearchBoxAnimation = SearchBoxAnimationStartingWidth;
+        float XPosCustomizationButtonAnimation = -90;
 
         public ApecMenuGui(Integer pageCounter) {
             this.page = pageCounter;
@@ -72,19 +74,20 @@ public class ApecMenu extends Component {
         @Override
         public void initGui() {
             super.initGui();
-            this.loadAtPage(page);
             ScaledResolution sr = new ScaledResolution(mc);
             int h = sr.getScaledHeight()/2;
             int w = sr.getScaledWidth()/2;
             this.buttonList.add(new ApecMenuNavigationButton(0,w-265,h-130,20,250,NavigationAction.BACK));
             this.buttonList.add(new ApecMenuNavigationButton(0,w+245,h-130,20,250,NavigationAction.NEXT));
-            this.buttonList.add(new ApecMenuNavigationButton(0,5,5,85,23,NavigationAction.OPEN_GUI_EDITING));
+            GuiCustomizationButton = new ApecMenuNavigationButton(0,-90,5,85,23,NavigationAction.OPEN_GUI_EDITING);
+            this.buttonList.add(GuiCustomizationButton);
             ShowSearchBoxButton = new ApecMenuNavigationButton(0,w-265,h-145,120,15,NavigationAction.SEARCH);
             this.buttonList.add(ShowSearchBoxButton);
             SearchBox = new GuiTextField(0,mc.fontRendererObj,w-265,h-150,SearchBoxAnimationStartingWidth,15);//150
 
             // Initiating the setting list
             Settings.addAll(ApecMain.Instance.settingsManager.settings);
+            this.loadAtPage(page);
 
         }
 
@@ -145,12 +148,19 @@ public class ApecMenu extends Component {
                 if(SearchBox.width < 150) {
                     float fps = Minecraft.getDebugFPS();
                     float DeltaTime = 120.0f/fps;
-                    WidthAnimationValue += 3f * DeltaTime;
-                    SearchBox.width = (int)WidthAnimationValue;
+                    WidthSearchBoxAnimation += 3f * DeltaTime;
+                    SearchBox.width = (int) WidthSearchBoxAnimation;
                 }
                 if (SearchBox.width > 150) SearchBox.width = 150;
                 SearchBox.drawTextBox();
             }
+            if (GuiCustomizationButton.xPosition < 5) {
+                float fps = Minecraft.getDebugFPS();
+                float DeltaTime = 120.0f/fps;
+                XPosCustomizationButtonAnimation += 4f * DeltaTime;
+                GuiCustomizationButton.xPosition = (int)XPosCustomizationButtonAnimation;
+            }
+            if (GuiCustomizationButton.xPosition > 5) GuiCustomizationButton.xPosition = 5;
             super.drawScreen(mouseX, mouseY, partialTicks);
 
         }
@@ -214,8 +224,8 @@ public class ApecMenu extends Component {
                 Settings.clear();
                 Settings.addAll(ApecMain.Instance.settingsManager.settings);
             }
-
-            loadAtPage(0);
+            page = 0;
+            loadAtPage(page);
         }
 
         @Override
