@@ -65,8 +65,6 @@ public class DataExtractor {
     private String lastSkillXp = "";
     private String lastPurse = "";
 
-    private final String magmaBossName = "magma cube boss";
-
     private final String sendTradeRequestMsg = "You have sent a trade request to";
     private final String expireSentTradeRequest = "Your /trade request to";
 

@@ -186,14 +186,17 @@ public class GUIModifier extends Component {
             GuiNewChat guiNewChat;
             GuiStreamIndicator guiStreamIndicator;
             Integer updateCounter;
+            RenderGameOverlayEvent event;
 
             guiNewChat = (GuiNewChat) ApecUtils.ReadDeclaredField(GuiIngame.class, from, ApecUtils.unObfedFieldNames.get("persistantChatGUI"));
             guiStreamIndicator = (GuiStreamIndicator) ApecUtils.ReadDeclaredField(GuiIngame.class, from, ApecUtils.unObfedFieldNames.get("streamIndicator"));
             updateCounter = (Integer) ApecUtils.ReadDeclaredField(GuiIngame.class, from, ApecUtils.unObfedFieldNames.get("updateCounter"));
+            event = (RenderGameOverlayEvent) ApecUtils.ReadDeclaredField(GuiIngameForge.class,from,"eventParent");
 
             ApecUtils.WriteDeclaredField(GuiIngame.class, to, ApecUtils.unObfedFieldNames.get("persistantChatGUI"), guiNewChat);
             ApecUtils.WriteDeclaredField(GuiIngame.class, to, ApecUtils.unObfedFieldNames.get("streamIndicator"), guiStreamIndicator);
             ApecUtils.WriteDeclaredField(GuiIngame.class, to, ApecUtils.unObfedFieldNames.get("updateCounter"), updateCounter);
+            ApecUtils.WriteDeclaredField(GuiIngameForge.class,to,"eventParent",event);
 
             GuiPlayerTabOverlay tab = (GuiPlayerTabOverlay) ApecUtils.ReadDeclaredField(GuiIngame.class,from,ApecUtils.unObfedFieldNames.get("overlayPlayerList"));
             ApecUtils.WriteDeclaredField(GuiPlayerTabOverlay.class,tab,ApecUtils.unObfedFieldNames.get("guiIngame"),to);
