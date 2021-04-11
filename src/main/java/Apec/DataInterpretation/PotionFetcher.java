@@ -5,7 +5,7 @@ package Apec.DataInterpretation;
 
 import Apec.ApecMain;
 import Apec.ApecUtils;
-import Apec.Components.Gui.ContainerGuis.TrasparentEffects.ActiveEffectsTransparentGui;
+import Apec.Components.Gui.ContainerGuis.TrasparentEffects.Gui.ActiveEffectsTransparentGui;
 import Apec.Settings.SettingID;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiContainer;

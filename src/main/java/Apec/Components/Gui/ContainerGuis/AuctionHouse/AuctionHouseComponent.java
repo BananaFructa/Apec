@@ -2,6 +2,7 @@ package Apec.Components.Gui.ContainerGuis.AuctionHouse;
 
 import Apec.ApecMain;
 import Apec.ComponentId;
+import Apec.Components.Gui.ContainerGuis.AuctionHouse.Gui.AuctionHouseGui;
 import Apec.Components.Gui.ContainerGuis.ChestGuiComponent;
 import Apec.Settings.SettingID;
 import net.minecraft.client.Minecraft;

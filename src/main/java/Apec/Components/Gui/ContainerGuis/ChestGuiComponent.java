@@ -5,13 +5,11 @@ import Apec.ComponentId;
 import net.minecraft.inventory.IInventory;
 import net.minecraftforge.client.event.GuiOpenEvent;
 
-public class ChestGuiComponent extends Component {
+/**
+ * Base component class for all the gui screen components(ex AH menu, skill menu)
+ */
 
-    public enum Actions {
-        PAGE_CHANGE,
-        BACK,
-        CLOSE
-    }
+public class ChestGuiComponent extends Component {
 
     public ChestGuiComponent(ComponentId componentId) {
         super(componentId);

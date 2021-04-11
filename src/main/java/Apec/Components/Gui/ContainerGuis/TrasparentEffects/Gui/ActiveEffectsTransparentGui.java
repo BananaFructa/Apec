@@ -1,4 +1,4 @@
-package Apec.Components.Gui.ContainerGuis.TrasparentEffects;
+package Apec.Components.Gui.ContainerGuis.TrasparentEffects.Gui;
 
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.inventory.IInventory;

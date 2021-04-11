@@ -3,7 +3,7 @@
  */
 package Apec.DataInterpretation;
 
-import Apec.Components.Gui.ContainerGuis.AuctionHouse.AuctionHouseGui;
+import Apec.Components.Gui.ContainerGuis.AuctionHouse.Gui.AuctionHouseGui;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.entity.player.InventoryPlayer;

@@ -7,6 +7,10 @@ import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 import java.util.HashMap;
 
+/**
+ * A component represents a functionality module or a "feature" which the mod provides
+ */
+
 public class Component {
 
 

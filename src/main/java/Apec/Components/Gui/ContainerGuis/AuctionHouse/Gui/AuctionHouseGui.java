@@ -1,7 +1,8 @@
-package Apec.Components.Gui.ContainerGuis.AuctionHouse;
+package Apec.Components.Gui.ContainerGuis.AuctionHouse.Gui;
 
 import Apec.ApecMain;
 import Apec.ComponentId;
+import Apec.Components.Gui.ContainerGuis.AuctionHouse.AuctionHouseComponent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.inventory.ContainerChest;
