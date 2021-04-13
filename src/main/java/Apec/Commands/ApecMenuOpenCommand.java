@@ -38,12 +38,12 @@ public class ApecMenuOpenCommand extends CommandBase {
 
     @Override
     public String getCommandName() {
-        return "apecmenu";
+        return "apec";
     }
 
     @Override
     public String getCommandUsage(ICommandSender sender) {
-        return "/apecmenu";
+        return "/apec";
     }
 
 }
