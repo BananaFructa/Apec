@@ -1,12 +1,12 @@
 package Apec;
 
-import Apec.Commands.ApecGuiOpenCommand;
-import Apec.Commands.ApecMenuOpenCommand;
+import Apec.Commands.ApecComponentTogglerCommand;
 import Apec.Components.Gui.ContainerGuis.TrasparentEffects.ActiveEffectsTransparentComponent;
 import Apec.Components.Gui.ContainerGuis.AuctionHouse.AuctionHouseComponent;
 import Apec.Components.Gui.ContainerGuis.SkillView.SkillViewComponent;
 import Apec.Components.Gui.GuiIngame.GUIModifier;
 import Apec.Components.Gui.Menu.SettingsMenu.ApecMenu;
+import Apec.Components.Gui.Menu.TexturePackMenu.TexturePackRegistryViewer;
 import Apec.DataInterpretation.ComponentSaveManager;
 import Apec.DataInterpretation.ContainerGuiManager;
 import Apec.DataInterpretation.DataExtractor;
@@ -67,6 +67,7 @@ public class ApecMain
     public List<Component> components = new ArrayList<Component>() {{
         add(new GUIModifier()); // The gui ingame interface
         add(new ApecMenu()); // The settings menu
+        add(new TexturePackRegistryViewer());
         add(new AuctionHouseComponent()); // The auction house ui
         add(new SkillViewComponent()); // Skill view ui
         add(new ActiveEffectsTransparentComponent()); // The transparent /effects screen
@@ -77,8 +78,9 @@ public class ApecMain
 
     @EventHandler
     public void preInit(FMLPreInitializationEvent event) {
-        ClientCommandHandler.instance.registerCommand(new ApecMenuOpenCommand());
-        ClientCommandHandler.instance.registerCommand(new ApecGuiOpenCommand());
+        ClientCommandHandler.instance.registerCommand(new ApecComponentTogglerCommand(ComponentId.SETTINGS_MENU,"apec",true));
+        ClientCommandHandler.instance.registerCommand(new ApecComponentTogglerCommand(ComponentId.GUI_MODIFIER,"apectoggle",false));
+        ClientCommandHandler.instance.registerCommand(new ApecComponentTogglerCommand(ComponentId.TEXTURE_PACK_REGISTRY_VIEWER,"apectpr",true));
     }
 
     @EventHandler

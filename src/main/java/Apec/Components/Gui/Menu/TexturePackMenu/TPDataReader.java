@@ -69,7 +69,7 @@ public class TPDataReader {
     }
 
     public TPData readNextTPData() {
-        String name = null,author = null,download = null,icon = null,description = null;
+        String name = null,author = null,download = null,icon = null,description = null,version = null,efn = null,optifine = null;
         for (int i = 0;i < 5;i++) {
             Tuple<String, String> pair = readNextPair();
             String tag = pair.getFirst();
@@ -78,9 +78,12 @@ public class TPDataReader {
             else if (tag.equals("download")) download = pair.getSecond();
             else if (tag.equals("icon")) icon = pair.getSecond();
             else if (tag.equals("description")) description = pair.getSecond();
+            else if (tag.equals("version")) version = pair.getSecond();
+            else if (tag.equals("efn")) efn = pair.getSecond();
+            else if (tag.equals("req-optifine")) optifine = pair.getSecond();
         }
-        if (name == null || author == null || download == null || icon == null || description == null) return null;
-        return new TPData(name,author,description,download,icon);
+        if (name == null || author == null || download == null || icon == null || description == null || efn == null || optifine == null) return null;
+        return new TPData(name,author,description,version,download,optifine,icon,efn);
     }
 
 }
