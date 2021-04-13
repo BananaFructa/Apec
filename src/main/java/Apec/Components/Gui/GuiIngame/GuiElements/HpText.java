@@ -3,13 +3,14 @@ package Apec.Components.Gui.GuiIngame.GuiElements;
 import Apec.ApecMain;
 import Apec.ApecUtils;
 import Apec.Components.Gui.GuiIngame.GUIComponentID;
+import Apec.Components.Gui.GuiIngame.TextComponent;
 import Apec.DataInterpretation.DataExtractor;
 import Apec.Settings.SettingID;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
 import org.lwjgl.util.vector.Vector2f;
 
-public class HpText extends GUIComponent {
+public class HpText extends TextComponent {
 
     public HpText () {
         super(GUIComponentID.HP_TEXT);
@@ -26,7 +27,7 @@ public class HpText extends GUIComponent {
 
             boolean showAP = ApecMain.Instance.settingsManager.getSettingState(SettingID.SHOW_ABSORPTION_BAR);
 
-            Vector2f StatBar = ApecUtils.scalarMultiply(getRealAnchorPoint(),oneOverScale);
+            Vector2f StatBar = ApecUtils.scalarMultiply(getCurrentAnchorPoint(),oneOverScale);
 
             int addedHp = ps.Hp + ps.Ap;
             String HPString = (!showAP && ps.Ap != 0 ? "\u00a7e" + addedHp + "\u00a7r" : ps.Hp) + "/" + ps.BaseHp + " HP";
@@ -49,7 +50,7 @@ public class HpText extends GUIComponent {
 
     @Override
     public Vector2f getBoundingPoint() {
-        return ApecUtils.addVec(getRealAnchorPoint(),new Vector2f(-stringWidth*scale,-11*scale));
+        return ApecUtils.addVec(getCurrentAnchorPoint(),new Vector2f(-stringWidth*scale,-11*scale));
     }
 
 }

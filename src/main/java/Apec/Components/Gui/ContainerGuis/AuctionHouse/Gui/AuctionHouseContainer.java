@@ -64,34 +64,29 @@ public abstract class AuctionHouseContainer extends ApecContainerGui {
 
     private void executeAction (AuctionHouseComponent.Actions actions,int mouseButton) {
         acceptNextClick = true;
-        if (mouseButton == 0) {
+        if (mouseButton == 0 || mouseButton == 1) {
             switch (actions) {
                 case SEARCH:
-                    handleMouseClick(this.inventorySlots.inventorySlots.get(48), 48, 0, 0);
+                    if (mouseButton == 0) handleMouseClick(this.inventorySlots.inventorySlots.get(48), 48, 0, 0);
+                    else handleMouseClick(this.inventorySlots.inventorySlots.get(47), 47, 0, 0);
                     break;
                 case NEXT:
-                    handleMouseClick(this.inventorySlots.inventorySlots.get(53), 53, 0, 0);
+                    handleMouseClick(this.inventorySlots.inventorySlots.get(53), 53, mouseButton, 0);
                     break;
                 case BACK:
-                    handleMouseClick(this.inventorySlots.inventorySlots.get(46), 46, 0, 0);
+                    handleMouseClick(this.inventorySlots.inventorySlots.get(46), 46, mouseButton, 0);
                     break;
                 case SORT_CHANGE:
-                    handleMouseClick(this.inventorySlots.inventorySlots.get(50), 50, 0, 0);
+                    handleMouseClick(this.inventorySlots.inventorySlots.get(50), 50, mouseButton, 0);
                     break;
                 case MOD_CHANGE:
-                    handleMouseClick(this.inventorySlots.inventorySlots.get(52), 52, 0, 0);
+                    handleMouseClick(this.inventorySlots.inventorySlots.get(52), 52, mouseButton, 0);
                     break;
                 case RARITY_CHANGE:
-                    handleMouseClick(this.inventorySlots.inventorySlots.get(51), 51, 0, 0);
+                    handleMouseClick(this.inventorySlots.inventorySlots.get(51), 51, mouseButton, 0);
                     break;
                 case CLOSE:
                     handleMouseClick(this.inventorySlots.inventorySlots.get(49), 49, 0, 0);
-                    break;
-            }
-        } else if (mouseButton == 1) {
-            switch (actions) {
-                case SEARCH:
-                    handleMouseClick(this.inventorySlots.inventorySlots.get(47), 47, 0, 0);
                     break;
             }
         }

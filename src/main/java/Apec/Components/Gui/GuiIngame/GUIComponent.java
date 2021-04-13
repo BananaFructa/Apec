@@ -1,7 +1,6 @@
-package Apec.Components.Gui.GuiIngame.GuiElements;
+package Apec.Components.Gui.GuiIngame;
 
 import Apec.ApecUtils;
-import Apec.Components.Gui.GuiIngame.GUIComponentID;
 import Apec.DataInterpretation.DataExtractor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
@@ -106,8 +105,8 @@ public class GUIComponent {
     /**
      * The point at which the object is currently situated
      */
-    public Vector2f getRealAnchorPoint() {
-        return ApecUtils.addVec(getAnchorPointPosition(), getDelta_position());
+    public Vector2f getCurrentAnchorPoint() {
+        return ApecUtils.addVec(getAnchorPointPosition(), getDeltaPosition());
     }
 
     /**
@@ -121,7 +120,7 @@ public class GUIComponent {
     /**
      * Gets the distance vector between the anchor position and the current position
      */
-    public Vector2f getDelta_position() {
+    public Vector2f getDeltaPosition() {
         return this.delta_position;
     }
 
@@ -133,10 +132,14 @@ public class GUIComponent {
     }
 
     /**
-     * Gets the scale
+     * Gets the scale of the element
      */
     public float getScale() {
         return this.scale;
+    }
+
+    public float getOneOverScale() {
+        return oneOverScale;
     }
 
     public List<Vector2f> getSubElementsAnchorPoints() {
@@ -144,18 +147,18 @@ public class GUIComponent {
     }
 
     public List<Vector2f> getSubElementsRealAnchorPoints() {
-        return ApecUtils.AddVecListToList(getSubElementsAnchorPoints(), getSubElementsDelta_positions());
+        return ApecUtils.AddVecListToList(getSubElementsAnchorPoints(), getSubElementsDeltaPositions());
     }
 
     public List<Vector2f> getSubElementsBoundingPoints() {
         return new ArrayList<Vector2f>();
     }
 
-    public List<Vector2f> getSubElementsDelta_positions() {
+    public List<Vector2f> getSubElementsDeltaPositions() {
         return this.subComponentDeltas;
     }
 
-    public void setSubElementDelta_position(Vector2f dp, int id) {
+    public void setSubElementDeltaPosition(Vector2f dp, int id) {
         this.subComponentDeltas.set(id, dp);
     }
 

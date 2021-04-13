@@ -1,7 +1,9 @@
 package Apec.Components.Gui.GuiIngame.GuiElements;
 
 import Apec.ApecUtils;
+import Apec.Components.Gui.GuiIngame.GUIComponent;
 import Apec.Components.Gui.GuiIngame.GUIComponentID;
+import Apec.Components.Gui.GuiIngame.TextComponent;
 import Apec.DataInterpretation.DataExtractor;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
@@ -9,7 +11,7 @@ import org.lwjgl.util.vector.Vector2f;
 
 import java.util.ArrayList;
 
-public class ExtraInfo extends GUIComponent {
+public class ExtraInfo extends TextComponent {
 
     public ExtraInfo() {
         super(GUIComponentID.EXTRA_INFO);
@@ -20,7 +22,7 @@ public class ExtraInfo extends GUIComponent {
         super.draw(ps,sd,od,sr,editingMode);
         GlStateManager.pushMatrix();
         GlStateManager.scale(scale,scale,scale);
-        Vector2f ExtraScoreInfo = ApecUtils.scalarMultiply(getRealAnchorPoint(),oneOverScale);
+        Vector2f ExtraScoreInfo = ApecUtils.scalarMultiply(getCurrentAnchorPoint(),oneOverScale);
 
         ArrayList<String> ei = new ArrayList<String>();
         ei.addAll(sd.ExtraInfo);
@@ -45,6 +47,6 @@ public class ExtraInfo extends GUIComponent {
 
     @Override
     public Vector2f getBoundingPoint() {
-        return ApecUtils.addVec(getRealAnchorPoint(),new Vector2f(55*scale,100*scale));
+        return ApecUtils.addVec(getCurrentAnchorPoint(),new Vector2f(55*scale,100*scale));
     }
 }

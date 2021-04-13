@@ -3,6 +3,7 @@ package Apec.Components.Gui.GuiIngame.GuiElements;
 import Apec.ApecMain;
 import Apec.ApecUtils;
 import Apec.ComponentId;
+import Apec.Components.Gui.GuiIngame.GUIComponent;
 import Apec.Components.Gui.GuiIngame.GUIComponentID;
 import Apec.Components.Gui.GuiIngame.GUIModifier;
 import Apec.Settings.SettingID;
@@ -31,14 +32,14 @@ public class ToolTipText extends GUIComponent {
          float x = 0f;
          float y = 0f;
         if (!ApecMain.Instance.settingsManager.getSettingState(SettingID.ITEM_HIGHLIGHT_TEXT)) {
-            Vector2f posH = ApecUtils.scalarMultiply( hotBar.getRealAnchorPoint(),hotBar.oneOverScale);
+            Vector2f posH = ApecUtils.scalarMultiply( hotBar.getCurrentAnchorPoint(),hotBar.getOneOverScale());
             x = (int) (posH.x) + 1;
             y = (int) (posH.y) - 10;
         } else {
-            x = (- mc.fontRendererObj.getStringWidth(CurrentText) * 0.5f) - 92 + g_sr.getScaledWidth()*hotBar.oneOverScale;
-            y = g_sr.getScaledHeight()*oneOverScale - 67*hotBar.oneOverScale;
-            x += hotBar.delta_position.x*hotBar.oneOverScale;
-            y += hotBar.delta_position.y*hotBar.oneOverScale;
+            x = (- mc.fontRendererObj.getStringWidth(CurrentText) * 0.5f) - 92 + g_sr.getScaledWidth()*hotBar.getOneOverScale();
+            y = g_sr.getScaledHeight()*oneOverScale - 67*hotBar.getOneOverScale();
+            x += hotBar.getDeltaPosition().x*hotBar.getScale();
+            y += hotBar.getDeltaPosition().y*hotBar.getOneOverScale();
         }
         return new Vector2f(x,y);
     }
@@ -48,8 +49,8 @@ public class ToolTipText extends GUIComponent {
         float x = 0f;
         float y = 0f;
         x = mc.fontRendererObj.getStringWidth(CurrentText);
-        y = mc.fontRendererObj.FONT_HEIGHT * hotBar.scale;
-        return ApecUtils.addVec(getRealAnchorPoint(), new Vector2f(x, y));
+        y = mc.fontRendererObj.FONT_HEIGHT * hotBar.getScale();
+        return ApecUtils.addVec(getCurrentAnchorPoint(), new Vector2f(x, y));
     }
 
 }

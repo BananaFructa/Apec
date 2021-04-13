@@ -6,7 +6,7 @@ import Apec.ComponentId;
 import Apec.Components.Gui.GuiIngame.ApecGuiIngameForge;
 import Apec.Components.Gui.GuiIngame.GUIComponentID;
 import Apec.Components.Gui.GuiIngame.GUIModifier;
-import Apec.Components.Gui.GuiIngame.GuiElements.GUIComponent;
+import Apec.Components.Gui.GuiIngame.GUIComponent;
 import Apec.Components.Gui.GuiIngame.GuiElements.InfoBox;
 import Apec.Components.Gui.GuiIngame.GuiElements.ToolTipText;
 import net.minecraft.client.Minecraft;
@@ -148,7 +148,7 @@ public class CustomizationGui extends GuiScreen {
         final ScaledResolution sr = new ScaledResolution(mc);
         for (GUIComponent component : components) {
             if (!(component instanceof InfoBox)) {
-                Vector2f pos = component.getRealAnchorPoint();
+                Vector2f pos = component.getCurrentAnchorPoint();
                 Vector2f b_pos = component.getBoundingPoint();
                 xSnapPoints.add(sr.getScaledWidth()/2);
                 xSnapPoints.add((int) pos.x);
@@ -168,10 +168,10 @@ public class CustomizationGui extends GuiScreen {
             FileWriter fw = new FileWriter("config/Apec/GuiDeltas.txt");
             String s = "";
             for (int i = 0;i < components.size();i++) {
-                s += components.get(i).gUiComponentID.ordinal() + "#" + components.get(i).getDelta_position().x + "@" + components.get(i).getDelta_position().y + "@" + components.get(i).getScale();
+                s += components.get(i).gUiComponentID.ordinal() + "#" + components.get(i).getDeltaPosition().x + "@" + components.get(i).getDeltaPosition().y + "@" + components.get(i).getScale();
                 if (components.get(i).hasSubComponents()) {
                     for (int j = 0;j < components.get(i).subComponentCount();j++) {
-                        Vector2f delta = components.get(i).getSubElementsDelta_positions().get(j);
+                        Vector2f delta = components.get(i).getSubElementsDeltaPositions().get(j);
                         s += "\n" + components.get(i).gUiComponentID.ordinal() + "!" + j + "#" + delta.x + "@" + delta.y + "@" + "1.0";
                     }
                 }

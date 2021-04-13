@@ -2,6 +2,7 @@ package Apec.Components.Gui.GuiIngame.GuiElements;
 
 import Apec.ApecMain;
 import Apec.ApecUtils;
+import Apec.Components.Gui.GuiIngame.GUIComponent;
 import Apec.Components.Gui.GuiIngame.GUIComponentID;
 import Apec.DataInterpretation.DataExtractor;
 import Apec.Settings.SettingID;
@@ -26,7 +27,7 @@ public class XpBar extends GUIComponent {
         if (ApecMain.Instance.settingsManager.getSettingState(SettingID.XP_BAR)) {
             GuiIngame gi = Minecraft.getMinecraft().ingameGUI;
 
-            Vector2f StatBar = ApecUtils.scalarMultiply(getRealAnchorPoint(),oneOverScale);
+            Vector2f StatBar = ApecUtils.scalarMultiply(getCurrentAnchorPoint(),oneOverScale);
 
             mc.renderEngine.bindTexture(new ResourceLocation(ApecMain.modId, "gui/statBars.png"));
 
@@ -43,7 +44,7 @@ public class XpBar extends GUIComponent {
 
     @Override
     public Vector2f getBoundingPoint() {
-        return ApecUtils.addVec(getRealAnchorPoint(),new Vector2f(182*scale,5*scale));
+        return ApecUtils.addVec(getCurrentAnchorPoint(),new Vector2f(182*scale,5*scale));
     }
 
 }

@@ -1,6 +1,6 @@
 package Apec.Components.Gui.Menu.CustomizationMenu;
 
-import Apec.Components.Gui.GuiIngame.GuiElements.GUIComponent;
+import Apec.Components.Gui.GuiIngame.GUIComponent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.ScaledResolution;
@@ -41,7 +41,7 @@ public class CustomizationGuiSlider extends GuiButton {
 
         public void changeVale(int mouseX,int mouseY) {
         ScaledResolution sr = new ScaledResolution(Minecraft.getMinecraft());
-        Vector2f realAnchor = this.guiComponent.getRealAnchorPoint();
+        Vector2f realAnchor = this.guiComponent.getCurrentAnchorPoint();
         Vector2f boundingPoint = this.guiComponent.getBoundingPoint();
         int differenceX = (mouseX - this.initialX) * (realAnchor.x < boundingPoint.x ? 1 : -1);
         int differenceY = (mouseY - this.initialY) * (realAnchor.y < boundingPoint.y ? 1 : -1);

@@ -2,6 +2,7 @@ package Apec.Components.Gui.GuiIngame.GuiElements;
 
 import Apec.ApecMain;
 import Apec.ApecUtils;
+import Apec.Components.Gui.GuiIngame.GUIComponent;
 import Apec.Components.Gui.GuiIngame.GUIComponentID;
 import Apec.DataInterpretation.DataExtractor;
 import Apec.Settings.SettingID;
@@ -10,7 +11,7 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.util.vector.Vector2f;
 
-public class DefenceText extends GUIComponent{
+public class DefenceText extends GUIComponent {
 
     private int StringWidth = 0;
 
@@ -25,7 +26,7 @@ public class DefenceText extends GUIComponent{
         if (ApecMain.Instance.settingsManager.getSettingState(SettingID.USE_DEFENCE_OUT_OF_BB) || editingMode) {
 
             mc.renderEngine.bindTexture(new ResourceLocation(ApecMain.modId, "gui/statBars.png"));
-            Vector2f Pos = ApecUtils.scalarMultiply(this.getRealAnchorPoint(),oneOverScale);
+            Vector2f Pos = ApecUtils.scalarMultiply(this.getCurrentAnchorPoint(),oneOverScale);
 
             String s = "\u00a7aDefence " + ps.Defence;
 
@@ -44,7 +45,7 @@ public class DefenceText extends GUIComponent{
 
     @Override
     public Vector2f getBoundingPoint() {
-        return ApecUtils.addVec(getRealAnchorPoint(),new Vector2f(StringWidth*scale,11*scale));
+        return ApecUtils.addVec(getCurrentAnchorPoint(),new Vector2f(StringWidth*scale,11*scale));
     }
 
 }

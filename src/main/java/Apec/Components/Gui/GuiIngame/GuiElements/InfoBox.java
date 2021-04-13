@@ -2,6 +2,7 @@ package Apec.Components.Gui.GuiIngame.GuiElements;
 
 import Apec.ApecMain;
 import Apec.ApecUtils;
+import Apec.Components.Gui.GuiIngame.GUIComponent;
 import Apec.Components.Gui.GuiIngame.GUIComponentID;
 import Apec.DataInterpretation.DataExtractor;
 import Apec.Settings.SettingID;
@@ -41,7 +42,7 @@ public class InfoBox extends GUIComponent {
         }
         GlStateManager.scale(scale,scale,1);
         if (UseIcons) {
-            Vector2f GuiPos = getRealAnchorPoint();
+            Vector2f GuiPos = getCurrentAnchorPoint();
 
             GuiPos.y += yDecremetor;
             mc.renderEngine.bindTexture(new ResourceLocation(ApecMain.modId, "gui/statBars.png"));
@@ -89,7 +90,7 @@ public class InfoBox extends GUIComponent {
         if (yDecremetor < 0) yDecremetor = 0;
         if (yDecremetor > 40) yDecremetor = 40;
         GuiIngame gi = Minecraft.getMinecraft().ingameGUI;
-        Vector2f GuiPos = getRealAnchorPoint();
+        Vector2f GuiPos = getCurrentAnchorPoint();
 
         GuiPos.y += yDecremetor;
 
@@ -171,7 +172,7 @@ public class InfoBox extends GUIComponent {
             add(new Vector2f( BitsLength + (UseIcons ? 9 : 0)*scale, 10*scale));
             add(new Vector2f(ZoneStringLength + (UseIcons ? zoneAddX : 0)*scale, 10*scale));
             add(new Vector2f(DefenceStringLength + (UseIcons ? 10 : 0)*scale, 10*scale));
-            add(new Vector2f(-TimeStringLength-(getRealAnchorPoint().x)*scale, 10*scale));
+            add(new Vector2f(-TimeStringLength-(getCurrentAnchorPoint().x)*scale, 10*scale));
             // Since the x is relative to the side of the screen and not the parent's x position i removed it's relativity
             // I can do that since the bottom bar cannot be moved so no wack shit is going to happen
         }};

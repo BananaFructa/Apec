@@ -3,6 +3,7 @@ package Apec.Components.Gui.GuiIngame.GuiElements;
 import Apec.ApecMain;
 import Apec.ApecUtils;
 import Apec.Components.Gui.GuiIngame.GUIComponentID;
+import Apec.Components.Gui.GuiIngame.TextComponent;
 import Apec.DataInterpretation.DataExtractor;
 import Apec.Settings.SettingID;
 import net.minecraft.client.Minecraft;
@@ -10,7 +11,7 @@ import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
 import org.lwjgl.util.vector.Vector2f;
 
-public class XpText extends GUIComponent {
+public class XpText extends TextComponent {
 
     public XpText() {
         super(GUIComponentID.XP_TEXT);
@@ -24,7 +25,7 @@ public class XpText extends GUIComponent {
         GlStateManager.pushMatrix();
         if (ApecMain.Instance.settingsManager.getSettingState(SettingID.XP_TEXT)) {
             GlStateManager.scale(scale, scale, scale);
-            Vector2f StatBar = ApecUtils.scalarMultiply(getRealAnchorPoint(),oneOverScale);
+            Vector2f StatBar = ApecUtils.scalarMultiply(getCurrentAnchorPoint(),oneOverScale);
 
             String XPString;
             if (ApecMain.Instance.dataExtractor.isInTheCatacombs && ApecMain.Instance.settingsManager.getSettingState(SettingID.XP_BAR)) {
@@ -45,7 +46,7 @@ public class XpText extends GUIComponent {
 
     @Override
     public Vector2f getBoundingPoint() {
-        return ApecUtils.addVec(getRealAnchorPoint(),new Vector2f(-stringWidth*scale,-11*scale));
+        return ApecUtils.addVec(getCurrentAnchorPoint(),new Vector2f(-stringWidth*scale,-11*scale));
     }
 
 }

@@ -1,6 +1,7 @@
 package Apec.Components.Gui.GuiIngame.GuiElements;
 
 import Apec.*;
+import Apec.Components.Gui.GuiIngame.GUIComponent;
 import Apec.Components.Gui.GuiIngame.GUIComponentID;
 import Apec.Components.Gui.GuiIngame.GUIModifier;
 import Apec.DataInterpretation.DataExtractor;
@@ -37,7 +38,7 @@ public class EventLister extends GUIComponent {
             }};
         }
         if (od.currentEvents != null) {
-            Vector2f warningPos = ApecUtils.scalarMultiply(this.getRealAnchorPoint(),oneOverScale);
+            Vector2f warningPos = ApecUtils.scalarMultiply(this.getCurrentAnchorPoint(),oneOverScale);
             for (int i = 0; i < od.currentEvents.size(); i++) {
                 drawIconForID(od.currentEvents.get(i), (int)(warningPos.x - (i+1) * 20),(int)(warningPos.y));
             }
@@ -49,7 +50,7 @@ public class EventLister extends GUIComponent {
         GuiIngame gi = Minecraft.getMinecraft().ingameGUI;
         if (mc.thePlayer.isInsideOfMaterial(Material.water) &&
                 ApecUtils.zeroMagnitude(this.delta_position) &&
-                ApecUtils.zeroMagnitude(((GUIModifier)ApecMain.Instance.getComponent(ComponentId.GUI_MODIFIER)).getGuiComponent(GUIComponentID.AIR_BAR).delta_position) &&
+                ApecUtils.zeroMagnitude(((GUIModifier)ApecMain.Instance.getComponent(ComponentId.GUI_MODIFIER)).getGuiComponent(GUIComponentID.AIR_BAR).getDeltaPosition()) &&
                 (ApecMain.Instance.settingsManager.getSettingState(SettingID.SHOW_AIR_BAR))) y += 17;
         switch (eventID) {
             case INV_FULL:
@@ -80,7 +81,7 @@ public class EventLister extends GUIComponent {
 
     @Override
     public Vector2f getBoundingPoint() {
-        return ApecUtils.addVec(getRealAnchorPoint(),new Vector2f(-120*scale,15*scale));
+        return ApecUtils.addVec(getCurrentAnchorPoint(),new Vector2f(-120*scale,15*scale));
     }
 
 }

@@ -2,6 +2,7 @@ package Apec.Components.Gui.GuiIngame.GuiElements;
 
 import Apec.ApecMain;
 import Apec.ApecUtils;
+import Apec.Components.Gui.GuiIngame.GUIComponent;
 import Apec.Components.Gui.GuiIngame.GUIComponentID;
 import Apec.DataInterpretation.DataExtractor;
 import Apec.Settings.SettingID;
@@ -25,7 +26,7 @@ public class AirText extends GUIComponent {
         GlStateManager.pushMatrix();
         if (ApecMain.Instance.settingsManager.getSettingState(SettingID.AIR_TEXT)) {
             GlStateManager.scale(scale, scale, scale);
-            Vector2f StatBar = ApecUtils.scalarMultiply(this.getRealAnchorPoint(),oneOverScale);
+            Vector2f StatBar = ApecUtils.scalarMultiply(this.getCurrentAnchorPoint(),oneOverScale);
 
             if (mc.thePlayer.isInsideOfMaterial(Material.water) || editingMode) {
                 float airPrec = (mc.thePlayer.getAir() / 300f) * 100;
@@ -45,7 +46,7 @@ public class AirText extends GUIComponent {
 
     @Override
     public Vector2f getBoundingPoint() {
-        return ApecUtils.addVec(getRealAnchorPoint(),new Vector2f(-stringWidth*scale,-11*scale));
+        return ApecUtils.addVec(getCurrentAnchorPoint(),new Vector2f(-stringWidth*scale,-11*scale));
     }
 
 }

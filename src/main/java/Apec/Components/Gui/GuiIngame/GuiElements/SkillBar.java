@@ -3,6 +3,7 @@ package Apec.Components.Gui.GuiIngame.GuiElements;
 import Apec.ApecMain;
 import Apec.ApecUtils;
 import Apec.ComponentId;
+import Apec.Components.Gui.GuiIngame.GUIComponent;
 import Apec.Components.Gui.GuiIngame.GUIComponentID;
 import Apec.Components.Gui.GuiIngame.GUIModifier;
 import Apec.Components.Gui.GuiIngame.SkillType;
@@ -28,7 +29,7 @@ public class SkillBar extends GUIComponent {
         GlStateManager.scale(scale,scale,scale);
         if (ApecMain.Instance.settingsManager.getSettingState(SettingID.SHOW_SKILL_XP) || editingMode) {
             GuiIngame gi = Minecraft.getMinecraft().ingameGUI;
-            Vector2f SkillBarPos = ApecUtils.scalarMultiply(getRealAnchorPoint(),oneOverScale);
+            Vector2f SkillBarPos = ApecUtils.scalarMultiply(getCurrentAnchorPoint(),oneOverScale);
 
             if (ps.SkillIsShown) {
                 mc.renderEngine.bindTexture(new ResourceLocation(ApecMain.modId, "gui/statBars.png"));
@@ -88,11 +89,11 @@ public class SkillBar extends GUIComponent {
 
     @Override
     public Vector2f getAnchorPointPosition() {
-        return new Vector2f((int) (g_sr.getScaledWidth() / 2 - 91), g_sr.getScaledHeight() - 30 + 20 * (1 - ((GUIModifier) ApecMain.Instance.getComponent(ComponentId.GUI_MODIFIER)).getGuiComponent(GUIComponentID.INFO_BOX).scale));
+        return new Vector2f((int) (g_sr.getScaledWidth() / 2 - 91), g_sr.getScaledHeight() - 30 + 20 * (1 - ((GUIModifier) ApecMain.Instance.getComponent(ComponentId.GUI_MODIFIER)).getGuiComponent(GUIComponentID.INFO_BOX).getScale()));
     }
 
     @Override
     public Vector2f getBoundingPoint() {
-        return ApecUtils.addVec(getRealAnchorPoint(),new Vector2f(182*scale,5*scale));
+        return ApecUtils.addVec(getCurrentAnchorPoint(),new Vector2f(182*scale,5*scale));
     }
 }

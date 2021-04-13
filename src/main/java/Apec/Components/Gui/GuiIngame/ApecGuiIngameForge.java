@@ -2,7 +2,6 @@ package Apec.Components.Gui.GuiIngame;
 
 import Apec.ApecMain;
 import Apec.ApecUtils;
-import Apec.Components.Gui.GuiIngame.GuiElements.GUIComponent;
 import Apec.Components.Gui.Menu.CustomizationMenu.CustomizationGui;
 import Apec.FakedScaledResolution;
 import Apec.Settings.SettingID;
@@ -49,7 +48,7 @@ public class ApecGuiIngameForge extends GuiIngameForge {
     @Override
     protected void renderTooltip(ScaledResolution sr, float partialTicks)
     {
-        Vector2f pos = HotBar.getRealAnchorPoint();
+        Vector2f pos = HotBar.getCurrentAnchorPoint();
         float scale = HotBar.getScale();
 
         // This is for modifying the position of the hotbar, the faked scale resolution class is used instead of glTranslate so it doesn't affect 5zig and other mods
@@ -64,11 +63,11 @@ public class ApecGuiIngameForge extends GuiIngameForge {
     @Override
     protected void renderToolHightlight(ScaledResolution res) {
 
-        Vector2f posH = HotBar.getRealAnchorPoint();
-        Vector2f deltaH = HotBar.getDelta_position();
+        Vector2f posH = HotBar.getCurrentAnchorPoint();
+        Vector2f deltaH = HotBar.getDeltaPosition();
         float scaleH = HotBar.getScale();
 
-        Vector2f deltaT = ToolTipText.getDelta_position();
+        Vector2f deltaT = ToolTipText.getDeltaPosition();
 
         GlStateManager.pushMatrix();
 

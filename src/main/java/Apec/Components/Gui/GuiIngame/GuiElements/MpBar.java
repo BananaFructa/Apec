@@ -2,6 +2,7 @@ package Apec.Components.Gui.GuiIngame.GuiElements;
 
 import Apec.ApecMain;
 import Apec.ApecUtils;
+import Apec.Components.Gui.GuiIngame.GUIComponent;
 import Apec.Components.Gui.GuiIngame.GUIComponentID;
 import Apec.DataInterpretation.DataExtractor;
 import Apec.Settings.SettingID;
@@ -12,9 +13,9 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.util.vector.Vector2f;
 
-public class MnBar extends GUIComponent {
+public class MpBar extends GUIComponent {
 
-    public MnBar() {
+    public MpBar() {
         super(GUIComponentID.MN_BAR);
     }
 
@@ -26,7 +27,7 @@ public class MnBar extends GUIComponent {
         if (ApecMain.Instance.settingsManager.getSettingState(SettingID.MP_BAR)) {
             GuiIngame gi = Minecraft.getMinecraft().ingameGUI;
 
-            Vector2f StatBar = ApecUtils.scalarMultiply(getRealAnchorPoint(),oneOverScale);
+            Vector2f StatBar = ApecUtils.scalarMultiply(getCurrentAnchorPoint(),oneOverScale);
 
             float mpFactor = ps.Mp > ps.BaseMp ? 1 :(float) ps.Mp / (float) ps.BaseMp;
 
@@ -45,7 +46,7 @@ public class MnBar extends GUIComponent {
 
     @Override
     public Vector2f getBoundingPoint() {
-        return ApecUtils.addVec(getRealAnchorPoint(),new Vector2f(182*scale,5*scale));
+        return ApecUtils.addVec(getCurrentAnchorPoint(),new Vector2f(182*scale,5*scale));
     }
 
 }

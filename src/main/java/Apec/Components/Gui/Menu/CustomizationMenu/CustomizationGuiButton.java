@@ -2,7 +2,7 @@ package Apec.Components.Gui.Menu.CustomizationMenu;
 
 import Apec.ApecMain;
 import Apec.ApecUtils;
-import Apec.Components.Gui.GuiIngame.GuiElements.GUIComponent;
+import Apec.Components.Gui.GuiIngame.GUIComponent;
 import Apec.Settings.SettingID;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
@@ -49,11 +49,11 @@ public class CustomizationGuiButton extends GuiButton {
             ScaledResolution sr = new ScaledResolution(mc);
             Vector2f v, rv;
             if (SubComponent == -1) {
-                v = this.guiComponent.getRealAnchorPoint();
+                v = this.guiComponent.getCurrentAnchorPoint();
                 rv = this.guiComponent.getBoundingPoint();
             } else {
-                v = ApecUtils.addVec(this.guiComponent.getRealAnchorPoint(),this.guiComponent.getSubElementsRealAnchorPoints().get(SubComponent));
-                rv = ApecUtils.addVec(this.guiComponent.getRealAnchorPoint(),this.guiComponent.getSubElementsBoundingPoints().get(SubComponent));
+                v = ApecUtils.addVec(this.guiComponent.getCurrentAnchorPoint(),this.guiComponent.getSubElementsRealAnchorPoints().get(SubComponent));
+                rv = ApecUtils.addVec(this.guiComponent.getCurrentAnchorPoint(),this.guiComponent.getSubElementsBoundingPoints().get(SubComponent));
             }
             if (v.x < rv.x && v.y < rv.y) {
                 this.xPosition = (int) v.x;
@@ -111,7 +111,7 @@ public class CustomizationGuiButton extends GuiButton {
                             isSnappedToPositionX ? SnapResult.vec.x + fineTuned.x : mouseX - anchor.x + fineTuned.x + initialPos.x,
                             (isSnappedToPositionY ? SnapResult.vec.y + fineTuned.y : mouseY - anchor.y + fineTuned.y + initialPos.y) * (LockY ? 0 : 1)
                     );
-                    this.guiComponent.setSubElementDelta_position(Result, SubComponent);
+                    this.guiComponent.setSubElementDeltaPosition(Result, SubComponent);
                 }
             } else {
                 this.fineTuned = new Vector2f(0, 0);
@@ -151,7 +151,7 @@ public class CustomizationGuiButton extends GuiButton {
     }
 
     public void userStartedDragging(int mouseX,int mouseY) {
-        initialPos = this.guiComponent.getRealAnchorPoint();
+        initialPos = this.guiComponent.getCurrentAnchorPoint();
         if (SubComponent != -1) {
             initialPos = ApecUtils.addVec(initialPos,this.guiComponent.getSubElementsRealAnchorPoints().get(SubComponent));
         }
@@ -164,7 +164,7 @@ public class CustomizationGuiButton extends GuiButton {
         if (SubComponent == -1) {
             this.guiComponent.setDelta_position(new Vector2f(0, 0));
         } else {
-            this.guiComponent.setSubElementDelta_position(new Vector2f(0,0),SubComponent);
+            this.guiComponent.setSubElementDeltaPosition(new Vector2f(0,0),SubComponent);
         }
     }
 

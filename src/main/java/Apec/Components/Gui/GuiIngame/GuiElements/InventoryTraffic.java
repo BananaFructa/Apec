@@ -3,6 +3,7 @@ package Apec.Components.Gui.GuiIngame.GuiElements;
 import Apec.ApecMain;
 import Apec.ApecUtils;
 import Apec.Components.Gui.GuiIngame.GUIComponentID;
+import Apec.Components.Gui.GuiIngame.TextComponent;
 import Apec.DataInterpretation.DataExtractor;
 import Apec.Settings.SettingID;
 import Apec.DataInterpretation.SubtractionListElem;
@@ -12,7 +13,7 @@ import org.lwjgl.util.vector.Vector2f;
 
 import java.util.ArrayList;
 
-public class InventoryTraffic extends GUIComponent {
+public class InventoryTraffic extends TextComponent {
 
     public InventoryTraffic() {
         super(GUIComponentID.INV_TRAFFIC);
@@ -24,7 +25,7 @@ public class InventoryTraffic extends GUIComponent {
         GlStateManager.pushMatrix();
         GlStateManager.scale(scale,scale,scale);
         if (ApecMain.Instance.settingsManager.getSettingState(SettingID.INVENTORY_TRAFFIC)) {
-            Vector2f subtrListPos = ApecUtils.scalarMultiply(getRealAnchorPoint(),oneOverScale);
+            Vector2f subtrListPos = ApecUtils.scalarMultiply(getCurrentAnchorPoint(),oneOverScale);
 
             ArrayList<SubtractionListElem> sles = ApecMain.Instance.inventorySubtractor.subtractionListElems;
 
@@ -72,6 +73,6 @@ public class InventoryTraffic extends GUIComponent {
 
     @Override
     public Vector2f getBoundingPoint() {
-        return ApecUtils.addVec(getRealAnchorPoint(),new Vector2f(65*scale,75*scale));
+        return ApecUtils.addVec(getCurrentAnchorPoint(),new Vector2f(65*scale,75*scale));
     }
 }

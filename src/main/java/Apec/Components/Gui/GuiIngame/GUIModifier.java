@@ -52,7 +52,7 @@ public class GUIModifier extends Component {
         add(new InfoBox()); // The block box with the things that used to be in the scoreboard
         add(new HpBar());
         add(new HpText());
-        add(new MnBar());
+        add(new MpBar());
         add(new MpText());
         add(new XpBar());
         add(new XpText());
@@ -141,7 +141,7 @@ public class GUIModifier extends Component {
      */
     private boolean shouldBlockF3(GUIComponent component) {
         return ApecMain.Instance.settingsManager.getSettingState(SettingID.HIDE_IN_F3) &&
-               mc.gameSettings.showDebugInfo && component.getRealAnchorPoint().y < 150;
+               mc.gameSettings.showDebugInfo && component.getCurrentAnchorPoint().y < 150;
     }
 
     /**
@@ -265,7 +265,7 @@ public class GUIModifier extends Component {
                     getGuiComponent(GUIComponentID.values()[idx]).setDelta_position(delta);
                     getGuiComponent(GUIComponentID.values()[idx]).setScale(scale);
                 } else {
-                    getGuiComponent(GUIComponentID.values()[idx]).setSubElementDelta_position(delta,subComponent);
+                    getGuiComponent(GUIComponentID.values()[idx]).setSubElementDeltaPosition(delta,subComponent);
                 }
             }
             scanner.close();

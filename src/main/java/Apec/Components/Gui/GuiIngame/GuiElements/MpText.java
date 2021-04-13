@@ -3,6 +3,7 @@ package Apec.Components.Gui.GuiIngame.GuiElements;
 import Apec.ApecMain;
 import Apec.ApecUtils;
 import Apec.Components.Gui.GuiIngame.GUIComponentID;
+import Apec.Components.Gui.GuiIngame.TextComponent;
 import Apec.DataInterpretation.DataExtractor;
 import Apec.Settings.SettingID;
 import net.minecraft.client.Minecraft;
@@ -10,7 +11,7 @@ import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
 import org.lwjgl.util.vector.Vector2f;
 
-public class MpText extends GUIComponent {
+public class MpText extends TextComponent {
 
     public MpText() {
         super(GUIComponentID.MP_TEXT);
@@ -24,7 +25,7 @@ public class MpText extends GUIComponent {
         if (ApecMain.Instance.settingsManager.getSettingState(SettingID.MP_TEXT)) {
             GlStateManager.pushMatrix();
             GlStateManager.scale(scale, scale, scale);
-            Vector2f StatBar = ApecUtils.scalarMultiply(getRealAnchorPoint(),oneOverScale);
+            Vector2f StatBar = ApecUtils.scalarMultiply(getCurrentAnchorPoint(),oneOverScale);
 
             String MPString = ps.Mp + "/" + ps.BaseMp + " MP";
             ApecUtils.drawThiccBorderString(MPString, (int) (StatBar.x - mc.fontRendererObj.getStringWidth(MPString)), (int) (StatBar.y - 10), 0x1139bd);
@@ -41,7 +42,7 @@ public class MpText extends GUIComponent {
 
     @Override
     public Vector2f getBoundingPoint() {
-        return ApecUtils.addVec(getRealAnchorPoint(),new Vector2f(-stringWidth*scale,-11*scale));
+        return ApecUtils.addVec(getCurrentAnchorPoint(),new Vector2f(-stringWidth*scale,-11*scale));
     }
 
 }

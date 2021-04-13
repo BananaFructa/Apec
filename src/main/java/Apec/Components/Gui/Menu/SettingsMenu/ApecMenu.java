@@ -190,8 +190,10 @@ public class ApecMenu extends Component {
                     int TotalScore = 0;
                     for (int w = 0;w < SearchWords.length;w++) {
                         char[] SearchTermC = SearchWords[w].toCharArray();
+                        if (SearchTermC.length == 0) continue;
                         for (int j = 0; j < SettingWords.length; j++) {
                             char[] Word = SettingWords[j].toCharArray();
+                            if (Word.length == 0) continue;
                             int Score = 0;
                             int CharactersFound = 0;
                             boolean LastChracterVald = false;

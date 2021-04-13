@@ -96,7 +96,7 @@ public class PotionFetcher {
             if ((event.message.getUnformattedText().contains("SIP") || event.message.getUnformattedText().contains("SLURP")) && !event.message.getUnformattedText().contains(":")) {
                 DumpAndLoad();
             }
-            if ((event.message.getUnformattedText().contains("BUFF")) && !event.message.getUnformattedText().contains(":")) {
+            if ((event.message.getUnformattedText().contains("BUFF")) && !event.message.getUnformattedText().contains(":") && event.message.getUnformattedText().contains("DUNGEON")) {
                 String name = event.message.getSiblings().get(0).getFormattedText();
                 String time = event.message.getSiblings().get(0).getChatStyle().getChatHoverEvent().getValue().getSiblings().get(0).getFormattedText();
                 String[] timeSplit = ApecUtils.removeAllCodes(time).replace("(", "").replace(")", "").split(":");

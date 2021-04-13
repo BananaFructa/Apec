@@ -2,6 +2,7 @@ package Apec.Components.Gui.GuiIngame.GuiElements;
 
 import Apec.ApecMain;
 import Apec.ApecUtils;
+import Apec.Components.Gui.GuiIngame.GUIComponent;
 import Apec.Components.Gui.GuiIngame.GUIComponentID;
 import Apec.DataInterpretation.DataExtractor;
 import Apec.Settings.SettingID;
@@ -28,7 +29,7 @@ public class AirBar extends GUIComponent {
         if (ApecMain.Instance.settingsManager.getSettingState(SettingID.SHOW_AIR_BAR)) {
 
             GuiIngame gi = Minecraft.getMinecraft().ingameGUI;
-            Vector2f StatBar = ApecUtils.scalarMultiply(this.getRealAnchorPoint(),oneOverScale);
+            Vector2f StatBar = ApecUtils.scalarMultiply(this.getCurrentAnchorPoint(),oneOverScale);
 
             mc.renderEngine.bindTexture(new ResourceLocation(ApecMain.modId, "gui/statBars.png"));
 
@@ -53,7 +54,7 @@ public class AirBar extends GUIComponent {
 
     @Override
     public Vector2f getBoundingPoint() {
-        return ApecUtils.addVec(getRealAnchorPoint(),new Vector2f(182*scale,5*scale));
+        return ApecUtils.addVec(getCurrentAnchorPoint(),new Vector2f(182*scale,5*scale));
     }
 
 }
