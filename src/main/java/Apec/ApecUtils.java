@@ -449,4 +449,8 @@ public class ApecUtils {
         }
         return res;
     }
+
+    public static String applyTagOnUrl(String url,String tag) {
+        return url.replace("__TAG__",tag);
+    }
 }

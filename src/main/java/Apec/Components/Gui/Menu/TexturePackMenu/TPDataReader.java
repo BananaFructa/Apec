@@ -8,6 +8,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -25,7 +26,10 @@ public class TPDataReader {
         List<String> lines = new ArrayList<String>();
         String line;
         try {
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(url.openStream()));
+            URLConnection connection = url.openConnection();
+            connection.setUseCaches(false);
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+            connection.connect();
             while ((line = bufferedReader.readLine()) != null) {
                 lines.add(line);
             }
@@ -70,8 +74,9 @@ public class TPDataReader {
 
     public TPData readNextTPData() {
         String name = null,author = null,download = null,icon = null,description = null,version = null,efn = null,optifine = null;
-        for (int i = 0;i < 5;i++) {
+        for (int i = 0;i < 8;i++) {
             Tuple<String, String> pair = readNextPair();
+            if (pair == null) break;
             String tag = pair.getFirst();
             if (tag.equals("name")) name = pair.getSecond();
             else if (tag.equals("author")) author = pair.getSecond();
@@ -82,7 +87,7 @@ public class TPDataReader {
             else if (tag.equals("efn")) efn = pair.getSecond();
             else if (tag.equals("req-optifine")) optifine = pair.getSecond();
         }
-        if (name == null || author == null || download == null || icon == null || description == null || efn == null || optifine == null) return null;
+        if (name == null || author == null || download == null || icon == null || description == null || efn == null || optifine == null || version == null) return null;
         return new TPData(name,author,description,version,download,optifine,icon,efn);
     }
 

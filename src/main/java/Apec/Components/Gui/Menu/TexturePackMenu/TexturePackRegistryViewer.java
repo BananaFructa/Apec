@@ -1,13 +1,22 @@
 package Apec.Components.Gui.Menu.TexturePackMenu;
 
+import Apec.ApecUtils;
 import Apec.Component;
 import Apec.ComponentId;
+import Apec.VersionChecker;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.GuiLabel;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
-import net.minecraft.client.renderer.GlStateManager;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class TexturePackRegistryViewer extends Component {
@@ -24,79 +33,158 @@ public class TexturePackRegistryViewer extends Component {
         this.Toggle();
     }
 
+    private static final String databaseUrl = "https://cdn.jsdelivr.net/gh/BananaFructa/Apec-DATA@__TAG__/TexturePackRegistry/database-list.txt";
+    private static final String iconsetUrl = "https://cdn.jsdelivr.net/gh/BananaFructa/Apec-DATA@__TAG__/TexturePackRegistry/Icons/";
+
+    public static List<DownloadProcess> activeDownloads = new ArrayList<DownloadProcess>();
+    public static HashMap<String,DownloadProcess> nameToDownloadProcess = new HashMap<String, DownloadProcess>();
+    public static final Object threadLock = new Object();
+
+    private static List<String> loadDataBases(String registryTag) {
+        try {
+            TPDataReader reader = new TPDataReader(new URL(ApecUtils.applyTagOnUrl(databaseUrl,registryTag)));
+            return reader.readAllDatabaseUrls();
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+            return new ArrayList<String>();
+        }
+    }
+
+    private static List<TPData> getAllTexturePacksFromDataBase(String url,String registryTag) {
+        try {
+            url = ApecUtils.applyTagOnUrl(url,registryTag);
+            TPDataReader reader = new TPDataReader(new URL(url));
+            List<TPData> texturePacks = new ArrayList<TPData>();
+            TPData tp;
+            while((tp = reader.readNextTPData()) != null) {
+                texturePacks.add(tp);
+            }
+            return texturePacks;
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+            return new ArrayList<TPData>();
+        }
+    }
+
+    public static BufferedImage loadIcon(String iconName,String registryTag) {
+        try {
+            String fullUrl = ApecUtils.applyTagOnUrl(iconsetUrl + iconName,registryTag);
+            return ImageIO.read(new URL(fullUrl));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public static void startNewDownload(TPData data) {
+        if (!data.downloadUrl.equals("NULL")) {
+            try {
+                DownloadProcess downloadProcess = new DownloadProcess(new URL(data.downloadUrl),data.name,data.expectedFileName);
+                downloadProcess.startDownload();
+                activeDownloads.add(downloadProcess);
+                nameToDownloadProcess.put(data.name,downloadProcess);
+            } catch (Exception err) {
+                err.printStackTrace();
+            }
+        }
+    }
+
+    public static void removeDownloadProcess(DownloadProcess process) {
+        synchronized (threadLock) {
+            activeDownloads.remove(process);
+            nameToDownloadProcess.remove(process.tpname,process);
+        }
+    }
+
     public static class TPRVGuiScreen extends GuiScreen {
 
-        public List<TPData> loadedTexturePacks = new ArrayList<TPData>();
+        private List<TPDisplayElement> elements = new ArrayList<TPDisplayElement>();
 
-        public final int elementLength = 300;
         public final int elementHeight = 50;
 
+        public List<String> dataBaseUrls;
+        private String registryTag;
+
         public TPRVGuiScreen() {
-            loadedTexturePacks.add(new TPData("RNBW+ Resource Pack","rainbowcraft2","NULL","v0.5.0","","TRUE","NULL","RNBW+ v0.5.zip"));
+
         }
 
         @Override
         public void initGui() {
             super.initGui();
-            final int buttonWidth = 50;
-            final int buttonHeight = 13;
-            ScaledResolution sr = new ScaledResolution(mc);
-            int width = sr.getScaledWidth()/2;
-            for (int i = 0;i < loadedTexturePacks.size();i++) {
-                int cornerX = width+elementLength/2;
-                int cornerY = (20 + elementHeight) + i * (elementHeight + 5);
-                this.buttonList.add(new TPRVDownloadButton(0,cornerX - 5 - buttonWidth,cornerY - 5 - buttonHeight,buttonWidth,buttonHeight,loadedTexturePacks.get(i)));
+            if (elements.isEmpty()) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        registryTag = VersionChecker.getRegistryTag();
+                        dataBaseUrls = loadDataBases(registryTag);
+                        if (dataBaseUrls.size() > 0) {
+                            loadDataset(0);
+                        }
+                    }
+                }).start();
             }
         }
 
         @Override
         public void drawScreen(int mouseX, int mouseY, float partialTicks) {
             this.drawDefaultBackground();
-            ScaledResolution sr = new ScaledResolution(mc);
-            drawRect(0,0,sr.getScaledWidth(),15, 0xff000000);
-            mc.fontRendererObj.drawString("Apec Texture Pack Registry",2,3,0xffffffff);
-            int width = sr.getScaledWidth()/2;
-            for (int i = 0;i < loadedTexturePacks.size();i++) {
-                TPData texturepack = loadedTexturePacks.get(i);
-
-                drawRect(width-elementLength/2,20 + i * (elementHeight + 5),width + elementLength/2,(20 + elementHeight) + i * (elementHeight + 5),0xaa000000);
-
-                int cornerX = width-elementLength/2;
-                int cornerY = 20 + i * (elementHeight + 5);
-
-                GlStateManager.pushMatrix();
-                GlStateManager.scale(1.2f,1.2f,1);
-                mc.fontRendererObj.drawString(texturepack.name,(int)((cornerX + 5)/1.2f),(int)((cornerY + 5)/1.2f),0xffffffff);
-                GlStateManager.popMatrix();
-                GlStateManager.pushMatrix();
-                GlStateManager.scale(0.9f,0.9f,1);
-                mc.fontRendererObj.drawString("by " + texturepack.author,(int)((cornerX + 5)/0.9f),(int)((cornerY + 19)/0.9f),0xffffffff);
-                GlStateManager.popMatrix();
-
-                if (texturepack.requiresOptifine.equals("TRUE")) {
-                    mc.fontRendererObj.drawString("\u00a7eRequires Optifine!",cornerX + 5,cornerY + 34,0xffffffff);
+            synchronized (threadLock) {
+                drawButtons(mouseX,mouseY,TPRVDropDownButton.class);
+                ScaledResolution sr = new ScaledResolution(mc);
+                drawRect(0, 0, sr.getScaledWidth(), 15, 0xff000000);
+                mc.fontRendererObj.drawString("Apec Texture Pack Registry", 2, 3, 0xffffffff);
+                int yOffset = 0;
+                for (int i = 0;i < elements.size();i++) {
+                    yOffset += elements.get(i).draw(20 + i * (elementHeight + 5) + yOffset,mouseX,mouseY,sr,mc);
                 }
-
-                int x = width-elementLength/2;
-                int y = 20 + i * (elementHeight + 5);
-                for (int j = 0;j < elementLength/10;j++) {
-                    drawLineComponent(x + j *10,y-1,x + (j+1)*10,y+1,mouseX,mouseY);
-                    drawLineComponent(x + j *10,y-1 + elementHeight,x + (j+1)*10,y+1+ elementHeight,mouseX,mouseY);
-                }
-                for (int j = 0;j < elementHeight/10;j++) {
-                    drawLineComponent(x-1,y+j*10,x+ 1,y+(j+1)*10,mouseX,mouseY);
-                    drawLineComponent(x-1+ elementLength,y+j*10,x + 1 + elementLength,y+(j+1)*10,mouseX,mouseY);
-                }
-
+                drawButtons(mouseX,mouseY,TPRVDownloadButton.class);
             }
-            super.drawScreen(mouseX, mouseY, partialTicks);
         }
 
-        private void drawLineComponent(int left,int top,int right,int bottom,int mX,int mY) {
-            double range = 45;
-            double dist =  Math.sqrt(Math.pow(left - mX,2) +  Math.pow(top - mY,2));
-            if (dist > range) dist = range;
-            drawRect(left,top,right,bottom,0xffffff | ((int)(0xff * ((range-dist)/range)) << 24));
+        private void loadDataset(final int index) {
+            //TODO: clear all
+            synchronized (threadLock) {
+                this.buttonList.clear();
+            }
+
+            final TexturePackRegistryViewer.TPRVGuiScreen instace = this;
+            // Request thread
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        List<TPData> tps = getAllTexturePacksFromDataBase(dataBaseUrls.get(index), registryTag);
+
+                        for (TPData tp : tps) {
+                            synchronized (threadLock) {
+                                TPRVDownloadButton button = new TPRVDownloadButton(0, 0, 0, tp);
+                                buttonList.add(button);
+                                TPDisplayElement element = new TPDisplayElement(tp, button, instace);
+                                if (element.hasDescription) {
+                                    TPRVDropDownButton dropDownButton = new TPRVDropDownButton(0,0,0,element);
+                                    element.setDdbutton(dropDownButton);
+                                    buttonList.add(dropDownButton);
+                                }
+                                elements.add(element);
+                            }
+                        }
+
+                    } catch (Exception err) {
+                        err.printStackTrace();
+                    }
+
+                    for (TPDisplayElement element : elements) {
+                        synchronized (threadLock) {
+                            try {
+                                element.loadIcon(registryTag, mc);
+                            } catch (Exception err) {
+                                err.printStackTrace();
+                            }
+                        }
+                    }
+                }
+            }).start();
         }
 
         @Override
@@ -104,6 +192,32 @@ public class TexturePackRegistryViewer extends Component {
             return false;
         }
 
+        @Override
+        protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
+            super.mouseClicked(mouseX, mouseY, mouseButton);
+            if (mouseButton == 0) {
+                for (GuiButton button : this.buttonList) {
+                    if (button instanceof TPRVDownloadButton) {
+                        if (button.mousePressed(mc,mouseX,mouseY)) {
+                            ((TPRVDownloadButton)button).startDownload();
+                            break;
+                        }
+                    } else if (button instanceof TPRVDropDownButton) {
+                        if (button.mousePressed(mc,mouseX,mouseY)) {
+                            ((TPRVDropDownButton)button).toggleDescription();
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        private void drawButtons(int mouseX,int mouseY,Class<?> type) {
+            for (int i = 0; i < this.buttonList.size(); ++i)
+            {
+                if (type.isInstance(this.buttonList.get(i))) ((GuiButton)this.buttonList.get(i)).drawButton(this.mc, mouseX, mouseY);
+            }
+        }
     }
 
 }
