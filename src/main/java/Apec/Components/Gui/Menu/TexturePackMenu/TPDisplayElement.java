@@ -5,8 +5,13 @@ import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.util.ResourceLocation;
+import org.apache.commons.lang3.ArrayUtils;
+import org.lwjgl.Sys;
 
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class TPDisplayElement {
 
@@ -28,22 +33,38 @@ public class TPDisplayElement {
     public boolean hasDownload;
     public boolean showDescription;
 
+    public String[] description;
+
     public TPDisplayElement(TPData texturepack,TPRVDownloadButton button,TexturePackRegistryViewer.TPRVGuiScreen parent) {
         this.texturepack = texturepack;
         this.parent = parent;
         this.dbutton = button;
         this.hasDescription = !texturepack.description.equals("NULL");
         if (hasDescription) {
-            descriptionHeight = 10 + this.texturepack.description.split("\n").length * 10;
+            List<String> lines = new ArrayList<String>();
+            String[] nonFormattedLines = this.texturepack.description.split("\n");
+            for (String s : nonFormattedLines) {
+                List<String> formattedLine = Apec.ApecUtils.stringToSizedArray(Minecraft.getMinecraft(),s,elementLength - 20);
+                lines.addAll(formattedLine);
+            }
+            Object[] arr = lines.toArray();
+            description = Arrays.copyOf(arr,arr.length,String[].class);
+            descriptionHeight = 10 + description.length * 10;
         }
     }
 
-    //TODO:add installed feature
-    //TODO:add scrolling
     //TODO:add paging
 
     public int draw(int y, int mouseX, int mouseY, ScaledResolution sr, Minecraft mc) {
-        int offset = 0;
+        int _offset = getOffset();
+        if (y > sr.getScaledHeight() || y  + _offset < 0) {
+            if (this.hasDescription) this.ddbutton.visible = false;
+            this.dbutton.visible = false;
+            return _offset;
+        }
+
+        if (this.hasDescription) this.ddbutton.visible = true;
+        this.dbutton.visible = true;
 
         int width = sr.getScaledWidth() / 2;
 
@@ -57,10 +78,9 @@ public class TPDisplayElement {
         if (hasDownload) {
             DownloadProcess process = TexturePackRegistryViewer.nameToDownloadProcess.get(texturepack.name);
             parent.drawRect(cornerXLeft, cornerYTop, cornerXRight, cornerYTop + downloadSectionHeight, 0xaa000000);
-            parent.drawRect(cornerXLeft + 2,cornerYTop + 2,(int)(cornerXLeft + 2 + ((cornerXRight - cornerXLeft - 4) * process.getProgress())),cornerYTop + downloadSectionHeight - 2,0xff00910a);
+            parent.drawRect(cornerXLeft + 3,cornerYTop + 3,(int)(cornerXLeft + 3 + ((cornerXRight - cornerXLeft - 6) * process.getProgress())),cornerYTop + downloadSectionHeight - 3,0xff00910a);
             cornerYTop += downloadSectionHeight;
             cornerYBottom += downloadSectionHeight;
-            offset += downloadSectionHeight;
         }
 
         this.dbutton.xPosition = cornerXRight - 5 - dbutton.width;
@@ -69,16 +89,13 @@ public class TPDisplayElement {
         parent.drawRect(cornerXLeft, cornerYTop, cornerXRight, cornerYBottom, 0xaa000000);
 
         if (hasDescription) {
-            offset += dropDownButtonHeight;
             parent.drawRect(cornerXLeft,cornerYBottom - 1,cornerXRight,cornerYBottom,0xffffffff);
             this.ddbutton.xPosition = cornerXLeft;
             this.ddbutton.yPosition = cornerYBottom;
             if (this.showDescription) {
-                offset += descriptionHeight;
                 parent.drawRect(cornerXLeft,cornerYBottom + dropDownButtonHeight,cornerXRight,cornerYBottom + dropDownButtonHeight + descriptionHeight,0x991f1f1f);
-                String[] descriptionLines = this.texturepack.description.split("\n");
-                for (int i = 0; i < descriptionLines.length;i++) {
-                    mc.fontRendererObj.drawString(descriptionLines[i],cornerXLeft + 5,cornerYBottom + dropDownButtonHeight + 5 + i * 10,0xffffffff);
+                for (int i = 0; i < description.length;i++) {
+                    mc.fontRendererObj.drawString(description[i],cornerXLeft + 5,cornerYBottom + dropDownButtonHeight + 5 + i * 10,0xffffffff);
                 }
             }
         }
@@ -127,11 +144,15 @@ public class TPDisplayElement {
             drawLineComponent(boxBoundXLeft - 1 +boxBoundLength, boxBoundYTop + j * 10, boxBoundXLeft + 1 + boxBoundLength, boxBoundYTop + (j + 1) * 10, mouseX, mouseY);
         }
 
-        return offset;
+        return getOffset();
     }
 
     public void setDdbutton(TPRVDropDownButton button) {
         this.ddbutton = button;
+    }
+
+    public int getOffset() {
+        return 5 + this.elementHeight + (this.hasDownload ? downloadSectionHeight : 0) + (this.hasDescription ? dropDownButtonHeight : 0) + (this.showDescription ? descriptionHeight : 0);
     }
 
     private void drawLineComponent(int left,int top,int right,int bottom,int mX,int mY) {
@@ -162,18 +183,15 @@ public class TPDisplayElement {
     }
 
     public void unLoadAll(final Minecraft mc) {
-        mc.addScheduledTask(new Runnable() {
-            @Override
-            public void run() {
-                synchronized (TexturePackRegistryViewer.threadLock) {
-                    iconTexture.deleteGlTexture();
-                }
-            }
-        });
+        if (iconTexture != null) iconTexture.deleteGlTexture();
     }
 
     public void toggleDescritption() {
         this.showDescription = !this.showDescription;
+    }
+
+    public void checkIfInstalled() {
+        this.dbutton.checkIfInstalled();
     }
 
 }

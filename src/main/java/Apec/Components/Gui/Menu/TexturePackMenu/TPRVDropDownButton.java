@@ -33,7 +33,9 @@ public class TPRVDropDownButton extends GuiButton {
     }
 
     public void toggleDescription() {
-        parent.toggleDescritption();
+        if (this.visible) {
+            parent.toggleDescritption();
+        }
     }
 
 }

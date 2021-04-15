@@ -6,9 +6,10 @@ import Apec.ComponentId;
 import Apec.VersionChecker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiLabel;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
+import org.lwjgl.Sys;
+import org.lwjgl.input.Mouse;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -21,7 +22,7 @@ import java.util.List;
 
 public class TexturePackRegistryViewer extends Component {
 
-    private final Minecraft mc = Minecraft.getMinecraft();
+    private final static Minecraft mc = Minecraft.getMinecraft();
 
     public TexturePackRegistryViewer() {
         super(ComponentId.TEXTURE_PACK_REGISTRY_VIEWER);
@@ -38,6 +39,7 @@ public class TexturePackRegistryViewer extends Component {
 
     public static List<DownloadProcess> activeDownloads = new ArrayList<DownloadProcess>();
     public static HashMap<String,DownloadProcess> nameToDownloadProcess = new HashMap<String, DownloadProcess>();
+
     public static final Object threadLock = new Object();
 
     private static List<String> loadDataBases(String registryTag) {
@@ -93,14 +95,17 @@ public class TexturePackRegistryViewer extends Component {
         synchronized (threadLock) {
             activeDownloads.remove(process);
             nameToDownloadProcess.remove(process.tpname,process);
+            if (mc.currentScreen instanceof TPRVGuiScreen) {
+                ((TPRVGuiScreen)mc.currentScreen).checkForAlreadyInstalledTPs();
+            }
         }
     }
 
     public static class TPRVGuiScreen extends GuiScreen {
 
         private List<TPDisplayElement> elements = new ArrayList<TPDisplayElement>();
-
-        public final int elementHeight = 50;
+        int scrollOffset = 0;
+        public boolean finishedLoading = false;
 
         public List<String> dataBaseUrls;
         private String registryTag;
@@ -127,19 +132,51 @@ public class TexturePackRegistryViewer extends Component {
         }
 
         @Override
+        public void onResize(Minecraft mcIn, int p_175273_2_, int p_175273_3_) {
+            this.mc = mcIn;
+            this.itemRender = mc.getRenderItem();
+            this.fontRendererObj = mc.fontRendererObj;
+            this.width = p_175273_2_;
+            this.height = p_175273_3_;
+        }
+
+        @Override
         public void drawScreen(int mouseX, int mouseY, float partialTicks) {
             this.drawDefaultBackground();
             synchronized (threadLock) {
                 drawButtons(mouseX,mouseY,TPRVDropDownButton.class);
                 ScaledResolution sr = new ScaledResolution(mc);
-                drawRect(0, 0, sr.getScaledWidth(), 15, 0xff000000);
-                mc.fontRendererObj.drawString("Apec Texture Pack Registry", 2, 3, 0xffffffff);
                 int yOffset = 0;
                 for (int i = 0;i < elements.size();i++) {
-                    yOffset += elements.get(i).draw(20 + i * (elementHeight + 5) + yOffset,mouseX,mouseY,sr,mc);
+                    yOffset += elements.get(i).draw(20 + yOffset - scrollOffset,mouseX,mouseY,sr,mc);
                 }
+                int limit = getMaxScrollOffset(yOffset,sr);
+                if (scrollOffset > limit && finishedLoading) scrollOffset = limit;
                 drawButtons(mouseX,mouseY,TPRVDownloadButton.class);
+                drawRect(0, 0, sr.getScaledWidth(), 15, 0xff000000);
+                mc.fontRendererObj.drawString("Apec Texture Pack Registry", 2, 3, 0xffffffff);
             }
+        }
+
+        @Override
+        public void handleMouseInput() throws IOException {
+            super.handleMouseInput();
+            int i = Mouse.getEventDWheel();
+            if (i < -1) {
+                ScaledResolution sr = new ScaledResolution(mc);;
+                int limit =  getMaxScrollOffset(sr);
+                scrollOffset += (scrollOffset + 20 > limit ? -scrollOffset + limit : 20);
+            } else if (i > 1) {
+                scrollOffset -= (scrollOffset - 20 < 0 ? scrollOffset : 20);
+            }
+        }
+
+        public int getMaxScrollOffset(ScaledResolution sr) {
+            return getTotalHeight() - (sr.getScaledHeight() - 20);
+        }
+
+        public int getMaxScrollOffset(int maxOffset,ScaledResolution sr) {
+            return maxOffset - (sr.getScaledHeight() - 20);
         }
 
         private void loadDataset(final int index) {
@@ -153,6 +190,8 @@ public class TexturePackRegistryViewer extends Component {
             new Thread(new Runnable() {
                 @Override
                 public void run() {
+                    finishedLoading = false;
+                    // Gets the text information about the texturepacks
                     try {
                         List<TPData> tps = getAllTexturePacksFromDataBase(dataBaseUrls.get(index), registryTag);
 
@@ -174,6 +213,7 @@ public class TexturePackRegistryViewer extends Component {
                         err.printStackTrace();
                     }
 
+                    // Loads the icons
                     for (TPDisplayElement element : elements) {
                         synchronized (threadLock) {
                             try {
@@ -183,8 +223,28 @@ public class TexturePackRegistryViewer extends Component {
                             }
                         }
                     }
+
+                    // Looks for already installed texturepacks
+                    synchronized (threadLock) {
+                        checkForAlreadyInstalledTPs();
+                    }
+                    finishedLoading = true;
                 }
             }).start();
+        }
+
+        public void checkForAlreadyInstalledTPs() {
+            for (TPDisplayElement element : elements) {
+                element.checkIfInstalled();
+            }
+        }
+
+        public int getTotalHeight() {
+            int totalOffset = 0;
+            for (TPDisplayElement element : elements) {
+                totalOffset += element.getOffset();
+            }
+            return totalOffset;
         }
 
         @Override
@@ -199,7 +259,7 @@ public class TexturePackRegistryViewer extends Component {
                 for (GuiButton button : this.buttonList) {
                     if (button instanceof TPRVDownloadButton) {
                         if (button.mousePressed(mc,mouseX,mouseY)) {
-                            ((TPRVDownloadButton)button).startDownload();
+                            ((TPRVDownloadButton)button).onClick();
                             break;
                         }
                     } else if (button instanceof TPRVDropDownButton) {
@@ -216,6 +276,14 @@ public class TexturePackRegistryViewer extends Component {
             for (int i = 0; i < this.buttonList.size(); ++i)
             {
                 if (type.isInstance(this.buttonList.get(i))) ((GuiButton)this.buttonList.get(i)).drawButton(this.mc, mouseX, mouseY);
+            }
+        }
+
+        @Override
+        public void onGuiClosed() {
+            super.onGuiClosed();
+            for (TPDisplayElement element : elements) {
+                element.unLoadAll(mc);
             }
         }
     }

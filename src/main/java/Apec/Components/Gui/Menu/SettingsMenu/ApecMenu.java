@@ -166,14 +166,7 @@ public class ApecMenu extends Component {
         }
 
         public void drawWrappedString(String s,int x,int y,int c) {
-            final int widthToWrap = 110;
-            ArrayList<String> lines = new ArrayList<String>();
-            int il = 0;
-            for (char ch : s.toCharArray()) {
-                if (lines.size() == il) lines.add("");
-                lines.set(il,lines.get(il).concat(String.valueOf(ch)));
-                if (mc.fontRendererObj.getStringWidth(lines.get(il)) >= widthToWrap && ch == ' ') il++;
-            }
+            List<String> lines = ApecUtils.stringToSizedArray(mc,s,140);
             for (int i = 0;i < lines.size();i++) {
                 mc.fontRendererObj.drawString(lines.get(i),x,y + (int)(i*10/0.8f),c);
             }

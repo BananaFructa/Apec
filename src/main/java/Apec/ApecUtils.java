@@ -453,4 +453,26 @@ public class ApecUtils {
     public static String applyTagOnUrl(String url,String tag) {
         return url.replace("__TAG__",tag);
     }
+
+    public static List<String> stringToSizedArray(Minecraft mc,String s,int widthToWrap) {
+        List<String> lines = new ArrayList<String>();
+        String[] words = s.split(" ");
+        String currentSentence = "";
+        for (String word : words) {
+            if (mc.fontRendererObj.getStringWidth(currentSentence + word) < widthToWrap) {
+                if (currentSentence.equals("")) {
+                    currentSentence = word;
+                } else {
+                    currentSentence += " " + word;
+                }
+            } else {
+                lines.add(currentSentence);
+                currentSentence = "";
+            }
+        }
+        if (!currentSentence.equals("")) {
+            lines.add(currentSentence);
+        }
+        return lines;
+    }
 }
