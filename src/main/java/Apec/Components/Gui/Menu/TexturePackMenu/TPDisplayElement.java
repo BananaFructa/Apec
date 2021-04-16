@@ -1,12 +1,11 @@
 package Apec.Components.Gui.Menu.TexturePackMenu;
 
+import Apec.Utils.ApecUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.util.ResourceLocation;
-import org.apache.commons.lang3.ArrayUtils;
-import org.lwjgl.Sys;
 
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
@@ -33,6 +32,9 @@ public class TPDisplayElement {
     public boolean hasDownload;
     public boolean showDescription;
 
+    public boolean reqOptifine;
+    public boolean reqNEU;
+
     public String[] description;
 
     public TPDisplayElement(TPData texturepack,TPRVDownloadButton button,TexturePackRegistryViewer.TPRVGuiScreen parent) {
@@ -40,11 +42,13 @@ public class TPDisplayElement {
         this.parent = parent;
         this.dbutton = button;
         this.hasDescription = !texturepack.description.equals("NULL");
+        this.reqOptifine = texturepack.requiresOptifine.equals("TRUE");
+        this.reqNEU = texturepack.requiresNeu.equals("TRUE");
         if (hasDescription) {
             List<String> lines = new ArrayList<String>();
             String[] nonFormattedLines = this.texturepack.description.split("\n");
             for (String s : nonFormattedLines) {
-                List<String> formattedLine = Apec.ApecUtils.stringToSizedArray(Minecraft.getMinecraft(),s,elementLength - 20);
+                List<String> formattedLine = ApecUtils.stringToSizedArray(Minecraft.getMinecraft(),s,elementLength - 20);
                 lines.addAll(formattedLine);
             }
             Object[] arr = lines.toArray();
@@ -120,8 +124,18 @@ public class TPDisplayElement {
             GlStateManager.popMatrix();
         }
 
-        if (texturepack.requiresOptifine.equals("TRUE")) {
-            mc.fontRendererObj.drawString("\u00a7eRequires Optifine!", cornerXLeft + 5 + xShift, cornerYTop + 34, 0xffffffff);
+        String reqText = null;
+
+        if (reqOptifine && !reqNEU) {
+            reqText = "\u00a7eRequires Optifine!";
+        } else if (!reqOptifine && reqNEU) {
+            reqText = "\u00a7eRequires NEU!";
+        } else if (reqOptifine && reqNEU) {
+            reqText = "\u00a7eRequires Optifine and NEU!";
+        }
+
+        if (reqOptifine || reqNEU) {
+            mc.fontRendererObj.drawString(reqText, cornerXLeft + 5 + xShift, cornerYTop + 34, 0xffffffff);
         }
 
         if (!texturepack.version.equals("NULL")) {
@@ -183,7 +197,11 @@ public class TPDisplayElement {
     }
 
     public void unLoadAll(final Minecraft mc) {
-        if (iconTexture != null) iconTexture.deleteGlTexture();
+        if (iconTexture != null) {
+            iconTexture.deleteGlTexture();
+            iconTexture = null;
+            icon = null;
+        }
     }
 
     public void toggleDescritption() {

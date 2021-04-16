@@ -1,5 +1,6 @@
-package Apec;
+package Apec.Utils;
 
+import Apec.ApecMain;
 import Apec.Settings.SettingID;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -456,6 +457,10 @@ public class ApecUtils {
 
     public static List<String> stringToSizedArray(Minecraft mc,String s,int widthToWrap) {
         List<String> lines = new ArrayList<String>();
+        if (s.equals("")) {
+            lines.add("");
+            return lines;
+        }
         String[] words = s.split(" ");
         String currentSentence = "";
         for (String word : words) {
@@ -467,7 +472,7 @@ public class ApecUtils {
                 }
             } else {
                 lines.add(currentSentence);
-                currentSentence = "";
+                currentSentence = word;
             }
         }
         if (!currentSentence.equals("")) {

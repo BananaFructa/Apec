@@ -1,4 +1,6 @@
-package Apec;
+package Apec.Utils;
+
+import Apec.ApecMain;
 
 import java.net.URL;
 import java.net.URLConnection;

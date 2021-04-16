@@ -1,6 +1,6 @@
 package Apec.Components.Gui.GuiIngame;
 
-import Apec.ApecUtils;
+import Apec.Utils.ApecUtils;
 import Apec.DataInterpretation.DataExtractor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;

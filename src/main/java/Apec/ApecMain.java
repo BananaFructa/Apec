@@ -12,6 +12,7 @@ import Apec.DataInterpretation.ContainerGuiManager;
 import Apec.DataInterpretation.DataExtractor;
 import Apec.DataInterpretation.InventorySubtractor;
 import Apec.Settings.SettingsManager;
+import Apec.Utils.VersionChecker;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraftforge.client.ClientCommandHandler;
 import net.minecraftforge.common.MinecraftForge;

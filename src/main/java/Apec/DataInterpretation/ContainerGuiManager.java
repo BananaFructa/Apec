@@ -4,7 +4,7 @@
 package Apec.DataInterpretation;
 
 import Apec.ApecMain;
-import Apec.ApecUtils;
+import Apec.Utils.ApecUtils;
 import Apec.ComponentId;
 import Apec.Components.Gui.ContainerGuis.ChestGuiComponent;
 import Apec.Settings.SettingID;

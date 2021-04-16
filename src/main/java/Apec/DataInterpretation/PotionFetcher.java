@@ -4,7 +4,7 @@
 package Apec.DataInterpretation;
 
 import Apec.ApecMain;
-import Apec.ApecUtils;
+import Apec.Utils.ApecUtils;
 import Apec.Components.Gui.ContainerGuis.TrasparentEffects.Gui.ActiveEffectsTransparentGui;
 import Apec.Settings.SettingID;
 import net.minecraft.client.Minecraft;

@@ -1,7 +1,6 @@
 package Apec.Components.Gui.GuiIngame.GuiElements;
 
-import Apec.ApecUtils;
-import Apec.Components.Gui.GuiIngame.GUIComponent;
+import Apec.Utils.ApecUtils;
 import Apec.Components.Gui.GuiIngame.GUIComponentID;
 import Apec.Components.Gui.GuiIngame.TextComponent;
 import Apec.DataInterpretation.DataExtractor;

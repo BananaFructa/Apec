@@ -1,6 +1,6 @@
 package Apec.Components.Gui.ContainerGuis.SkillView.Gui;
 
-import Apec.ApecUtils;
+import Apec.Utils.ApecUtils;
 import Apec.Components.Gui.ContainerGuis.ApecContainerGui;
 import Apec.Components.Gui.ContainerGuis.SkillView.SkillViewComponent;
 import net.minecraft.client.gui.GuiButton;

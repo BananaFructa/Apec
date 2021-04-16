@@ -1,4 +1,4 @@
-package Apec;
+package Apec.Utils;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;

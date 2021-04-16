@@ -1,9 +1,9 @@
 package Apec.Components.Gui.GuiIngame;
 
 import Apec.ApecMain;
-import Apec.ApecUtils;
+import Apec.Utils.ApecUtils;
 import Apec.Components.Gui.Menu.CustomizationMenu.CustomizationGui;
-import Apec.FakedScaledResolution;
+import Apec.Utils.FakedScaledResolution;
 import Apec.Settings.SettingID;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;

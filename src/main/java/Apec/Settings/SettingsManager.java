@@ -1,6 +1,6 @@
 package Apec.Settings;
 
-import Apec.ApecUtils;
+import Apec.Utils.ApecUtils;
 import net.minecraft.util.Tuple;
 
 import java.io.File;

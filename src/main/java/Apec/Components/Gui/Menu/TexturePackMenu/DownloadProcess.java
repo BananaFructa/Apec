@@ -1,5 +1,7 @@
 package Apec.Components.Gui.Menu.TexturePackMenu;
 
+import Apec.Utils.ParameterizedRunnable;
+
 import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
@@ -12,8 +14,8 @@ public class DownloadProcess {
     public String tpname;
 
     public float downloadProgress = 0;
-    public boolean downloadFailed = false;
-    public boolean downloadFinished = false;
+
+    private ParameterizedRunnable<Integer> callback;
 
     public DownloadProcess(URL url,String texturePackName,String fileName) {
         this.url = url;
@@ -22,10 +24,12 @@ public class DownloadProcess {
         this.file = new File("resourcepacks/" + fileName);
     }
 
+    public void setCallback(ParameterizedRunnable<Integer> callback) {
+        this.callback = callback;
+    }
+
     public void startDownload() {
         try {
-            downloadFailed = false;
-            downloadFinished = false;
             downloadProgress = 0;
             URLConnection connection = url.openConnection();
             final long fileSize = connection.getContentLength();
@@ -48,37 +52,21 @@ public class DownloadProcess {
                             }
                             outputStream.close();
                             inputStream.close();
-                            downloadFinished = true;
-                            removeSelf();
+                            if (callback != null) callback.run(0);
                         }
                     } catch (Exception err) {
+                        if (callback != null) callback.run(-1);
                         err.printStackTrace();
-                        downloadFailed = true;
-                        removeSelf();
                     }
                 }
             }).start();
         } catch (Exception exception) {
+            if (callback != null) callback.run(-1);
             exception.printStackTrace();
         }
-    }
-
-    public boolean isFinished() {
-        synchronized (threadLock) {
-            return downloadFinished;
-        }
-    }
-
-    public boolean failed() {
-        return downloadFailed;
     }
 
     public float getProgress() {
         return downloadProgress;
     }
-
-    public void removeSelf() {
-        TexturePackRegistryViewer.removeDownloadProcess(this);
-    }
-
 }

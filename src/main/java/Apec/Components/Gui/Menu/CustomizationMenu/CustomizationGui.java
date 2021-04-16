@@ -1,7 +1,7 @@
 package Apec.Components.Gui.Menu.CustomizationMenu;
 
 import Apec.ApecMain;
-import Apec.ApecUtils;
+import Apec.Utils.ApecUtils;
 import Apec.ComponentId;
 import Apec.Components.Gui.GuiIngame.ApecGuiIngameForge;
 import Apec.Components.Gui.GuiIngame.GUIComponentID;

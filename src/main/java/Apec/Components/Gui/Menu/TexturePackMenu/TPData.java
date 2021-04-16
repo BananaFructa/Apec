@@ -11,8 +11,9 @@ public class TPData {
     public String version;
     public String expectedFileName;
     public String requiresOptifine;
+    public String requiresNeu;
 
-    public TPData(String name, String author, String description,String version, String downloadUrl,String requiresOptifine, String iconUrl,String expectedFileName) {
+    public TPData(String name, String author, String description,String version, String downloadUrl,String requiresOptifine,String requiresNeu, String iconUrl,String expectedFileName) {
         this.name = name;
         this.author = author;
         this.description = description.replace("\\n","\n");
@@ -21,5 +22,6 @@ public class TPData {
         this.version = version;
         this.expectedFileName = expectedFileName;
         this.requiresOptifine = requiresOptifine;
+        this.requiresNeu = requiresNeu;
     }
 }
