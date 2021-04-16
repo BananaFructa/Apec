@@ -75,7 +75,7 @@ public class SkillText extends TextComponent {
 
     @Override
     public Vector2f getAnchorPointPosition() {
-        return new Vector2f((int) (g_sr.getScaledWidth() * 0.5f ) - stringWidth * 0.5f, g_sr.getScaledHeight() - 30 + 20 * (1 - ((GUIModifier) ApecMain.Instance.getComponent(ComponentId.GUI_MODIFIER)).getGuiComponent(GUIComponentID.INFO_BOX).getScale()));
+        return this.guiModifier.applyGlobalChanges(this,new Vector2f((int) (g_sr.getScaledWidth() * 0.5f ) - stringWidth * 0.5f, g_sr.getScaledHeight() - 30 + 20 * (1 - ((GUIModifier) ApecMain.Instance.getComponent(ComponentId.GUI_MODIFIER)).getGuiComponent(GUIComponentID.INFO_BOX).getScale())));
     }
 
     @Override

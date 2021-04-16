@@ -26,6 +26,7 @@ import static net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType
 public class ApecGuiIngameForge extends GuiIngameForge {
 
     private final GUIComponent HotBar = GUIModifier.Instance.getGuiComponent(GUIComponentID.HOT_BAR);
+    private final GUIComponent BossBar = GUIModifier.Instance.getGuiComponent(GUIComponentID.BOSS_HEALTH);
     private final GUIComponent ToolTipText = GUIModifier.Instance.getGuiComponent(GUIComponentID.TOOL_TIP_TEXT);
     private final Method pre = ApecUtils.GetDeclaredMethod(GuiIngameForge.class,"pre",RenderGameOverlayEvent.ElementType.class);
     private final Method post = ApecUtils.GetDeclaredMethod(GuiIngameForge.class,"post",RenderGameOverlayEvent.ElementType.class);
@@ -135,6 +136,15 @@ public class ApecGuiIngameForge extends GuiIngameForge {
     @Override
     protected void renderRecordOverlay(int width, int height, float partialTicks) {
         // no record
+    }
+
+    @Override
+    protected void renderBossHealth() {
+        GlStateManager.pushMatrix();
+        Vector2f pos = GUIModifier.Instance.applyGlobalChanges(BossBar,BossBar.getDeltaPosition());
+        GlStateManager.translate(pos.x,pos.y, 0);
+        super.renderBossHealth();
+        GlStateManager.popMatrix();
     }
 
     /**

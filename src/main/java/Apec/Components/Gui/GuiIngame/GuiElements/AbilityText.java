@@ -23,6 +23,7 @@ public class AbilityText extends GUIComponent {
 
     @Override
     public void init() {
+        super.init();
         mpText = (MpText) GUIModifier.Instance.getGuiComponent(GUIComponentID.MP_TEXT);
     }
 
@@ -52,7 +53,7 @@ public class AbilityText extends GUIComponent {
 
     @Override
     public Vector2f getAnchorPointPosition() {
-        return AnchorPosition;
+        return this.guiModifier.applyGlobalChanges(this,AnchorPosition);
     }
 
     @Override

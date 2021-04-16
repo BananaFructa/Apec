@@ -127,6 +127,10 @@ public class ApecUtils {
         return new Vector2f(v.x*s,v.y*s);
     }
 
+    public static Vector2f subVec(Vector2f a,Vector2f b) {
+        return new Vector2f(a.x - b.x,a.y - b.y);
+    }
+
     /**
      * @brief Shown the specified message in the chat if debug messages are on
      * @param string = Input message

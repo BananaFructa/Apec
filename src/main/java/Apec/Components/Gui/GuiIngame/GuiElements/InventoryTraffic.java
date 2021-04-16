@@ -68,7 +68,7 @@ public class InventoryTraffic extends TextComponent {
 
     @Override
     public Vector2f getAnchorPointPosition() {
-        return new Vector2f(5, 5);
+        return this.guiModifier.applyGlobalChanges(this,new Vector2f(5, 5));
     }
 
     @Override

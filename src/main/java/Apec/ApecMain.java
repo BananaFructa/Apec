@@ -128,9 +128,9 @@ public class ApecMain
      * @param componentId = The id of component which has to be found
      * @return Returns the component with the same id, null if none was found
      */
-    public Component getComponent(ComponentId componentId) {
+    public <U extends Component> U getComponent(ComponentId componentId) {
         for (Component component : components) {
-            if (component.componentId == componentId) return component;
+            if (component.componentId == componentId) return (U)component;
         }
         return null;
     }

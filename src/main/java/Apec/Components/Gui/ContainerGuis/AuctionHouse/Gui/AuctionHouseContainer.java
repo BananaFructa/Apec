@@ -195,7 +195,7 @@ public abstract class AuctionHouseContainer extends ApecContainerGui {
         if (!setInitialCategory && inventorySlots.inventorySlots.get(1).getStack() != null) {
             // Sets the initial category
             String name = inventorySlots.inventorySlots.get(1).getStack().getUnlocalizedName();
-            AuctionHouseComponent component = ((AuctionHouseComponent) ApecMain.Instance.getComponent(ComponentId.AUCTION_HOUSE_MENU));
+            AuctionHouseComponent component = ApecMain.Instance.getComponent(ComponentId.AUCTION_HOUSE_MENU);
             if (name.endsWith("orange")) {
                 component.SetCategoryID(AuctionHouseComponent.CategoryID.WEAPONS);
             } else if (name.endsWith("blue")) {

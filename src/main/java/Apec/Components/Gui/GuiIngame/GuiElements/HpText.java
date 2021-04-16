@@ -45,7 +45,7 @@ public class HpText extends TextComponent {
 
     @Override
     public Vector2f getAnchorPointPosition() {
-        return new Vector2f(g_sr.getScaledWidth() - 190 + 112 + 70, 15);
+        return guiModifier.applyGlobalChanges(this,new Vector2f(g_sr.getScaledWidth() - 190 + 112 + 70, 15));
     }
 
     @Override

@@ -43,14 +43,15 @@ public class SettingsManager {
         add(new Setting(MENU_GUI,true));
         add(new Setting(GUIS_WHEN_DISABLED, false));
         add(new Setting(SHOW_ABILITY_TEXT,true));
+        add(new Setting(BB_ON_TOP,false));
         add(new Setting(USE_DEFENCE_OUT_OF_BB,false));
+        add(new Setting(USE_AUTO_SCALING_BB,true));
         add(new Setting(COMPATIBILITY_SAFETY,true));
         add(new Setting(HIDE_IN_F3,false));
         add(new Setting(SNAP_IN_EDITING,true));
         //add(new Setting(SHOW_CACHED_PURSE_IN_DUNGEONS,true));
         add(new Setting(INFO_BOX_ANIMATION,true));
         add(new Setting(INFO_BOX_ICONS,true));
-        add(new Setting(USE_AUTO_SCALING_BB,true));
         add(new Setting(BORDER_TYPE,true));
         //add(new Setting(OVERWRITE_GUI,false));
         add(new Setting(SHOW_DEBUG_MESSAGES,false));
@@ -90,11 +91,12 @@ public class SettingsManager {
         put(SHOW_CURRENT_SERVER,new Tuple<String, String>("Show current server","Show in which server you are in"));
         put(COLORED_SKILL_XP,new Tuple<String,String>("Colored skill xp","Shows a different colored bar for each skill xp"));
         put(SHOW_EFFECTS_AS_IN_TAB,new Tuple<String,String>("Show tab effect","Show the one rolling effect that appears in tab"));
-        put(INFO_BOX_ICONS,new Tuple<String, String>("Bottom bar icons", "Shows icons for each stat instead of text"));
-        put(USE_AUTO_SCALING_BB,new Tuple<String, String>("Bottom bar autoscaling","The bottom bar auto-scales based on the gui scale"));
+        put(INFO_BOX_ICONS,new Tuple<String, String>("Info bar icons", "Shows icons for each stat instead of text"));
+        put(USE_AUTO_SCALING_BB,new Tuple<String, String>("Info bar autoscaling","The bottom bar auto-scales based on the gui scale"));
         put(GUIS_WHEN_DISABLED,new Tuple<String, String>("Allow GUIs when inactive","Allow GUIs when the Ingame GUI is not enabled"));
         put(USE_DEFENCE_OUT_OF_BB,new Tuple<String, String>("Defence outside bar","Shows the defence outside the bottom bar"));
         put(COMPATIBILITY_SAFETY,new Tuple<String, String>("Compatibility Safety","Ensures that certain features that might break some mods are disabled"));
+        put(BB_ON_TOP,new Tuple<String,String>("Info bar on top","Puts the info bar on top instead of on the bottom"));
     }};
 
     /**

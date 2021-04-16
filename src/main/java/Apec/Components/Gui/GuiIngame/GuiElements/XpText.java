@@ -41,7 +41,7 @@ public class XpText extends TextComponent {
 
     @Override
     public Vector2f getAnchorPointPosition() {
-        return new Vector2f(g_sr.getScaledWidth() - 190 + 112 + 70, 53);
+        return this.guiModifier.applyGlobalChanges(this,new Vector2f(g_sr.getScaledWidth() - 190 + 112 + 70, 53));
     }
 
     @Override

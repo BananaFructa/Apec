@@ -77,7 +77,7 @@ public class EventLister extends GUIComponent {
 
     @Override
     public Vector2f getAnchorPointPosition() {
-        return new Vector2f(g_sr.getScaledWidth() - 2, 65);
+        return guiModifier.applyGlobalChanges(this,new Vector2f(g_sr.getScaledWidth() - 2, 65));
     }
 
     @Override

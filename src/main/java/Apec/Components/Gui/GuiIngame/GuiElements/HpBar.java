@@ -48,7 +48,7 @@ public class HpBar extends GUIComponent {
 
     @Override
     public Vector2f getAnchorPointPosition() {
-        return new Vector2f(g_sr.getScaledWidth() - 190, 15);
+        return guiModifier.applyGlobalChanges(this,new Vector2f(g_sr.getScaledWidth() - 190, 15));
     }
 
     @Override

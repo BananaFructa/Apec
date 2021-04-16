@@ -30,7 +30,7 @@ public class HotBar extends GUIComponent {
     @Override
     public Vector2f getAnchorPointPosition() {
         // The scale of the bottom bar is used so that the hotbar remains at the same distance from it on different gui scales
-        return new Vector2f(g_sr.getScaledWidth()-183, g_sr.getScaledHeight() - 43 +20*(1- ((GUIModifier)ApecMain.Instance.getComponent(ComponentId.GUI_MODIFIER)).getGuiComponent(GUIComponentID.INFO_BOX).getScale()));
+        return this.guiModifier.applyGlobalChanges(this,new Vector2f(g_sr.getScaledWidth()-183, g_sr.getScaledHeight() - 43 +20*(1- ((GUIModifier)ApecMain.Instance.getComponent(ComponentId.GUI_MODIFIER)).getGuiComponent(GUIComponentID.INFO_BOX).getScale())));
     }
 
     @Override

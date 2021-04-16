@@ -41,7 +41,7 @@ public class ExtraInfo extends TextComponent {
 
     @Override
     public Vector2f getAnchorPointPosition() {
-        return new Vector2f(5,85);
+        return this.guiModifier.applyGlobalChanges(this,new Vector2f(5,85));
     }
 
     @Override

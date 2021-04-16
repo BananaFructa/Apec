@@ -37,7 +37,7 @@ public class MpText extends TextComponent {
 
     @Override
     public Vector2f getAnchorPointPosition() {
-        return new Vector2f(g_sr.getScaledWidth() - 190 + 112 + 70, 34);
+        return this.guiModifier.applyGlobalChanges(this,new Vector2f(g_sr.getScaledWidth() - 190 + 112 + 70, 34));
     }
 
     @Override

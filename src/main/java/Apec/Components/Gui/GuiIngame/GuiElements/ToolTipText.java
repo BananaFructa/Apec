@@ -20,7 +20,8 @@ public class ToolTipText extends GUIComponent {
 
     @Override
     public void init() {
-        hotBar = (HotBar) ((GUIModifier)ApecMain.Instance.getComponent(ComponentId.GUI_MODIFIER)).getGuiComponent(GUIComponentID.HOT_BAR);
+         super.init();
+         hotBar = (HotBar) ((GUIModifier)ApecMain.Instance.getComponent(ComponentId.GUI_MODIFIER)).getGuiComponent(GUIComponentID.HOT_BAR);
     }
 
     public void SetText(String text) {
@@ -41,7 +42,7 @@ public class ToolTipText extends GUIComponent {
             x += hotBar.getDeltaPosition().x*hotBar.getScale();
             y += hotBar.getDeltaPosition().y*hotBar.getOneOverScale();
         }
-        return new Vector2f(x,y);
+        return this.guiModifier.applyGlobalChanges(this,new Vector2f(x,y));
     }
 
     @Override

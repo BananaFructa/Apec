@@ -1,5 +1,7 @@
 package Apec.Components.Gui.GuiIngame;
 
+import Apec.ApecMain;
+import Apec.ComponentId;
 import Apec.Utils.ApecUtils;
 import Apec.DataInterpretation.DataExtractor;
 import net.minecraft.client.Minecraft;
@@ -13,6 +15,8 @@ import java.util.List;
 public class GUIComponent {
 
     protected Minecraft mc = Minecraft.getMinecraft();
+
+    protected GUIModifier guiModifier;
 
     protected Vector2f delta_position = new Vector2f(0, 0);
     protected List<Vector2f> subComponentDeltas = new ArrayList<Vector2f>();
@@ -85,7 +89,7 @@ public class GUIComponent {
      * Initialize function
      */
     public void init() {
-
+        guiModifier = ApecMain.Instance.getComponent(ComponentId.GUI_MODIFIER);
     }
 
     /**

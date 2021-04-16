@@ -49,7 +49,7 @@ public class AirBar extends GUIComponent {
 
     @Override
     public Vector2f getAnchorPointPosition() {
-        return new Vector2f(g_sr.getScaledWidth() - 190, 72);
+        return this.guiModifier.applyGlobalChanges(this,new Vector2f(g_sr.getScaledWidth() - 190, 72));
     }
 
     @Override

@@ -121,7 +121,7 @@ public class TexturePackRegistryViewer extends Component {
                 nameToDownloadProcess.put(data.name,downloadProcess);
                 downloadProcess.setCallback(new ParameterizedRunnable<Integer>() {
                     @Override
-                    public void run(Integer... parameter) {
+                    public void run(Integer parameter) {
                         synchronized (threadLock) {
                             activeDownloads.remove(downloadProcess);
                             nameToDownloadProcess.remove(downloadProcess.tpname,downloadProcess);

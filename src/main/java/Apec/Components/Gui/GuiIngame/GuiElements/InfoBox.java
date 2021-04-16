@@ -1,6 +1,7 @@
 package Apec.Components.Gui.GuiIngame.GuiElements;
 
 import Apec.ApecMain;
+import Apec.Settings.SettingsManager;
 import Apec.Utils.ApecUtils;
 import Apec.Components.Gui.GuiIngame.GUIComponent;
 import Apec.Components.Gui.GuiIngame.GUIComponentID;
@@ -30,31 +31,32 @@ public class InfoBox extends GUIComponent {
     @Override
     public void drawTex(DataExtractor.PlayerStats ps, DataExtractor.ScoreBoardData sd, DataExtractor.OtherData od, ScaledResolution sr, boolean editingMode) {
         super.drawTex(ps, sd, od, sr, editingMode);
+        Vector2f GuiPos = getCurrentAnchorPoint();
+
         boolean UseIcons = ApecMain.Instance.settingsManager.getSettingState(SettingID.INFO_BOX_ICONS);
         GuiIngame gi = Minecraft.getMinecraft().ingameGUI;
         mc.renderEngine.bindTexture(new ResourceLocation(ApecMain.modId, "gui/bottomBar.png"));
         int DrawCounts = (int)(sr.getScaledWidth()/256) + 1;
         for (int i = 0;i < DrawCounts;i++) {
-            gi.drawTexturedModalRect((int) delta_position.x + i * 256, sr.getScaledHeight() - (int)(20*scale) + (int) delta_position.y + (int)yDecremetor,0,0,256,20);
+            gi.drawTexturedModalRect(GuiPos.x + i * 256, GuiPos.y + (int)yDecremetor,0,0,256,20);
             if (mc.gameSettings.guiScale == 1) {
-                gi.drawTexturedModalRect((int) delta_position.x + i * 256, sr.getScaledHeight() - (int)(7*scale) + (int) delta_position.y + (int)yDecremetor,0,0,256,20);
+                gi.drawTexturedModalRect(GuiPos.x + i * 256, GuiPos.y + 13*scale + (int)yDecremetor,0,0,256,20);
             }
         }
         GlStateManager.scale(scale,scale,1);
         if (UseIcons) {
-            Vector2f GuiPos = getCurrentAnchorPoint();
 
             GuiPos.y += yDecremetor;
             mc.renderEngine.bindTexture(new ResourceLocation(ApecMain.modId, "gui/statBars.png"));
-            gi.drawTexturedModalRect((int)(GuiPos.x + (subComponentDeltas.get(0).getX())*oneOverScale), (int)((GuiPos.y+ subComponentDeltas.get(0).getY())*oneOverScale -1),1,216,6,9);
-            gi.drawTexturedModalRect((int)(GuiPos.x + (subComponentDeltas.get(1).getX())*oneOverScale + 120), (int)((GuiPos.y+ subComponentDeltas.get(1).getY())*oneOverScale -1),8,216,5,9);
+            gi.drawTexturedModalRect((int)(GuiPos.x + 20 + (subComponentDeltas.get(0).getX())*oneOverScale), (GuiPos.y+ subComponentDeltas.get(0).getY())*oneOverScale -1 + 6*scale,1,216,6,9);
+            gi.drawTexturedModalRect((int)(GuiPos.x + 20 + (subComponentDeltas.get(1).getX())*oneOverScale + 120), (GuiPos.y+ subComponentDeltas.get(1).getY())*oneOverScale -1 + 6*scale,8,216,5,9);
             if (ApecMain.Instance.dataExtractor.isInTheCatacombs) {
-                gi.drawTexturedModalRect((int) (GuiPos.x + (subComponentDeltas.get(2).getX())*oneOverScale + 220 - 1), (int) ((GuiPos.y + subComponentDeltas.get(2).getY())*oneOverScale -1), 24, 216, 7, 8);
+                gi.drawTexturedModalRect((int) (GuiPos.x + 20 + (subComponentDeltas.get(2).getX())*oneOverScale + 220 - 1), (GuiPos.y + subComponentDeltas.get(2).getY())*oneOverScale -1 + 6*scale, 24, 216, 7, 8);
             } else {
-                gi.drawTexturedModalRect((int) (GuiPos.x + (subComponentDeltas.get(2).getX())*oneOverScale + 220), (int) ((GuiPos.y + subComponentDeltas.get(2).getY())*oneOverScale -1 ), 14, 216, 9, 9);
+                gi.drawTexturedModalRect((int) (GuiPos.x + 20 + (subComponentDeltas.get(2).getX())*oneOverScale + 220), (GuiPos.y + subComponentDeltas.get(2).getY())*oneOverScale -1  + 6*scale, 14, 216, 9, 9);
             }
             if (!ApecMain.Instance.settingsManager.getSettingState(SettingID.USE_DEFENCE_OUT_OF_BB) || editingMode) {
-                gi.drawTexturedModalRect((int) (GuiPos.x + (subComponentDeltas.get(3).getX()) * oneOverScale + 360), (int) ((GuiPos.y + subComponentDeltas.get(3).getY()) *oneOverScale - 1), 32, 215, 7, 10);
+                gi.drawTexturedModalRect((int) (GuiPos.x + 20 + (subComponentDeltas.get(3).getX()) * oneOverScale + 360),  (GuiPos.y + subComponentDeltas.get(3).getY()) * oneOverScale - 1 + 6*scale, 32, 215, 7, 10);
             }
         }
         GlStateManager.scale(1,1,1);
@@ -80,7 +82,7 @@ public class InfoBox extends GUIComponent {
         super.draw(ps, sd, od, sr, editingMode);
         boolean isInChat = Minecraft.getMinecraft().currentScreen instanceof GuiChat;
         float fps = Minecraft.getDebugFPS();
-        if (ApecMain.Instance.settingsManager.getSettingState(SettingID.INFO_BOX_ANIMATION)) {
+        if (ApecMain.Instance.settingsManager.getSettingState(SettingID.INFO_BOX_ANIMATION) && !ApecMain.Instance.settingsManager.getSettingState(SettingID.BB_ON_TOP)) {
             // Calculating delta time for constant smooth velocity
             if (isInChat && yDecremetor < 40) yDecremetor += 1 * (120f / fps);
             if (!isInChat && yDecremetor > 0) yDecremetor -= 1 * (120f / fps);
@@ -92,7 +94,7 @@ public class InfoBox extends GUIComponent {
         GuiIngame gi = Minecraft.getMinecraft().ingameGUI;
         Vector2f GuiPos = getCurrentAnchorPoint();
 
-        GuiPos.y += yDecremetor;
+        GuiPos.y += yDecremetor + 6*scale;
 
         boolean UseIcons = ApecMain.Instance.settingsManager.getSettingState(SettingID.INFO_BOX_ICONS);
 
@@ -103,20 +105,20 @@ public class InfoBox extends GUIComponent {
         boolean inTheCatacombs = ApecMain.Instance.dataExtractor.isInTheCatacombs;
         mc.fontRendererObj.drawString(
                 purseText,
-                (int) (GuiPos.x + (subComponentDeltas.get(0).getX() + (UseIcons ? 9 : 0)) * oneOverScale),
+                (int) (GuiPos.x + 20 + (subComponentDeltas.get(0).getX() + (UseIcons ? 9 : 0)) * oneOverScale),
                 (int) ((GuiPos.y + subComponentDeltas.get(0).getY()) * oneOverScale),
                 0xffffff, false
         );
         mc.fontRendererObj.drawString(
                 bitText,
-                (int) (GuiPos.x + (subComponentDeltas.get(1).getX() + (UseIcons ? 9 : 0)) * oneOverScale + 120),
+                (int) (GuiPos.x + 20 + (subComponentDeltas.get(1).getX() + (UseIcons ? 9 : 0)) * oneOverScale + 120),
                 (int) ((GuiPos.y + subComponentDeltas.get(1).getY()) * oneOverScale),
                 0xffffff, false
         );
         int zoneAddX = (inTheCatacombs ? 5 : 9) ;
         mc.fontRendererObj.drawString(
                 zoneText,
-                (int) (GuiPos.x + (subComponentDeltas.get(2).getX() + (UseIcons ? zoneAddX : 0)) * oneOverScale + 220),
+                (int) (GuiPos.x + 20 + (subComponentDeltas.get(2).getX() + (UseIcons ? zoneAddX : 0)) * oneOverScale + 220),
                 (int) ((GuiPos.y + subComponentDeltas.get(2).getY()) * oneOverScale),
                 0xffffff, false
         );
@@ -124,7 +126,7 @@ public class InfoBox extends GUIComponent {
         if (!ApecMain.Instance.settingsManager.getSettingState(SettingID.USE_DEFENCE_OUT_OF_BB) || editingMode) {
             mc.fontRendererObj.drawString(
                     defenceText,
-                    (int) (GuiPos.x + (subComponentDeltas.get(3).getX() + (UseIcons ? 10 : 0)) * oneOverScale + 360),
+                    (int) (GuiPos.x + 20 + (subComponentDeltas.get(3).getX() + (UseIcons ? 10 : 0)) * oneOverScale + 360),
                     (int) ((GuiPos.y + subComponentDeltas.get(3).getY()) * oneOverScale),
                     0xffffff
             );
@@ -148,7 +150,11 @@ public class InfoBox extends GUIComponent {
 
     @Override
     public Vector2f getAnchorPointPosition() {
-        return new Vector2f(20, g_sr.getScaledHeight() - 14*scale);
+        float y = 0;
+        if (!ApecMain.Instance.settingsManager.getSettingState(SettingID.BB_ON_TOP)) {
+            y = g_sr.getScaledHeight() - 20*scale;
+        }
+        return new Vector2f(0, y);
     }
 
     @Override

@@ -89,7 +89,7 @@ public class SkillBar extends GUIComponent {
 
     @Override
     public Vector2f getAnchorPointPosition() {
-        return new Vector2f((int) (g_sr.getScaledWidth() / 2 - 91), g_sr.getScaledHeight() - 30 + 20 * (1 - ((GUIModifier) ApecMain.Instance.getComponent(ComponentId.GUI_MODIFIER)).getGuiComponent(GUIComponentID.INFO_BOX).getScale()));
+        return this.guiModifier.applyGlobalChanges(this,new Vector2f((int) (g_sr.getScaledWidth() / 2 - 91), g_sr.getScaledHeight() - 30 + 20 * (1 - ((GUIModifier) ApecMain.Instance.getComponent(ComponentId.GUI_MODIFIER)).getGuiComponent(GUIComponentID.INFO_BOX).getScale())));
     }
 
     @Override

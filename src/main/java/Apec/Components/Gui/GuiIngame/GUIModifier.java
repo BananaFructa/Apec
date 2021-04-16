@@ -69,6 +69,7 @@ public class GUIModifier extends Component {
         add(new ToolTipText());
         add(new EventLister());
         add(new AbilityText());
+        add(new BossBar());
     }};
 
     public GUIModifier() {
@@ -129,9 +130,9 @@ public class GUIModifier extends Component {
      * @param guiComponentID = Gui Component Id
      * @return Returns the component with the matching component id, null if none is found
      */
-    public GUIComponent getGuiComponent(GUIComponentID guiComponentID) {
+    public <T extends GUIComponent> T getGuiComponent(GUIComponentID guiComponentID) {
         for (GUIComponent component : GUIComponents) {
-            if (component.gUiComponentID == guiComponentID) return component;
+            if (component.gUiComponentID == guiComponentID) return (T)component;
         }
         return null;
     }
@@ -237,6 +238,12 @@ public class GUIModifier extends Component {
         GuiIngameForge.renderObjective = true;
 
         shouldTheGuiAppear = false;
+    }
+
+    public Vector2f applyGlobalChanges(GUIComponent component,Vector2f anchorPoint) {
+        boolean isbbUp = ApecMain.Instance.settingsManager.getSettingState(SettingID.BB_ON_TOP);
+        if (isbbUp && component.getDeltaPosition().length() == 0) anchorPoint = ApecUtils.addVec(anchorPoint,new Vector2f(0,20));
+        return anchorPoint;
     }
 
     /**
