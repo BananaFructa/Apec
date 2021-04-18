@@ -1,5 +1,6 @@
 package Apec.Components.Gui;
 
+import Apec.ApecMain;
 import Apec.Component;
 import Apec.ComponentId;
 import Apec.Components.Gui.ContainerGuis.ApecContainerGui;
@@ -9,7 +10,10 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.inventory.Slot;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
@@ -65,18 +69,33 @@ public class CustomItemToolTip extends Component {
                     int xEnd = x + maxWidth + 6;
 
                     if (hoveredSlot.getStack() != null && mc.thePlayer.inventory.getItemStack() == null) {
-                        GlStateManager.disableLighting();
-                        GlStateManager.disableDepth();
 
                         int xIcon = xEnd - 20;
+
+                        GlStateManager.disableDepth();
+                        RenderHelper.disableStandardItemLighting();
+
+                        GlStateManager.pushMatrix();
+
+                        GlStateManager.color(1,1,1);
+                        mc.renderEngine.bindTexture(new ResourceLocation(ApecMain.modId,"gui/rarityIcons.png"));
+                        int rarityIdx = rarity.ordinal();
+                        float scaleFactor = 20f/16f;
+                        GlStateManager.scale(scaleFactor,scaleFactor,1);
+                        if (rarityIdx == 8) rarityIdx = 7;
+                        mc.currentScreen.drawTexturedModalRect((xIcon+1)/scaleFactor,(y-21)/scaleFactor,rarityIdx * 16,0,16,16);
+
+                        GlStateManager.popMatrix();
+
+                        GlStateManager.disableLighting();
 
                         GuiScreen.drawRect(xIcon, y - 21, xIcon + 1, y - 1, 0xff000000);
                         GuiScreen.drawRect(xIcon + 1, y - 22, xIcon + 21, y - 21, 0xff000000);
                         GuiScreen.drawRect(xIcon + 21, y - 21, xIcon + 22, y - 1, 0xff000000);
 
-
                         GlStateManager.enableLighting();
                         GlStateManager.enableDepth();
+                        RenderHelper.enableStandardItemLighting();
                     }
                 }
             }

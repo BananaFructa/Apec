@@ -146,8 +146,8 @@ public class TexturePackRegistryViewer extends Component {
 
     public static class TPRVGuiScreen extends GuiScreen {
 
-        private final List<TPDisplayElement> elements = new ArrayList<TPDisplayElement>();
-        private final List<ITPDrawableElement> drawableElements = new ArrayList<ITPDrawableElement>();
+        private List<TPDisplayElement> elements = new ArrayList<TPDisplayElement>();
+        private List<ITPDrawableElement> drawableElements = new ArrayList<ITPDrawableElement>();
 
         int scrollOffset = 0;
         public boolean finishedLoading = false;
@@ -284,85 +284,88 @@ public class TexturePackRegistryViewer extends Component {
 
             final TexturePackRegistryViewer.TPRVGuiScreen instance = this;
             // Request thread
-            new Thread(() -> {
-                finishedLoading = false;
-                // Gets the text information about the texturepacks
-                try {
-                    List<TPData> tps = getAllTexturePacksFromDataBase(dataBaseUrls.get(index), registryTag);
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    finishedLoading = false;
+                    // Gets the text information about the texturepacks
+                    try {
+                        List<TPData> tps = getAllTexturePacksFromDataBase(dataBaseUrls.get(index), registryTag);
 
-                    for (TPData tp : tps) {
-                        synchronized (threadLock) {
-                            TPRVDownloadButton button = new TPRVDownloadButton(0, 0, 0, tp);
-                            buttonList.add(button);
-                            TPDisplayElement element = new TPDisplayElement(tp, button, instance);
-                            if (element.hasDescription) {
-                                TPRVDropDownButton dropDownButton = new TPRVDropDownButton(0,0,0,element);
-                                element.setDdbutton(dropDownButton);
-                                buttonList.add(dropDownButton);
+                        for (TPData tp : tps) {
+                            synchronized (threadLock) {
+                                TPRVDownloadButton button = new TPRVDownloadButton(0, 0, 0, tp);
+                                buttonList.add(button);
+                                TPDisplayElement element = new TPDisplayElement(tp, button, instance);
+                                if (element.hasDescription) {
+                                    TPRVDropDownButton dropDownButton = new TPRVDropDownButton(0,0,0,element);
+                                    element.setDdbutton(dropDownButton);
+                                    buttonList.add(dropDownButton);
+                                }
+                                elements.add(element);
                             }
-                            elements.add(element);
                         }
-                    }
 
-                    HashMap<String, List<TPDisplayElement>> tagToElements = new HashMap<String, List<TPDisplayElement>>();
-                    HashMap<Integer,String> reservedElementIndexes = new HashMap<Integer,String>(); // Used for remembering order after merging tagged elements
-                    List<TPDisplayElement> unTaggedElements = new ArrayList<TPDisplayElement>();
+                        HashMap<String, List<TPDisplayElement>> tagToElements = new HashMap<String, List<TPDisplayElement>>();
+                        HashMap<Integer,String> reservedElementIndexes = new HashMap<Integer,String>(); // Used for remembering order after merging tagged elements
+                        List<TPDisplayElement> unTaggedElements = new ArrayList<TPDisplayElement>();
 
-                    int slotsUsedByMergedElements = 0;
+                        int slotsUsedByMergedElements = 0;
 
-                    for (int i = 0;i < elements.size();i++) {
-                        TPDisplayElement element = elements.get(i);
-                        if (!element.texturepack.tag.equals("NULL")) {
-                            if (tagToElements.containsKey(element.texturepack.name)) {
-                                tagToElements.get(element.texturepack.name).add(element);
-                                slotsUsedByMergedElements++;
+                        for (int i = 0;i < elements.size();i++) {
+                            TPDisplayElement element = elements.get(i);
+                            if (!element.texturepack.tag.equals("NULL")) {
+                                if (tagToElements.containsKey(element.texturepack.name)) {
+                                    tagToElements.get(element.texturepack.name).add(element);
+                                    slotsUsedByMergedElements++;
+                                } else {
+                                    tagToElements.put(element.texturepack.name,new ArrayList<TPDisplayElement>());
+                                    tagToElements.get(element.texturepack.name).add(element);
+                                    reservedElementIndexes.put(i - slotsUsedByMergedElements,element.texturepack.name);
+                                }
                             } else {
-                                tagToElements.put(element.texturepack.name,new ArrayList<TPDisplayElement>());
-                                tagToElements.get(element.texturepack.name).add(element);
-                                reservedElementIndexes.put(i - slotsUsedByMergedElements,element.texturepack.name);
+                                unTaggedElements.add(element);
                             }
-                        } else {
-                            unTaggedElements.add(element);
+                        }
+
+                        int indexOffset = 0;
+
+                        for (int i = 0;i < unTaggedElements.size() + indexOffset;i++) {
+                            if (reservedElementIndexes.containsKey(i)) {
+                                TPDisplayElement[] elements = ApecUtils.listToArray(tagToElements.get(reservedElementIndexes.get(i)),TPDisplayElement[].class);
+                                TPRVTabButton[] tabs = new TPRVTabButton[elements.length];
+                                for (int j = 0;j < tabs.length;j++) {
+                                    tabs[j] = new TPRVTabButton(elements[j].texturepack.tag,j);
+                                    buttonList.add(tabs[j]);
+                                }
+                                drawableElements.add(new TPTaggedDisplayElement(elements,tabs));
+                                indexOffset++;
+                            } else {
+                                drawableElements.add(unTaggedElements.get(i - indexOffset));
+                            }
+                        }
+
+                    } catch (Exception err) {
+                        err.printStackTrace();
+                    }
+
+                    // Loads the icons
+                    for (TPDisplayElement element : elements) {
+                        synchronized (threadLock) {
+                            try {
+                                element.loadIcon(registryTag, mc);
+                            } catch (Exception err) {
+                                err.printStackTrace();
+                            }
                         }
                     }
 
-                    int indexOffset = 0;
-
-                    for (int i = 0;i < unTaggedElements.size() + indexOffset;i++) {
-                        if (reservedElementIndexes.containsKey(i)) {
-                            TPDisplayElement[] elements = ApecUtils.listToArray(tagToElements.get(reservedElementIndexes.get(i)),TPDisplayElement[].class);
-                            TPRVTabButton[] tabs = new TPRVTabButton[elements.length];
-                            for (int j = 0;j < tabs.length;j++) {
-                                tabs[j] = new TPRVTabButton(elements[j].texturepack.tag,j);
-                                buttonList.add(tabs[j]);
-                            }
-                            drawableElements.add(new TPTaggedDisplayElement(elements,tabs));
-                            indexOffset++;
-                        } else {
-                            drawableElements.add(unTaggedElements.get(i - indexOffset));
-                        }
-                    }
-
-                } catch (Exception err) {
-                    err.printStackTrace();
-                }
-
-                // Loads the icons
-                for (TPDisplayElement element : elements) {
+                    // Looks for already installed texturepacks
                     synchronized (threadLock) {
-                        try {
-                            element.loadIcon(registryTag, mc);
-                        } catch (Exception err) {
-                            err.printStackTrace();
-                        }
+                        checkForAlreadyInstalledTPs();
                     }
+                    finishedLoading = true;
                 }
-
-                // Looks for already installed texturepacks
-                synchronized (threadLock) {
-                    checkForAlreadyInstalledTPs();
-                }
-                finishedLoading = true;
             }).start();
         }
 

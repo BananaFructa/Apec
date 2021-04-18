@@ -20,6 +20,10 @@ public enum ItemRarity {
         List<String> toolTip = itemStack.getTooltip(mc.thePlayer,false);
         for (int i = toolTip.size() - 1;i > -1;i--) {
             for (ItemRarity rarity : ItemRarity.values()) {
+                if (
+                    (rarity == COMMON && ApecUtils.containedByCharSequence(toolTip.get(i),"UNCOMMON")) ||
+                    (rarity == SPECIAL && ApecUtils.containedByCharSequence(toolTip.get(i),"VERY SPECIAL"))
+                ) continue;
                 if (ApecUtils.containedByCharSequence(toolTip.get(i),rarity.name().replace("_"," "))) return rarity;
             }
         }
