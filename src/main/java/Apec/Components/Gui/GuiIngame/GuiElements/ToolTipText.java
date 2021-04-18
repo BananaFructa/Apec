@@ -42,7 +42,7 @@ public class ToolTipText extends GUIComponent {
             x += hotBar.getDeltaPosition().x*hotBar.getScale();
             y += hotBar.getDeltaPosition().y*hotBar.getOneOverScale();
         }
-        return this.guiModifier.applyGlobalChanges(this,new Vector2f(x,y));
+        return new Vector2f(x,y);
     }
 
     @Override

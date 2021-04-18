@@ -20,6 +20,8 @@ import java.util.List;
 
 public class InfoBox extends GUIComponent {
 
+    // FIXME: Repair improper usages of the gui element position API
+
     float yDecremetor = 0;
 
     public InfoBox() {
@@ -46,17 +48,17 @@ public class InfoBox extends GUIComponent {
         GlStateManager.scale(scale,scale,1);
         if (UseIcons) {
 
-            GuiPos.y += yDecremetor;
+            GuiPos.y += yDecremetor + 6*scale;
             mc.renderEngine.bindTexture(new ResourceLocation(ApecMain.modId, "gui/statBars.png"));
-            gi.drawTexturedModalRect((int)(GuiPos.x + 20 + (subComponentDeltas.get(0).getX())*oneOverScale), (GuiPos.y+ subComponentDeltas.get(0).getY())*oneOverScale -1 + 6*scale,1,216,6,9);
-            gi.drawTexturedModalRect((int)(GuiPos.x + 20 + (subComponentDeltas.get(1).getX())*oneOverScale + 120), (GuiPos.y+ subComponentDeltas.get(1).getY())*oneOverScale -1 + 6*scale,8,216,5,9);
+            gi.drawTexturedModalRect((int)(GuiPos.x + 20 + (subComponentDeltas.get(0).getX())*oneOverScale), (GuiPos.y+ subComponentDeltas.get(0).getY())*oneOverScale -1,1,216,6,9);
+            gi.drawTexturedModalRect((int)(GuiPos.x + 20 + (subComponentDeltas.get(1).getX())*oneOverScale + 120), (GuiPos.y+ subComponentDeltas.get(1).getY())*oneOverScale -1,8,216,5,9);
             if (ApecMain.Instance.dataExtractor.isInTheCatacombs) {
-                gi.drawTexturedModalRect((int) (GuiPos.x + 20 + (subComponentDeltas.get(2).getX())*oneOverScale + 220 - 1), (GuiPos.y + subComponentDeltas.get(2).getY())*oneOverScale -1 + 6*scale, 24, 216, 7, 8);
+                gi.drawTexturedModalRect((int) (GuiPos.x + 20 + (subComponentDeltas.get(2).getX())*oneOverScale + 220 - 1), (GuiPos.y + subComponentDeltas.get(2).getY())*oneOverScale -1, 24, 216, 7, 8);
             } else {
-                gi.drawTexturedModalRect((int) (GuiPos.x + 20 + (subComponentDeltas.get(2).getX())*oneOverScale + 220), (GuiPos.y + subComponentDeltas.get(2).getY())*oneOverScale -1  + 6*scale, 14, 216, 9, 9);
+                gi.drawTexturedModalRect((int) (GuiPos.x + 20 + (subComponentDeltas.get(2).getX())*oneOverScale + 220), (GuiPos.y + subComponentDeltas.get(2).getY())*oneOverScale -1, 14, 216, 9, 9);
             }
             if (!ApecMain.Instance.settingsManager.getSettingState(SettingID.USE_DEFENCE_OUT_OF_BB) || editingMode) {
-                gi.drawTexturedModalRect((int) (GuiPos.x + 20 + (subComponentDeltas.get(3).getX()) * oneOverScale + 360),  (GuiPos.y + subComponentDeltas.get(3).getY()) * oneOverScale - 1 + 6*scale, 32, 215, 7, 10);
+                gi.drawTexturedModalRect((int) (GuiPos.x + 20 + (subComponentDeltas.get(3).getX()) * oneOverScale + 360),  (GuiPos.y + subComponentDeltas.get(3).getY()) * oneOverScale - 1, 32, 215, 7, 10);
             }
         }
         GlStateManager.scale(1,1,1);
@@ -160,11 +162,11 @@ public class InfoBox extends GUIComponent {
     @Override
     public List<Vector2f> getSubElementsAnchorPoints() {
         return new ArrayList<Vector2f>() {{
-            add(new Vector2f(0, 0));
-            add(new Vector2f(120*scale, 0));
-            add(new Vector2f(220*scale, 0));
-            add(new Vector2f(360*scale, 0));
-            add(new Vector2f((g_sr.getScaledWidth() - 20), 0));
+            add(new Vector2f(0 + 20 * scale, 6*scale));
+            add(new Vector2f(120*scale + 20 * scale, 6*scale));
+            add(new Vector2f(220*scale + 20 * scale, 6*scale));
+            add(new Vector2f(360*scale + 20 * scale, 6*scale));
+            add(new Vector2f((g_sr.getScaledWidth() - 20), 6*scale));
         }};
     }
 

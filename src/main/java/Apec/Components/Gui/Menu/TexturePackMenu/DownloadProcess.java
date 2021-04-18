@@ -11,17 +11,17 @@ public class DownloadProcess {
     private URL url;
     private File file;
     private final Object threadLock = new Object();
-    public String tpname;
+    public TPData tpdata;
 
     public float downloadProgress = 0;
 
     private ParameterizedRunnable<Integer> callback;
 
-    public DownloadProcess(URL url,String texturePackName,String fileName) {
+    public DownloadProcess(URL url,TPData tpdata) {
         this.url = url;
-        this.tpname = texturePackName;
+        this.tpdata = tpdata;
         new File("resourcepacks").mkdirs(); // in case there is no resorscpacks folder ? idk
-        this.file = new File("resourcepacks/" + fileName);
+        this.file = new File("resourcepacks/" + tpdata.expectedFileName);
     }
 
     public void setCallback(ParameterizedRunnable<Integer> callback) {

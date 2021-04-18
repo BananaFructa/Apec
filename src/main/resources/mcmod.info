@@ -2,7 +2,7 @@
 {
   "modid": "apec",
   "name": "Apec",
-  "description": "A mod the changes the game's gui for a better experience in hypixel skyblock.",
+  "description": "A mod the changes the game's gui for a better experience in hypixel skyblock. Special thanks to the artist team (xCyndi,tea and Glenz) for contributing to the mod's assets.",
   "version": "${version}",
   "mcversion": "${mcversion}",
   "url": "",

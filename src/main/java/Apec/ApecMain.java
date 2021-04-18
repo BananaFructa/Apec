@@ -4,6 +4,7 @@ import Apec.Commands.ApecComponentTogglerCommand;
 import Apec.Components.Gui.ContainerGuis.TrasparentEffects.ActiveEffectsTransparentComponent;
 import Apec.Components.Gui.ContainerGuis.AuctionHouse.AuctionHouseComponent;
 import Apec.Components.Gui.ContainerGuis.SkillView.SkillViewComponent;
+import Apec.Components.Gui.CustomItemToolTip;
 import Apec.Components.Gui.GuiIngame.GUIModifier;
 import Apec.Components.Gui.Menu.SettingsMenu.ApecMenu;
 import Apec.Components.Gui.Menu.TexturePackMenu.TexturePackRegistryViewer;
@@ -16,6 +17,7 @@ import Apec.Utils.VersionChecker;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraftforge.client.ClientCommandHandler;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.Mod;
@@ -69,6 +71,7 @@ public class ApecMain
         add(new GUIModifier()); // The gui ingame interface
         add(new ApecMenu()); // The settings menu
         add(new TexturePackRegistryViewer());
+        add(new CustomItemToolTip());
         add(new AuctionHouseComponent()); // The auction house ui
         add(new SkillViewComponent()); // Skill view ui
         add(new ActiveEffectsTransparentComponent()); // The transparent /effects screen
@@ -112,6 +115,8 @@ public class ApecMain
             if (!DataOfComponents.get(component.componentId.ordinal()).isEmpty()) component.loadSavedData(DataOfComponents.get(component.componentId.ordinal()));
             component.init();
         }
+
+        getComponent(ComponentId.CUSTOM_ITEM_TOOL_TIP).Toggle();
 
     }
 

@@ -14,12 +14,13 @@ import org.lwjgl.util.vector.Vector2f;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
 public class ApecUtils {
 
-    /** If you are in debugging mode set this variable to true */
+    /** If you are in a fml workspace set this variable to true */
     public static boolean inFMLDebugFramework = false;
 
     private static String[] colorCodes = { "\u00a70","\u00a71","\u00a72","\u00a73","\u00a74","\u00a75","\u00a76","\u00a77","\u00a78","\u00a79","\u00a7a","\u00a7b","\u00a7c","\u00a7d","\u00a7e","\u00a7f" };
@@ -37,8 +38,11 @@ public class ApecUtils {
             put("overlayPlayerList", "field_175196_v");
             put("guiIngame", "field_175251_g");
             put("chatMessages", "field_146253_i");
+            put("theSlot","field_147006_u");
         }
     }};
+
+    private static HashMap<String,Field> reflectionFieldCache = new HashMap<String, Field>();
 
     public static HashMap<String,String> getUnObfedMethodNames = new HashMap<String, String>() {{
         if (!inFMLDebugFramework) {
@@ -47,18 +51,22 @@ public class ApecUtils {
         }
     }};
 
-    public static Object ReadDeclaredField(Class<?> targetType,Object target,String name) {
+    public static <T> T readDeclaredField(Class<?> targetType, Object target, String name) {
         try {
-            Field f = targetType.getDeclaredField(unObfedFieldNames.getOrDefault(name,name));
-            f.setAccessible(true);
-            return f.get(target);
+            if (reflectionFieldCache.containsKey(name)) {
+                return (T)reflectionFieldCache.get(name).get(target);
+            } else {
+                Field f = targetType.getDeclaredField(unObfedFieldNames.getOrDefault(name, name));
+                f.setAccessible(true);
+                return (T)f.get(target);
+            }
         } catch (Exception err) {
             err.printStackTrace();
             return null;
         }
     }
 
-    public static void WriteDeclaredField(Class<?> targetType,Object target,String name,Object value) {
+    public static void writeDeclaredField(Class<?> targetType, Object target, String name, Object value) {
         try {
             Field f = targetType.getDeclaredField(unObfedFieldNames.getOrDefault(name,name));
             f.setAccessible(true);
@@ -68,7 +76,7 @@ public class ApecUtils {
         }
     }
 
-    public static Method GetDeclaredMethod(Class<?> targetClass,String name,Class<?>... parameters) {
+    public static Method getDeclaredMethod(Class<?> targetClass, String name, Class<?>... parameters) {
         try {
             Method m = targetClass.getDeclaredMethod(getUnObfedMethodNames.getOrDefault(name,name),parameters);
             m.setAccessible(true);
@@ -218,7 +226,7 @@ public class ApecUtils {
 
     /**
      * @param l = A list of strings
-     * @param regex = A string
+     * @param regex = Regex
      * @return Returns true if the input string is contained in a string from the list
      */
 
@@ -483,5 +491,10 @@ public class ApecUtils {
             lines.add(currentSentence);
         }
         return lines;
+    }
+
+    public static <T> T[] listToArray(List<T> list,Class<T[]> type) {
+        Object[] arr = list.toArray();
+        return Arrays.copyOf(arr,arr.length,type);
     }
 }

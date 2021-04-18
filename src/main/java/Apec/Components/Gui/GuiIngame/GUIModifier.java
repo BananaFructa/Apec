@@ -190,19 +190,19 @@ public class GUIModifier extends Component {
             Integer updateCounter;
             RenderGameOverlayEvent event;
 
-            guiNewChat = (GuiNewChat) ApecUtils.ReadDeclaredField(GuiIngame.class, from,"persistantChatGUI");
-            guiStreamIndicator = (GuiStreamIndicator) ApecUtils.ReadDeclaredField(GuiIngame.class, from,"streamIndicator");
-            updateCounter = (Integer) ApecUtils.ReadDeclaredField(GuiIngame.class, from,"updateCounter");
-            event = (RenderGameOverlayEvent) ApecUtils.ReadDeclaredField(GuiIngameForge.class,from,"eventParent");
+            guiNewChat = ApecUtils.readDeclaredField(GuiIngame.class, from,"persistantChatGUI");
+            guiStreamIndicator = ApecUtils.readDeclaredField(GuiIngame.class, from,"streamIndicator");
+            updateCounter = ApecUtils.readDeclaredField(GuiIngame.class, from,"updateCounter");
+            event = ApecUtils.readDeclaredField(GuiIngameForge.class,from,"eventParent");
 
-            ApecUtils.WriteDeclaredField(GuiIngame.class, to,"persistantChatGUI", guiNewChat);
-            ApecUtils.WriteDeclaredField(GuiIngame.class, to,"streamIndicator", guiStreamIndicator);
-            ApecUtils.WriteDeclaredField(GuiIngame.class, to,"updateCounter", updateCounter);
-            ApecUtils.WriteDeclaredField(GuiIngameForge.class,to,"eventParent",event);
+            ApecUtils.writeDeclaredField(GuiIngame.class, to,"persistantChatGUI", guiNewChat);
+            ApecUtils.writeDeclaredField(GuiIngame.class, to,"streamIndicator", guiStreamIndicator);
+            ApecUtils.writeDeclaredField(GuiIngame.class, to,"updateCounter", updateCounter);
+            ApecUtils.writeDeclaredField(GuiIngameForge.class,to,"eventParent",event);
 
-            GuiPlayerTabOverlay tab = (GuiPlayerTabOverlay) ApecUtils.ReadDeclaredField(GuiIngame.class,from,"overlayPlayerList");
-            ApecUtils.WriteDeclaredField(GuiPlayerTabOverlay.class,tab,"guiIngame",to);
-            ApecUtils.WriteDeclaredField(GuiIngame.class,to,"overlayPlayerList",tab);
+            GuiPlayerTabOverlay tab = (GuiPlayerTabOverlay) ApecUtils.readDeclaredField(GuiIngame.class,from,"overlayPlayerList");
+            ApecUtils.writeDeclaredField(GuiPlayerTabOverlay.class,tab,"guiIngame",to);
+            ApecUtils.writeDeclaredField(GuiIngame.class,to,"overlayPlayerList",tab);
 
         } catch (Exception err) {
             err.printStackTrace();

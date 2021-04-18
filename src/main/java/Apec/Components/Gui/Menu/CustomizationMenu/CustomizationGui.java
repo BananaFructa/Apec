@@ -81,6 +81,15 @@ public class CustomizationGui extends GuiScreen {
         super.mouseClicked(mouseX, mouseY, mouseButton);
         if (mouseButton == 0) {
             for (GuiButton guiButton : this.buttonList) {
+                if (guiButton.mousePressed(Minecraft.getMinecraft(), mouseX, mouseY) && guiButton instanceof CustomizationResetButton) {
+                    for (GUIComponent component : components) {
+                        component.resetDeltaPositions();
+                        component.setScale(1);
+                    }
+                    return;
+                }
+            }
+            for (GuiButton guiButton : this.buttonList) {
                 if (guiButton.mousePressed(Minecraft.getMinecraft(), mouseX, mouseY) && guiButton instanceof CustomizationGuiSlider) {
                     ((CustomizationGuiSlider) guiButton).userStartedDragging(mouseX, mouseY);
                     return;
@@ -90,14 +99,6 @@ public class CustomizationGui extends GuiScreen {
                 if (guiButton.mousePressed(Minecraft.getMinecraft(), mouseX, mouseY) && guiButton instanceof CustomizationGuiButton) {
                     ((CustomizationGuiButton) guiButton).userStartedDragging(mouseX, mouseY);
                     return;
-                }
-            }
-            for (GuiButton guiButton : this.buttonList) {
-                if (guiButton.mousePressed(Minecraft.getMinecraft(), mouseX, mouseY) && guiButton instanceof CustomizationResetButton) {
-                    for (GUIComponent component : components) {
-                        component.resetDeltaPositions();
-                        component.setScale(1);
-                    }
                 }
             }
         } else if (mouseButton == 1) {

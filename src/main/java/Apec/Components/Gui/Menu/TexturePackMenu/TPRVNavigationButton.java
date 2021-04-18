@@ -5,11 +5,11 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.renderer.GlStateManager;
 
-public class TRPVNavigationButton extends GuiButton {
+public class TPRVNavigationButton extends GuiButton {
 
     public TexturePackRegistryViewer.Actions action;
 
-    public TRPVNavigationButton(TexturePackRegistryViewer.Actions action) {
+    public TPRVNavigationButton(TexturePackRegistryViewer.Actions action) {
         super(0,0,0,0,15, "");
         this.action = action;
     }

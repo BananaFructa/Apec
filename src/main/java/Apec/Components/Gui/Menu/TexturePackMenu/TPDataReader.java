@@ -1,8 +1,6 @@
 package Apec.Components.Gui.Menu.TexturePackMenu;
 
 import net.minecraft.util.Tuple;
-import org.apache.commons.lang3.ArrayUtils;
-import org.lwjgl.Sys;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -73,24 +71,25 @@ public class TPDataReader {
     }
 
     public TPData readNextTPData() {
-        String name = null,author = null,download = null,icon = null,description = null,version = null,efn = null,optifine = null,neu = null;
-        final int tagCount = 9;
+        String name = null,author = null,download = null,icon = null,description = null,version = null,efn = null,optifine = null,neu = null,tag = null;
+        final int tagCount = 10;
         for (int i = 0;i < tagCount;i++) {
             Tuple<String, String> pair = readNextPair();
             if (pair == null) break;
-            String tag = pair.getFirst();
-            if (tag.equals("name")) name = pair.getSecond();
-            else if (tag.equals("author")) author = pair.getSecond();
-            else if (tag.equals("download")) download = pair.getSecond();
-            else if (tag.equals("icon")) icon = pair.getSecond();
-            else if (tag.equals("description")) description = pair.getSecond();
-            else if (tag.equals("version")) version = pair.getSecond();
-            else if (tag.equals("efn")) efn = pair.getSecond();
-            else if (tag.equals("req-optifine")) optifine = pair.getSecond();
-            else if (tag.equals("req-NEU")) neu = pair.getSecond();
+            String tagPair = pair.getFirst();
+            if (tagPair.equals("name")) name = pair.getSecond();
+            else if (tagPair.equals("author")) author = pair.getSecond();
+            else if (tagPair.equals("download")) download = pair.getSecond();
+            else if (tagPair.equals("icon")) icon = pair.getSecond();
+            else if (tagPair.equals("description")) description = pair.getSecond();
+            else if (tagPair.equals("version")) version = pair.getSecond();
+            else if (tagPair.equals("efn")) efn = pair.getSecond();
+            else if (tagPair.equals("req-optifine")) optifine = pair.getSecond();
+            else if (tagPair.equals("req-NEU")) neu = pair.getSecond();
+            else if (tagPair.equals("tag")) tag = pair.getSecond();
         }
-        if (name == null || author == null || download == null || icon == null || description == null || efn == null || optifine == null || version == null || neu == null) return null;
-        return new TPData(name,author,description,version,download,optifine,neu,icon,efn);
+        if (name == null || author == null || download == null || icon == null || description == null || efn == null || optifine == null || version == null || neu == null || tag == null) return null;
+        return new TPData(name,author,description,version,tag,download,optifine,neu,icon,efn);
     }
 
 }

@@ -2,8 +2,6 @@ package Apec.Components.Gui.Menu.TexturePackMenu;
 
 import Apec.ApecMain;
 import Apec.Components.Gui.Menu.MessageBox;
-import Apec.Components.Gui.Menu.SettingsMenu.ApecMenu;
-import Apec.DataInterpretation.ComponentSaveManager;
 import Apec.Utils.ApecUtils;
 import Apec.Component;
 import Apec.ComponentId;
@@ -13,7 +11,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
-import org.lwjgl.Sys;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.util.ResourceLocation;
 import org.lwjgl.input.Mouse;
 
 import javax.imageio.ImageIO;
@@ -55,7 +54,7 @@ public class TexturePackRegistryViewer extends Component {
             mc.displayGuiScreen(new MessageBox(
                     "Before continuing we would like to state the fact that ANYONE can publish their texturepack in the Apec Texture Pack Registry," +
                             " so if you have your own texturepack we would be happy to publish it here.You can publish a texturepack by joining the Apec discord server" +
-                            " and submitting a request in #texture-pack-registry-requests.",
+                            " and submitting a request in #tpr-requests.",
                     new TPRVGuiScreen()));
         } else {
             mc.displayGuiScreen(new TPRVGuiScreen());
@@ -112,19 +111,27 @@ public class TexturePackRegistryViewer extends Component {
         }
     }
 
+    public static boolean hasDownload(TPData data) {
+        return nameToDownloadProcess.containsKey(data.name + (!data.tag.equals("NULL") ? data.tag : ""));
+    }
+
+    public static DownloadProcess getDownloadProcess(TPData data) {
+        return nameToDownloadProcess.get(data.name + (!data.tag.equals("NULL") ? data.tag : ""));
+    }
+
     public static void startNewDownload(TPData data) {
         if (!data.downloadUrl.equals("NULL")) {
             try {
-                final DownloadProcess downloadProcess = new DownloadProcess(new URL(data.downloadUrl),data.name,data.expectedFileName);
+                final DownloadProcess downloadProcess = new DownloadProcess(new URL(data.downloadUrl),data);
                 downloadProcess.startDownload();
                 activeDownloads.add(downloadProcess);
-                nameToDownloadProcess.put(data.name,downloadProcess);
+                nameToDownloadProcess.put(data.name + (!data.tag.equals("NULL") ? data.tag : ""),downloadProcess);
                 downloadProcess.setCallback(new ParameterizedRunnable<Integer>() {
                     @Override
                     public void run(Integer parameter) {
                         synchronized (threadLock) {
                             activeDownloads.remove(downloadProcess);
-                            nameToDownloadProcess.remove(downloadProcess.tpname,downloadProcess);
+                            nameToDownloadProcess.remove(downloadProcess.tpdata.name + (!downloadProcess.tpdata.tag.equals("NULL") ? downloadProcess.tpdata.tag : ""));
                             if (mc.currentScreen instanceof TPRVGuiScreen) {
                                 ((TPRVGuiScreen)mc.currentScreen).checkForAlreadyInstalledTPs();
                             }
@@ -139,11 +146,13 @@ public class TexturePackRegistryViewer extends Component {
 
     public static class TPRVGuiScreen extends GuiScreen {
 
-        private List<TPDisplayElement> elements = new ArrayList<TPDisplayElement>();
+        private final List<TPDisplayElement> elements = new ArrayList<TPDisplayElement>();
+        private final List<ITPDrawableElement> drawableElements = new ArrayList<ITPDrawableElement>();
+
         int scrollOffset = 0;
         public boolean finishedLoading = false;
 
-        public TRPVNavigationButton nextButton,previousButton;
+        public TPRVNavigationButton nextButton,previousButton;
 
         public List<String> dataBaseUrls;
         private String registryTag;
@@ -158,8 +167,8 @@ public class TexturePackRegistryViewer extends Component {
         public void initGui() {
             super.initGui();
             if (elements.isEmpty()) {
-                nextButton = new TRPVNavigationButton(Actions.NEXT_PAGE);
-                previousButton = new TRPVNavigationButton(Actions.PREVIOUS_PAGE);
+                nextButton = new TPRVNavigationButton(Actions.NEXT_PAGE);
+                previousButton = new TPRVNavigationButton(Actions.PREVIOUS_PAGE);
                 this.buttonList.add(nextButton);
                 this.buttonList.add(previousButton);
                 new Thread(new Runnable() {
@@ -190,24 +199,37 @@ public class TexturePackRegistryViewer extends Component {
         public void drawScreen(int mouseX, int mouseY, float partialTicks) {
             this.drawDefaultBackground();
             synchronized (threadLock) {
+                GlStateManager.pushMatrix();
+
                 drawButtons(mouseX,mouseY,TPRVDropDownButton.class);
+
                 ScaledResolution sr = new ScaledResolution(mc);
                 int yOffset = 0;
-                for (int i = 0;i < elements.size();i++) {
-                    yOffset += elements.get(i).draw(20 + yOffset - scrollOffset,mouseX,mouseY,sr,mc);
+                for (int i = 0;i < drawableElements.size();i++) {
+                    yOffset += drawableElements.get(i).draw(20 + yOffset - scrollOffset,mouseX,mouseY,sr,mc);
                 }
+
                 int limit = getMaxScrollOffset(yOffset,sr);
                 if (scrollOffset > limit && finishedLoading) scrollOffset = limit;
+
                 drawButtons(mouseX,mouseY,TPRVDownloadButton.class);
+
                 drawRect(0, 0, sr.getScaledWidth(), 15, 0xff000000);
-                mc.fontRendererObj.drawString("Apec Texture Pack Registry", 2, 3, 0xffffffff);
                 String pageText = (currentPage + 1) + "/" + totalPages;
                 int pageTextWidth = mc.fontRendererObj.getStringWidth(pageText);
                 int middle = sr.getScaledWidth()/2;
                 previousButton.xPosition = middle - previousButton.width - 2 - pageTextWidth/2;
                 mc.fontRendererObj.drawString(pageText,middle - pageTextWidth/2,3,0xffffffff);
                 nextButton.xPosition = middle + pageTextWidth/2 + 2;
-                drawButtons(mouseX,mouseY,TRPVNavigationButton.class);
+
+                drawButtons(mouseX,mouseY, TPRVNavigationButton.class);
+                GlStateManager.popMatrix();
+                GlStateManager.pushMatrix();
+                mc.renderEngine.bindTexture(new ResourceLocation(ApecMain.modId,"gui/apecTprLogo.png"));
+                float scaleFactor = 15f/28f;
+                GlStateManager.scale(scaleFactor,scaleFactor,1);
+                drawTexturedModalRect((int)(1/scaleFactor),0,0,0,214,28);
+                GlStateManager.popMatrix();
             }
         }
 
@@ -254,55 +276,93 @@ public class TexturePackRegistryViewer extends Component {
                 unLoadTextureData();
                 this.scrollOffset = 0;
                 this.elements.clear();
+                this.drawableElements.clear();
                 this.clearButtonsOfType(TPRVDownloadButton.class);
                 this.clearButtonsOfType(TPRVDropDownButton.class);
+                this.clearButtonsOfType(TPRVTabButton.class);
             }
 
             final TexturePackRegistryViewer.TPRVGuiScreen instance = this;
             // Request thread
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    finishedLoading = false;
-                    // Gets the text information about the texturepacks
-                    try {
-                        List<TPData> tps = getAllTexturePacksFromDataBase(dataBaseUrls.get(index), registryTag);
+            new Thread(() -> {
+                finishedLoading = false;
+                // Gets the text information about the texturepacks
+                try {
+                    List<TPData> tps = getAllTexturePacksFromDataBase(dataBaseUrls.get(index), registryTag);
 
-                        for (TPData tp : tps) {
-                            synchronized (threadLock) {
-                                TPRVDownloadButton button = new TPRVDownloadButton(0, 0, 0, tp);
-                                buttonList.add(button);
-                                TPDisplayElement element = new TPDisplayElement(tp, button, instance);
-                                if (element.hasDescription) {
-                                    TPRVDropDownButton dropDownButton = new TPRVDropDownButton(0,0,0,element);
-                                    element.setDdbutton(dropDownButton);
-                                    buttonList.add(dropDownButton);
-                                }
-                                elements.add(element);
-                            }
-                        }
-
-                    } catch (Exception err) {
-                        err.printStackTrace();
-                    }
-
-                    // Loads the icons
-                    for (TPDisplayElement element : elements) {
+                    for (TPData tp : tps) {
                         synchronized (threadLock) {
-                            try {
-                                element.loadIcon(registryTag, mc);
-                            } catch (Exception err) {
-                                err.printStackTrace();
+                            TPRVDownloadButton button = new TPRVDownloadButton(0, 0, 0, tp);
+                            buttonList.add(button);
+                            TPDisplayElement element = new TPDisplayElement(tp, button, instance);
+                            if (element.hasDescription) {
+                                TPRVDropDownButton dropDownButton = new TPRVDropDownButton(0,0,0,element);
+                                element.setDdbutton(dropDownButton);
+                                buttonList.add(dropDownButton);
                             }
+                            elements.add(element);
                         }
                     }
 
-                    // Looks for already installed texturepacks
-                    synchronized (threadLock) {
-                        checkForAlreadyInstalledTPs();
+                    HashMap<String, List<TPDisplayElement>> tagToElements = new HashMap<String, List<TPDisplayElement>>();
+                    HashMap<Integer,String> reservedElementIndexes = new HashMap<Integer,String>(); // Used for remembering order after merging tagged elements
+                    List<TPDisplayElement> unTaggedElements = new ArrayList<TPDisplayElement>();
+
+                    int slotsUsedByMergedElements = 0;
+
+                    for (int i = 0;i < elements.size();i++) {
+                        TPDisplayElement element = elements.get(i);
+                        if (!element.texturepack.tag.equals("NULL")) {
+                            if (tagToElements.containsKey(element.texturepack.name)) {
+                                tagToElements.get(element.texturepack.name).add(element);
+                                slotsUsedByMergedElements++;
+                            } else {
+                                tagToElements.put(element.texturepack.name,new ArrayList<TPDisplayElement>());
+                                tagToElements.get(element.texturepack.name).add(element);
+                                reservedElementIndexes.put(i - slotsUsedByMergedElements,element.texturepack.name);
+                            }
+                        } else {
+                            unTaggedElements.add(element);
+                        }
                     }
-                    finishedLoading = true;
+
+                    int indexOffset = 0;
+
+                    for (int i = 0;i < unTaggedElements.size() + indexOffset;i++) {
+                        if (reservedElementIndexes.containsKey(i)) {
+                            TPDisplayElement[] elements = ApecUtils.listToArray(tagToElements.get(reservedElementIndexes.get(i)),TPDisplayElement[].class);
+                            TPRVTabButton[] tabs = new TPRVTabButton[elements.length];
+                            for (int j = 0;j < tabs.length;j++) {
+                                tabs[j] = new TPRVTabButton(elements[j].texturepack.tag,j);
+                                buttonList.add(tabs[j]);
+                            }
+                            drawableElements.add(new TPTaggedDisplayElement(elements,tabs));
+                            indexOffset++;
+                        } else {
+                            drawableElements.add(unTaggedElements.get(i - indexOffset));
+                        }
+                    }
+
+                } catch (Exception err) {
+                    err.printStackTrace();
                 }
+
+                // Loads the icons
+                for (TPDisplayElement element : elements) {
+                    synchronized (threadLock) {
+                        try {
+                            element.loadIcon(registryTag, mc);
+                        } catch (Exception err) {
+                            err.printStackTrace();
+                        }
+                    }
+                }
+
+                // Looks for already installed texturepacks
+                synchronized (threadLock) {
+                    checkForAlreadyInstalledTPs();
+                }
+                finishedLoading = true;
             }).start();
         }
 
@@ -314,7 +374,7 @@ public class TexturePackRegistryViewer extends Component {
 
         public int getTotalHeight() {
             int totalOffset = 0;
-            for (TPDisplayElement element : elements) {
+            for (ITPDrawableElement element : drawableElements) {
                 totalOffset += element.getOffset();
             }
             return totalOffset;
@@ -340,9 +400,14 @@ public class TexturePackRegistryViewer extends Component {
                             ((TPRVDropDownButton) button).toggleDescription();
                             break;
                         }
-                    } else if (button instanceof TRPVNavigationButton) {
+                    } else if (button instanceof TPRVNavigationButton) {
                         if (button.mousePressed(mc, mouseX, mouseY)) {
-                            this.executeAction(((TRPVNavigationButton) button).action);
+                            this.executeAction(((TPRVNavigationButton) button).action);
+                            break;
+                        }
+                    } else if (button instanceof TPRVTabButton) {
+                        if (button.mousePressed(mc,mouseX,mouseY)) {
+                            ((TPRVTabButton)button).onClick();
                             break;
                         }
                     }

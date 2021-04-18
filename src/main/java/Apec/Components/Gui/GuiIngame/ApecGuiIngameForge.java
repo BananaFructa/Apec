@@ -28,8 +28,8 @@ public class ApecGuiIngameForge extends GuiIngameForge {
     private final GUIComponent HotBar = GUIModifier.Instance.getGuiComponent(GUIComponentID.HOT_BAR);
     private final GUIComponent BossBar = GUIModifier.Instance.getGuiComponent(GUIComponentID.BOSS_HEALTH);
     private final GUIComponent ToolTipText = GUIModifier.Instance.getGuiComponent(GUIComponentID.TOOL_TIP_TEXT);
-    private final Method pre = ApecUtils.GetDeclaredMethod(GuiIngameForge.class,"pre",RenderGameOverlayEvent.ElementType.class);
-    private final Method post = ApecUtils.GetDeclaredMethod(GuiIngameForge.class,"post",RenderGameOverlayEvent.ElementType.class);
+    private final Method pre = ApecUtils.getDeclaredMethod(GuiIngameForge.class,"pre",RenderGameOverlayEvent.ElementType.class);
+    private final Method post = ApecUtils.getDeclaredMethod(GuiIngameForge.class,"post",RenderGameOverlayEvent.ElementType.class);
 
     public ApecGuiIngameForge  (Minecraft mc) {
         super(mc);
