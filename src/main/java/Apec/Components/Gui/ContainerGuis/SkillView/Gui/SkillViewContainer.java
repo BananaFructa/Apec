@@ -102,6 +102,18 @@ public abstract class SkillViewContainer extends ApecContainerGui {
         return new ArrayList<String>();
     }
 
+    public List<String> getPetMilestones() {
+        try {
+            if (this.inventorySlots.inventorySlots.get(51).inventory.getStackInSlot(51).getItem() != Item.getItemFromBlock(Blocks.glass_pane)) {
+                final List<String> allText = this.inventorySlots.inventorySlots.get(51).inventory.getStackInSlot(51).getTooltip(mc.thePlayer, false);
+                return allText;
+            }
+        } catch (Exception err) {
+            err.printStackTrace();
+        }
+        return new ArrayList<String>();
+    }
+
     @Override
     public void handleMouseInput() throws IOException {
         super.handleMouseInput();
@@ -167,6 +179,10 @@ public abstract class SkillViewContainer extends ApecContainerGui {
                 List<String> linesForIntroduction = this.inventorySlots.inventorySlots.get(skillXpContainerSlot[0]).inventory.getStackInSlot(skillXpContainerSlot[0]).getTooltip(mc.thePlayer, false);
                 for (int k = 0; k < linesForIntroduction.size(); k++) {
                     fontRendererObj.drawString(linesForIntroduction.get(k), 1, 1 + 10 * k, 0xffffff);
+                }
+                List<String> petMileStones = getPetMilestones();
+                for (int k = 0;k < petMileStones.size();k++) {
+                    fontRendererObj.drawString(petMileStones.get(k), sr.getScaledWidth() - 1 - fontRendererObj.getStringWidth(petMileStones.get(k)), 16 + 10 * k, 0xffffff);
                 }
             }
         } catch (Exception e) {

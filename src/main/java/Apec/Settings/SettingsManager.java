@@ -1,7 +1,9 @@
 package Apec.Settings;
 
+import Apec.Events.ApecSettingChangedState;
 import Apec.Utils.ApecUtils;
 import net.minecraft.util.Tuple;
+import net.minecraftforge.common.MinecraftForge;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -36,6 +38,7 @@ public class SettingsManager {
         add(new Setting(SHOW_POTIONS_EFFECTS,true));
         add(new Setting(COMPACT_POTION,false));
         //add(new Setting(HIDE_NIGHT_VISION,false));
+        add(new Setting(CUSTOM_TOOL_TIP,true));
         add(new Setting(SHOW_EFFECTS_AS_IN_TAB,true));
         add(new Setting(SHOW_CURRENT_SERVER,false));
         add(new Setting(ITEM_HIGHLIGHT_TEXT,false));
@@ -85,7 +88,7 @@ public class SettingsManager {
         put(SHOW_ABSORPTION_BAR,new Tuple<String, String>("Show absorption bar","Shows the absorption bar"));
         put(HP_TEXT,new Tuple<String, String>("Show HP Text","Shows the HP text"));
         put(MP_TEXT,new Tuple<String, String>("Show MP Text","Shows the MP text"));
-        put( XP_TEXT,new Tuple<String, String>("Show XP Text","Shows the XP text"));
+        put(XP_TEXT,new Tuple<String, String>("Show XP Text","Shows the XP text"));
         put(AIR_TEXT,new Tuple<String, String>("Show Air text","Shows the air text"));
         put(SKILL_TEXT,new Tuple<String, String>("Show Skill text","Shows the skill text"));
         put(SHOW_CURRENT_SERVER,new Tuple<String, String>("Show current server","Show in which server you are in"));
@@ -97,17 +100,28 @@ public class SettingsManager {
         put(USE_DEFENCE_OUT_OF_BB,new Tuple<String, String>("Defence outside bar","Shows the defence outside the bottom bar"));
         put(COMPATIBILITY_SAFETY,new Tuple<String, String>("Compatibility Safety","Ensures that certain features that might break some mods are disabled"));
         put(BB_ON_TOP,new Tuple<String,String>("Info bar on top","Puts the info bar on top instead of on the bottom"));
+        put(CUSTOM_TOOL_TIP,new Tuple<String,String>("Custom tool tip","Shows extra icons above the item tool tip."));
     }};
+
+    /** Cache for setting states */
+    private final HashMap<SettingID,Boolean> stateCache = new HashMap<SettingID,Boolean>();
 
     /**
      * @param settingID = The setting id of the referred setting
      * @return Returns the enable state of the setting
      */
     public boolean getSettingState(SettingID settingID){
-        for (Setting s : settings) {
-            if (s.settingID == settingID) return s.enabled;
+        synchronized (stateCache) {
+            Boolean state = stateCache.get(settingID);
+            if (state != null) return state;
+            for (Setting s : settings) {
+                if (s.settingID == settingID) {
+                    stateCache.put(s.settingID, s.enabled);
+                    return s.enabled;
+                }
+            }
+            return false;
         }
-        return false;
     }
 
     /**
@@ -116,12 +130,14 @@ public class SettingsManager {
      * @param state = The new state of the setting
      */
     public void setSettingState(SettingID settingID,boolean state) {
+        stateCache.clear();
         for (Setting s : settings) {
             if (s.settingID == settingID) {
                 s.enabled = state;
                 break;
             }
         }
+        MinecraftForge.EVENT_BUS.post(new ApecSettingChangedState(settingID,state));
         this.SaveSettings();
     }
 
@@ -130,13 +146,15 @@ public class SettingsManager {
      * @param settingID = The setting id of the referred setting
      * @param state = The new state of the setting
      */
-    public void setSettingStateWithNoSaveing(SettingID settingID,boolean state) {
+    public void setSettingStateWithNoSaving(SettingID settingID, boolean state) {
+        stateCache.clear();
         for (Setting s : settings) {
             if (s.settingID == settingID) {
                 s.enabled = state;
                 break;
             }
         }
+        MinecraftForge.EVENT_BUS.post(new ApecSettingChangedState(settingID,state));
     }
 
     /**
@@ -183,7 +201,7 @@ public class SettingsManager {
                     boolean status = false;
                     if (tempSplit[1].equals("t")) 
                         status = true;
-                    this.setSettingStateWithNoSaveing(SettingID.values()[idx],status);
+                    this.setSettingStateWithNoSaving(SettingID.values()[idx],status);
                 }
                 catch (Exception e) {
                     ApecUtils.showMessage("[\u00A72Apec\u00A7f] There was an error reading \"" + s + "\"!");

@@ -28,7 +28,7 @@ public class AirBar extends GUIComponent {
 
         if (ApecMain.Instance.settingsManager.getSettingState(SettingID.SHOW_AIR_BAR)) {
 
-            GuiIngame gi = Minecraft.getMinecraft().ingameGUI;
+            GuiIngame gi = mc.ingameGUI;
             Vector2f StatBar = ApecUtils.scalarMultiply(this.getCurrentAnchorPoint(),oneOverScale);
 
             mc.renderEngine.bindTexture(new ResourceLocation(ApecMain.modId, "gui/statBars.png"));

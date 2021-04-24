@@ -20,5 +20,6 @@ public enum GUIComponentID {
     TOOL_TIP_TEXT,
     ABILITY_TEXT,
     DEFENCE_TEXT,
-    BOSS_HEALTH
+    BOSS_HEALTH,
+    JUMP_BAR
 }

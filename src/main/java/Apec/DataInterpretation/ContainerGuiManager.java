@@ -4,6 +4,7 @@
 package Apec.DataInterpretation;
 
 import Apec.ApecMain;
+import Apec.Component;
 import Apec.Utils.ApecUtils;
 import Apec.ComponentId;
 import Apec.Components.Gui.ContainerGuis.ChestGuiComponent;
@@ -22,9 +23,11 @@ public class ContainerGuiManager {
     public List<ChestGuiComponent> guiMenuComponents =  new ArrayList<ChestGuiComponent>();
 
     public void init() {
-        guiMenuComponents.add((ChestGuiComponent) ApecMain.Instance.getComponent(ComponentId.AUCTION_HOUSE_MENU));
-        guiMenuComponents.add((ChestGuiComponent) ApecMain.Instance.getComponent(ComponentId.SKILL_VIEW_MENU));
-        guiMenuComponents.add((ChestGuiComponent) ApecMain.Instance.getComponent(ComponentId.TRANSPARENT_ACTIVE_EFFECTS_MENU));
+        for (Component component : ApecMain.Instance.components) {
+            if (component instanceof ChestGuiComponent) {
+                guiMenuComponents.add((ChestGuiComponent) component);
+            }
+        }
     }
 
     @SubscribeEvent

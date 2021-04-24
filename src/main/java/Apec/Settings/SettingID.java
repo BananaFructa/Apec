@@ -40,6 +40,7 @@ public enum SettingID {
     GUIS_WHEN_DISABLED,
     USE_DEFENCE_OUT_OF_BB,
     COMPATIBILITY_SAFETY,
-    BB_ON_TOP
+    BB_ON_TOP,
+    CUSTOM_TOOL_TIP
 
 }

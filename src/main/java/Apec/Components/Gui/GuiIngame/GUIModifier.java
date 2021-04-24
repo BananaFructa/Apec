@@ -66,6 +66,7 @@ public class GUIModifier extends Component {
         add(new ExtraInfo()); // The other things that used to be in the scoreboard
         //add(new BossHealthBar());
         add(new HotBar());
+        add(new HorseJumpBar());
         add(new ToolTipText());
         add(new EventLister());
         add(new AbilityText());
@@ -270,7 +271,7 @@ public class GUIModifier extends Component {
                     scale = Float.parseFloat(tempSplit[1].split("@")[2]);
                 }
                 if (subComponent == -1) {
-                    getGuiComponent(GUIComponentID.values()[idx]).setDelta_position(delta);
+                    getGuiComponent(GUIComponentID.values()[idx]).setDeltaPosition(delta);
                     getGuiComponent(GUIComponentID.values()[idx]).setScale(scale);
                 } else {
                     getGuiComponent(GUIComponentID.values()[idx]).setSubElementDeltaPosition(delta,subComponent);

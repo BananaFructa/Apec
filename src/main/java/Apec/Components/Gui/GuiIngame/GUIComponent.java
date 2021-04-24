@@ -95,7 +95,7 @@ public class GUIComponent {
     /**
      * Sets the delta position vector
      */
-    public void setDelta_position(Vector2f dp) {
+    public void setDeltaPosition(Vector2f dp) {
         delta_position = dp;
     }
 

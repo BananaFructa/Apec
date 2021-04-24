@@ -148,7 +148,7 @@ public class ApecGuiIngameForge extends GuiIngameForge {
     }
 
     /**
-     * Removing rendering is done this done this way in the case other mods might use the render game overlay events
+     * Removing rendering is done this way in the case other mods might use the render game overlay events
      * Note the methods from the outer class are not called
      */
 
@@ -207,6 +207,18 @@ public class ApecGuiIngameForge extends GuiIngameForge {
             mc.mcProfiler.startSection("expBar");
             this.mc.mcProfiler.endSection();
             post.invoke(this,EXPERIENCE);
+        } catch (Exception err) {
+            err.printStackTrace();
+        }
+    }
+
+    @Override
+    protected void renderJumpBar(int width, int height) {
+        try {
+            if ((Boolean) pre.invoke(this,JUMPBAR)) return;
+            mc.mcProfiler.startSection("jumpBar");
+            this.mc.mcProfiler.endSection();
+            post.invoke(this,JUMPBAR);
         } catch (Exception err) {
             err.printStackTrace();
         }

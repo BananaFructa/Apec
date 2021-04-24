@@ -21,12 +21,12 @@ import java.util.List;
 public class ApecUtils {
 
     /** If you are in a fml workspace set this variable to true */
-    public static boolean inFMLDebugFramework = false;
+    public static boolean inFMLFramework = false;
 
     private static String[] colorCodes = { "\u00a70","\u00a71","\u00a72","\u00a73","\u00a74","\u00a75","\u00a76","\u00a77","\u00a78","\u00a79","\u00a7a","\u00a7b","\u00a7c","\u00a7d","\u00a7e","\u00a7f" };
 
     public static HashMap<String,String> unObfedFieldNames = new HashMap<String,String>() {{
-        if (!inFMLDebugFramework) {
+        if (!inFMLFramework) {
             put("footer", "field_175255_h");
             put("header", "field_175256_i");
             put("upperChestInventory", "field_147016_v");
@@ -39,15 +39,17 @@ public class ApecUtils {
             put("guiIngame", "field_175251_g");
             put("chatMessages", "field_146253_i");
             put("theSlot","field_147006_u");
+            put("stackTagCompound","field_77990_d");
         }
     }};
 
     private static HashMap<String,Field> reflectionFieldCache = new HashMap<String, Field>();
 
     public static HashMap<String,String> getUnObfedMethodNames = new HashMap<String, String>() {{
-        if (!inFMLDebugFramework) {
+        if (!inFMLFramework) {
             put("handleMouseClick", "func_146984_a");
             put("drawItemStack","func_146982_a");
+            put("drawGradientRect","func_73733_a");
         }
     }};
 

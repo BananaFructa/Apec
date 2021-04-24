@@ -17,13 +17,13 @@ import Apec.Utils.VersionChecker;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraftforge.client.ClientCommandHandler;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent;
 import org.apache.logging.log4j.Logger;
@@ -115,9 +115,6 @@ public class ApecMain
             if (!DataOfComponents.get(component.componentId.ordinal()).isEmpty()) component.loadSavedData(DataOfComponents.get(component.componentId.ordinal()));
             component.init();
         }
-
-        getComponent(ComponentId.CUSTOM_ITEM_TOOL_TIP).Toggle();
-
     }
 
     @SubscribeEvent
@@ -139,4 +136,5 @@ public class ApecMain
         }
         return null;
     }
+
 }

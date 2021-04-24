@@ -105,7 +105,7 @@ public class CustomizationGuiButton extends GuiButton {
                             isSnappedToPositionX ? SnapResult.vec.x + fineTuned.x : mouseX - anchor.x + fineTuned.x + initialPos.x,
                             (isSnappedToPositionY ? SnapResult.vec.y + fineTuned.y : mouseY - anchor.y + fineTuned.y + initialPos.y) * (LockY ? 0 : 1)
                     );
-                    this.guiComponent.setDelta_position(Result);
+                    this.guiComponent.setDeltaPosition(Result);
                 } else {
                     Vector2f Result = new Vector2f(
                             isSnappedToPositionX ? SnapResult.vec.x + fineTuned.x : mouseX - anchor.x + fineTuned.x + initialPos.x,
@@ -162,7 +162,7 @@ public class CustomizationGuiButton extends GuiButton {
 
     public void setDeltaToZero() {
         if (SubComponent == -1) {
-            this.guiComponent.setDelta_position(new Vector2f(0, 0));
+            this.guiComponent.setDeltaPosition(new Vector2f(0, 0));
         } else {
             this.guiComponent.setSubElementDeltaPosition(new Vector2f(0,0),SubComponent);
         }
