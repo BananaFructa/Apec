@@ -19,6 +19,7 @@ import net.minecraft.inventory.Slot;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,7 +37,7 @@ public class CustomItemToolTip extends Component {
     final char starChar = '\u272A';
 
     @SubscribeEvent
-    public void onSettingChanged(ApecSettingChangedState event) {
+    public void onTick(TickEvent.ClientTickEvent event) {
         boolean on = (ApecMain.Instance.settingsManager.getSettingState(SettingID.GUIS_WHEN_DISABLED) || GUIModifier.Instance.getEnableState()) && ApecMain.Instance.settingsManager.getSettingState(SettingID.CUSTOM_TOOL_TIP);
         if (on != this.getEnableState()) this.Toggle();
     }
@@ -50,75 +51,80 @@ public class CustomItemToolTip extends Component {
             } else if (mc.currentScreen instanceof ApecContainerGui) {
                 hoveredSlot = ((ApecContainerGui) mc.currentScreen).theSlot;
             }
-            if (hoveredSlot != null) {
-                if (hoveredSlot.getStack() != null && mc.thePlayer.inventory.getItemStack() == null) {
-                    int _x = event.mouseX + 8;
-                    int _y = event.mouseY - 15;
+            if (hoveredSlot == null) return;
+            if (hoveredSlot.getStack() != null && mc.thePlayer.inventory.getItemStack() == null) {
+                int _x = event.mouseX + 8;
+                int _y = event.mouseY - 15;
 
-                    int maxWidth = 0;
-                    List<String> toolTip = hoveredSlot.getStack().getTooltip(mc.thePlayer, mc.gameSettings.advancedItemTooltips);
-                    int maxHeight = 8 + 3 + 6;
+                int maxWidth = 0;
+                List<String> toolTip = hoveredSlot.getStack().getTooltip(mc.thePlayer, mc.gameSettings.advancedItemTooltips);
+                int maxHeight = 8 + 3 + 6;
 
-                    for (String s : toolTip) {
-                        int width = mc.fontRendererObj.getStringWidth(s);
-                        if (width > maxWidth) {
-                            maxWidth = width;
-                        }
+                for (String s : toolTip) {
+                    int width = mc.fontRendererObj.getStringWidth(s);
+                    if (width > maxWidth) {
+                        maxWidth = width;
                     }
-
-
-                    if (toolTip.size() > 1) {
-                        maxHeight += 2 + (toolTip.size() - 1) * 10;
-                    }
-
-                    if (_x + maxWidth + 4> mc.currentScreen.width) {
-                        _x -= 28 + maxWidth;
-                    }
-
-                    if (_y + maxHeight > mc.currentScreen.height) {
-                        _y = mc.currentScreen.height - maxHeight;
-                    }
-
-                    final int x = _x;
-                    final int y = _y;
-
-                    GlStateManager.disableDepth();
-                    RenderHelper.disableStandardItemLighting();
-
-                    drawUpperInfo(hoveredSlot,toolTip,x,y,maxWidth);
-
-                    int lightEndX = (int)((maxWidth) * 3f/5f);
-                    lightEndX /= 3;
-                    for (int i = 0;i < lightEndX;i++) {
-                        int alpha1 = (int)((1-Math.tanh(((float)i/lightEndX))) * 170f);
-                        int alpha2 = (int)((1-Math.tanh(((float)i/lightEndX) * 2)) * 170f);
-                        GuiScreen.drawRect(x+1+i*3,y-1,x+1+(i+1)*3,y,(alpha1 << 24) | 0xffffff);
-                        GuiScreen.drawRect(x+1+i*3,y,x+1+(i+1)*3,y + 1,(alpha2 << 24) | 0xffffff);
-                    }
-
-                    int lightEndY = (int)((maxHeight) * 3f/5f);
-                    lightEndY /= 3;
-                    for (int i = 0;i < lightEndY;i++) {
-                        int alpha1 = (int)((1-Math.tanh(((float)i/lightEndY))) * 170f);
-                        int alpha2 = (int)((1-Math.tanh(((float)i/lightEndY) * 2)) * 170f);
-                        GuiScreen.drawRect(x,y+i*3,x+1,y+(i+1)*3,(alpha1 << 24) | 0xffffff);
-                        GuiScreen.drawRect(x+1,y+1+i*3,x+2,y+1+(i+1)*3,(alpha2 << 24) | 0xffffff);
-                    }
-
-                    for (Runnable runnable : afterRuns) {
-                        runnable.run();
-                    }
-
-                    afterRuns.clear();
-
-                    GlStateManager.enableDepth();
-                    RenderHelper.enableStandardItemLighting();
                 }
+
+
+                if (toolTip.size() > 1) {
+                    maxHeight += 2 + (toolTip.size() - 1) * 10;
+                }
+
+                if (_x + maxWidth + 4 > mc.currentScreen.width) {
+                    _x -= 28 + maxWidth;
+                }
+
+                if (_y + maxHeight > mc.currentScreen.height) {
+                    _y = mc.currentScreen.height - maxHeight;
+                }
+
+                final int x = _x;
+                final int y = _y;
+
+                GlStateManager.disableDepth();
+                RenderHelper.disableStandardItemLighting();
+
+                drawUpperInfo(hoveredSlot, x, y, maxWidth);
+
+                int lightEndX = (int) ((maxWidth) * 3f / 5f);
+                lightEndX /= 3;
+                int lightEndY = (int) ((maxHeight) * 3f / 5f);
+                lightEndY /= 3;
+
+                if (lightEndX > 1 && lightEndY > 1) {
+
+                    for (int i = 0; i < lightEndX; i++) {
+                        int alpha1 = (int) ((1 - Math.tanh(((float) i / lightEndX))) * 170f);
+                        int alpha2 = (int) ((1 - Math.tanh(((float) i / lightEndX) * 2)) * 170f);
+                        GuiScreen.drawRect(x + 1 + i * 3, y - 1, x + 1 + (i + 1) * 3, y, (alpha1 << 24) | 0xffffff);
+                        GuiScreen.drawRect(x + 1 + i * 3, y, x + 1 + (i + 1) * 3, y + 1, (alpha2 << 24) | 0xffffff);
+                    }
+
+                    for (int i = 0; i < lightEndY; i++) {
+                        int alpha1 = (int) ((1 - Math.tanh(((float) i / lightEndY))) * 170f);
+                        int alpha2 = (int) ((1 - Math.tanh(((float) i / lightEndY) * 2)) * 170f);
+                        GuiScreen.drawRect(x, y + i * 3, x + 1, y + (i + 1) * 3, (alpha1 << 24) | 0xffffff);
+                        GuiScreen.drawRect(x + 1, y + 1 + i * 3, x + 2, y + 1 + (i + 1) * 3, (alpha2 << 24) | 0xffffff);
+                    }
+
+                }
+
+                for (Runnable runnable : afterRuns) {
+                    runnable.run();
+                }
+
+                afterRuns.clear();
+
+                GlStateManager.enableDepth();
+                RenderHelper.enableStandardItemLighting();
             }
+
         }
     }
 
-    public void drawUpperInfo(final Slot hoveredSlot,final List<String> toolTip, final int x,final int y,final int maxWidth) {
+    public void drawUpperInfo(final Slot hoveredSlot, final int x,final int y,final int maxWidth) {
         ItemRarity rarity = ItemRarity.getRarity(mc, hoveredSlot.getStack());
 
         if (rarity != null) {

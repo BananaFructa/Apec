@@ -166,7 +166,7 @@ public class ApecMenu extends Component {
         }
 
         public void drawWrappedString(String s,int x,int y,int c) {
-            List<String> lines = ApecUtils.stringToSizedArray(mc,s,140);
+            List<String> lines = ApecUtils.wrappStringToWidth(mc,s,140);
             for (int i = 0;i < lines.size();i++) {
                 mc.fontRendererObj.drawString(lines.get(i),x,y + (int)(i*10/0.8f),c);
             }

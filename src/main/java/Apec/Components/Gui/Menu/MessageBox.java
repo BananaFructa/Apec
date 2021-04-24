@@ -25,7 +25,7 @@ public class MessageBox extends GuiScreen {
         String[] split = message.split("\n");
         List<String> lines = new ArrayList<String>();
         for (String s : split) {
-            List<String> wrapped = ApecUtils.stringToSizedArray(mc,s,190);
+            List<String> wrapped = ApecUtils.wrappStringToWidth(mc,s,190);
             lines.addAll(wrapped);
         }
         Object[] arr = lines.toArray();

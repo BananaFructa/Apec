@@ -54,7 +54,7 @@ public class TPDisplayElement implements ITPDrawableElement {
             List<String> lines = new ArrayList<String>();
             String[] nonFormattedLines = this.texturepack.description.split("\n");
             for (String s : nonFormattedLines) {
-                List<String> formattedLine = ApecUtils.stringToSizedArray(Minecraft.getMinecraft(),s,elementLength - 20);
+                List<String> formattedLine = ApecUtils.wrappStringToWidth(Minecraft.getMinecraft(),s,elementLength - 20);
                 lines.addAll(formattedLine);
             }
             Object[] arr = lines.toArray();

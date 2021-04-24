@@ -469,7 +469,7 @@ public class ApecUtils {
         return url.replace("__TAG__",tag);
     }
 
-    public static List<String> stringToSizedArray(Minecraft mc,String s,int widthToWrap) {
+    public static List<String> wrappStringToWidth(Minecraft mc, String s, int widthToWrap) {
         List<String> lines = new ArrayList<String>();
         if (s.equals("")) {
             lines.add("");
