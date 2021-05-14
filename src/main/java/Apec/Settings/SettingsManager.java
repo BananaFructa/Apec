@@ -20,9 +20,9 @@ public class SettingsManager {
     /** List which contains all settings */
     public List<Setting> settings = new ArrayList<Setting>() {{
         add(new Setting(AUTO_ENABLE,true));
-        add(new Setting(SettingID.HP_BAR,true));
-        add(new Setting(SettingID.HP_TEXT,true));
-        add(new Setting(SettingID.SHOW_ABSORPTION_BAR,true));
+        add(new Setting(HP_BAR,true));
+        add(new Setting(HP_TEXT,true));
+        add(new Setting(SHOW_ABSORPTION_BAR,true));
         add(new Setting(MP_BAR,true));
         add(new Setting(MP_TEXT,true));
         add(new Setting(XP_BAR,true));

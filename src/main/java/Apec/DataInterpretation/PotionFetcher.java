@@ -205,9 +205,14 @@ public class PotionFetcher {
 
     @SubscribeEvent
     public void OnTick(TickEvent.ClientTickEvent tickEvent) {
-        ShouldRun = ApecMain.Instance.settingsManager.getSettingState(SettingID.SHOW_POTIONS_EFFECTS) &&
-                    !ApecMain.Instance.settingsManager.getSettingState(SettingID.SHOW_EFFECTS_AS_IN_TAB) &&
-                     ApecMain.Instance.dataExtractor.isInSkyblock;
+        try {
+                ShouldRun = ApecMain.Instance.settingsManager.getSettingState(SettingID.SHOW_POTIONS_EFFECTS) &&
+                        !ApecMain.Instance.settingsManager.getSettingState(SettingID.SHOW_EFFECTS_AS_IN_TAB) &&
+                        ApecMain.Instance.dataExtractor.isInSkyblock;
+        } catch (Exception err) {
+            ShouldRun = false;
+            err.printStackTrace();
+        }
 
         if (ShouldRun) {
 
