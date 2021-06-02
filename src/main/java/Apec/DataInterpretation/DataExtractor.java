@@ -100,8 +100,8 @@ public class DataExtractor {
 
     public boolean isInSkyblock = false; // This flag is true if the player is in skyblock
 
-    // Gets the action bar data
     // The priority is set on highest so the data is getting parsed before it's modified by sba
+    /** Gets the action bar data and looks in the chat for trades */
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onChatMsg(ClientChatReceivedEvent event) {
         if (
@@ -112,6 +112,7 @@ public class DataExtractor {
         ) {
             IsDeadInTheCatacombs = event.message.getUnformattedText().contains(reviveSymbol);
             actionBarData = event.message.getUnformattedText();
+            System.out.println(actionBarData);
         } else if (!event.message.getUnformattedText().contains("<") && !event.message.getUnformattedText().contains(":")){
 
             String msg = ApecUtils.removeAllCodes(event.message.getUnformattedText());
@@ -532,32 +533,30 @@ public class DataExtractor {
 
         try {
             // Skill
-                String secmentedString = ApecUtils.segmentString(actionBarData, ")", '+', ' ', 1, 1, false,false);
-                if (secmentedString != null) {
-                    lastSkillXp = secmentedString;
-                    String wholeString = ApecUtils.removeAllCodes(secmentedString);
-                    Tuple<Float, Float> t = formatStringFractF(ApecUtils.segmentString(secmentedString, "(", '(', ')', 1, 1, true,false));
+                String segmentString = ApecUtils.segmentString(actionBarData, ")", '+', ' ', 1, 1, false,false);
+                if (segmentString != null) {
+                    lastSkillXp = segmentString;
+                    String wholeString = ApecUtils.removeAllCodes(segmentString);
+                    float percentage = praseSkillPercentage(ApecUtils.segmentString(segmentString, "(", '(', ')', 1, 1, true,false));
 
                     playerStats.SkillIsShown = true;
                     playerStats.SkillInfo = wholeString;
-                    playerStats.SkillExp = t.getFirst();
-                    playerStats.BaseSkillExp = t.getSecond();
+                    playerStats.SkillExpPercentage = percentage;
 
                 } else {
                     if (ApecMain.Instance.settingsManager.getSettingState(SettingID.ALWAYS_SHOW_SKILL) && !lastSkillXp.equals("")) {
                         String wholeString = ApecUtils.removeAllCodes(lastSkillXp);
-                        Tuple<Float, Float> t = formatStringFractF(ApecUtils.segmentString(lastSkillXp, "(", '(', ')', 1, 1, true,false));
+                        float percentage = praseSkillPercentage(ApecUtils.segmentString(lastSkillXp, "(", '(', ')', 1, 1, true,false));
 
                         playerStats.SkillIsShown = true;
                         playerStats.SkillInfo = wholeString;
-                        playerStats.SkillExp = t.getFirst();
-                        playerStats.BaseSkillExp = t.getSecond();
+                        playerStats.SkillExpPercentage = percentage;
                     } else {
                         playerStats.SkillIsShown = false;
                     }
                 }
         } catch (Exception err) {
-            playerStats.SkillIsShown = false;
+            err.printStackTrace();
         }
 
         try {
@@ -605,6 +604,24 @@ public class DataExtractor {
         }
 
         return playerStats;
+    }
+
+    /**
+     * @param skillInfo = The text between brackets of the skill xp string
+     * @return the precentege of completion until next skill level
+     */
+    float praseSkillPercentage(String skillInfo) {
+        if (skillInfo == null) return 0f;
+        if (skillInfo.contains("%")) {
+            skillInfo = skillInfo.replace("%","");
+            return Float.parseFloat(skillInfo) / 100f;
+        } else if (skillInfo.contains("/")){
+            String[] twoValues = skillInfo.split("/");
+            float first = ApecUtils.hypixelShortValueFormattingToFloat(twoValues[0]);
+            float second = ApecUtils.hypixelShortValueFormattingToFloat(twoValues[1]);
+            return first / second;
+        }
+        return 0f;
     }
 
     public PlayerStats getPlayerStats () {
@@ -765,17 +782,6 @@ public class DataExtractor {
     }
 
     /**
-     * @param s = The string that you input
-     * @return From two floats divide by '/' (ex 230.5/500) it returns the vale and the base value (ex 230.5 is the value and 500 is the base value)
-     */
-
-    public Tuple<Float,Float> formatStringFractF(String s) {
-        s = s.replace(",","");
-        String[] tempSplit = s.split("/");
-        return new Tuple<Float, Float>(Float.parseFloat(tempSplit[0]),Float.parseFloat(tempSplit[1]));
-    }
-
-    /**
      * The classes that encapsulate all the different types of data
      */
 
@@ -800,8 +806,7 @@ public class DataExtractor {
         public int BaseMp;
         public int Defence;
         public String SkillInfo;
-        public float SkillExp;
-        public float BaseSkillExp;
+        public float SkillExpPercentage;
         public boolean SkillIsShown;
         public boolean IsAbilityShown;
         public String AbilityText = "\u00a7b-00 Mana (\u00a76Some Ability\u00a7b)";

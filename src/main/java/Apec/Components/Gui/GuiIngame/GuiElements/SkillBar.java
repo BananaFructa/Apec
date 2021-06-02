@@ -33,9 +33,7 @@ public class SkillBar extends GUIComponent {
 
             if (ps.SkillIsShown) {
                 mc.renderEngine.bindTexture(new ResourceLocation(ApecMain.modId, "gui/statBars.png"));
-                float factor;
-                if (ps.BaseSkillExp == 0) factor = 0;
-                else factor = (float) ps.SkillExp / (float) ps.BaseSkillExp;
+                float factor = ps.SkillExpPercentage;
                 if (factor > 1f) factor = 1f;
                 factor *= 182f;
                 if (ps.SkillInfo.contains("Rune")) {

@@ -25,6 +25,11 @@ public class ApecUtils {
 
     private static String[] colorCodes = { "\u00a70","\u00a71","\u00a72","\u00a73","\u00a74","\u00a75","\u00a76","\u00a77","\u00a78","\u00a79","\u00a7a","\u00a7b","\u00a7c","\u00a7d","\u00a7e","\u00a7f" };
 
+    private static HashMap <String,Integer> multipleNotations = new HashMap<String, Integer>() {{
+            put("k",1000);
+            put("m",1000000);
+    }};
+
     public static HashMap<String,String> unObfedFieldNames = new HashMap<String,String>() {{
         if (!inFMLFramework) {
             put("footer", "field_175255_h");
@@ -463,6 +468,22 @@ public class ApecUtils {
             }
         }
         return res;
+    }
+
+    /**
+     * @brief Converts values strings which contain values represented in short form (ex: "20k") to float
+     * @param s = input string
+     * @return Converted output
+     */
+    public static float hypixelShortValueFormattingToFloat(String s) {
+        s = s.replace(",","");
+        for (String notation : multipleNotations.keySet()) {
+            if (s.contains(notation)) {
+                s = s.replace(notation,"");
+                return Float.parseFloat(s) * multipleNotations.get(notation);
+            }
+        }
+        return Float.parseFloat(s);
     }
 
     public static String applyTagOnUrl(String url,String tag) {
