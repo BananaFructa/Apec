@@ -387,6 +387,26 @@ public class ApecUtils {
         return (float)((int)(v*100)) / 100.0f;
     }
 
+    public static enum SegmentationOptions {
+
+        TOTALLY_EXCLUSIVE,
+        TOTALLY_INCLUSIVE,
+        ALL_INSTANCES_RIGHT,
+        ALL_INSTANCES_LEFT
+
+    }
+
+    public static String segmentString(String string,String symbol,char leftChar,char rightChar,int allowedInstancesL,int allowedInstancesR, SegmentationOptions... options) {
+        boolean totallyExclusive = false, totallyInclusive = false, allInstancesR = false,allInstancesL = false;
+        for (SegmentationOptions option : options) {
+            if (option == SegmentationOptions.TOTALLY_EXCLUSIVE) totallyExclusive = true;
+            if (option == SegmentationOptions.TOTALLY_INCLUSIVE) totallyInclusive = true;
+            if (option == SegmentationOptions.ALL_INSTANCES_RIGHT) allInstancesR = true;
+            if (option == SegmentationOptions.ALL_INSTANCES_LEFT) allInstancesL = true;
+        }
+        return segmentString(string, symbol, leftChar, rightChar, allowedInstancesL, allowedInstancesR, totallyExclusive,totallyInclusive,allInstancesR,allInstancesL);
+    }
+
     /**
      * @param string = The string you want to extract data from
      * @param symbol = A string that will act as a pivot
@@ -399,7 +419,7 @@ public class ApecUtils {
      *         allowedInsracesL only if totallyExclusive = false else allowedInstacesL - 1
      */
 
-    public static String segmentString(String string,String symbol,char leftChar,char rightChar,int allowedInstancesL,int allowedInstancesR,boolean totallyExclusive,boolean totallyInclusive) {
+    public static String segmentString(String string,String symbol,char leftChar,char rightChar,int allowedInstancesL,int allowedInstancesR,boolean totallyExclusive,boolean totallyInclusive,boolean allInstancesR,boolean allInstancesL) {
 
         int leftIdx = 0,rightIdx = 0;
 
@@ -425,6 +445,8 @@ public class ApecUtils {
                 }
             }
 
+            if (allowedInstancesL != 0 && allInstancesL) return null;
+            if (allowedInstancesR != 0 && allInstancesR) return null;
             return string.substring(leftIdx + (totallyExclusive ? 1 : 0), rightIdx + (totallyInclusive ? 1 : 0));
         } else {
             return null;
