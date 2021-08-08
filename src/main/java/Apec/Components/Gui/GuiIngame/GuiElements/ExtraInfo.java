@@ -46,6 +46,6 @@ public class ExtraInfo extends TextComponent {
 
     @Override
     public Vector2f getBoundingPoint() {
-        return ApecUtils.addVec(getCurrentAnchorPoint(),new Vector2f(55*scale,100*scale));
+        return new Vector2f(55*scale,100*scale);
     }
 }

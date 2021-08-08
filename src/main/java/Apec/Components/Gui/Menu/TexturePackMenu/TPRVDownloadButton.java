@@ -26,7 +26,7 @@ public class TPRVDownloadButton extends GuiButton {
             GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
             this.hovered = mouseX >= this.xPosition && mouseY >= this.yPosition && mouseX < this.xPosition + this.width && mouseY < this.yPosition + this.height;
 
-            isInstalling = TexturePackRegistryViewer.nameToDownloadProcess.containsKey(correspondingData.name);
+            isInstalling = TexturePackRegistryViewer.nameToDownloadProcess.containsKey(correspondingData.name + (!correspondingData.tag.equals("NULL") ? correspondingData.tag : ""));
 
             if (!alreadyInstalled && !isInstalling) {
                 this.displayString = "Download";

@@ -1,7 +1,6 @@
 package Apec.Components.Gui.GuiIngame.GuiElements;
 
 import Apec.ApecMain;
-import Apec.Settings.SettingsManager;
 import Apec.Utils.ApecUtils;
 import Apec.Components.Gui.GuiIngame.GUIComponent;
 import Apec.Components.Gui.GuiIngame.GUIComponentID;
@@ -150,6 +149,10 @@ public class InfoBox extends GUIComponent {
 
     }
 
+    public int getHeight() {
+        return (int)(20 * scale);
+    }
+
     @Override
     public Vector2f getAnchorPointPosition() {
         float y = 0;
@@ -184,7 +187,7 @@ public class InfoBox extends GUIComponent {
             // Since the x is relative to the side of the screen and not the parent's x position i removed it's relativity
             // I can do that since the bottom bar cannot be moved so no wack shit is going to happen
         }};
-        return ApecUtils.AddVecListToList(RelativeVectors,getSubElementsRealAnchorPoints());
+        return ApecUtils.AddVecListToList(RelativeVectors, getSubElementsCurrentAnchorPoints());
     }
 
     private String RemovePurseText(String s) {

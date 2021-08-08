@@ -82,7 +82,7 @@ public class EventLister extends GUIComponent {
 
     @Override
     public Vector2f getBoundingPoint() {
-        return ApecUtils.addVec(getCurrentAnchorPoint(),new Vector2f(-120*scale,15*scale));
+        return new Vector2f(-120*scale,15*scale);
     }
 
 }

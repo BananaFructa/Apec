@@ -37,7 +37,7 @@ public class HpText extends TextComponent {
 
             if (ps.Ap != 0 && showAP) {
                 String APString = ps.Ap + "/" + ps.BaseAp + " AP";
-                ApecUtils.drawThiccBorderString(APString, (int) (StatBar.x - 5 - mc.fontRendererObj.getStringWidth(APString) - mc.fontRendererObj.getStringWidth(HPString)), (int) (StatBar.y - 10), 0xC8AC35);
+                ApecUtils.drawThiccBorderString(APString, (int) (StatBar.x - 5 - mc.fontRendererObj.getStringWidth(APString) - mc.fontRendererObj.getStringWidth(HPString)), (int) (StatBar.y - 10), 0x1966AD);
             }
         }
         GlStateManager.popMatrix();
@@ -50,7 +50,7 @@ public class HpText extends TextComponent {
 
     @Override
     public Vector2f getBoundingPoint() {
-        return ApecUtils.addVec(getCurrentAnchorPoint(),new Vector2f(-stringWidth*scale,-11*scale));
+        return new Vector2f(-stringWidth*scale,-11*scale);
     }
 
 }

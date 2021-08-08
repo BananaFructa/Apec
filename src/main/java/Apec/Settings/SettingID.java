@@ -41,6 +41,7 @@ public enum SettingID {
     USE_DEFENCE_OUT_OF_BB,
     COMPATIBILITY_SAFETY,
     BB_ON_TOP,
-    CUSTOM_TOOL_TIP
+    CUSTOM_TOOL_TIP,
+    SHOW_OP_BAR
 
 }

@@ -35,6 +35,6 @@ public class HotBar extends GUIComponent {
 
     @Override
     public Vector2f getBoundingPoint() {
-        return ApecUtils.addVec(getCurrentAnchorPoint(),new Vector2f(182*scale,22*scale));
+        return new Vector2f(182*scale,22*scale);
     }
 }

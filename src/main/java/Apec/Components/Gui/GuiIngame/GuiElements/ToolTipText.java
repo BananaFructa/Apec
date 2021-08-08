@@ -51,7 +51,7 @@ public class ToolTipText extends GUIComponent {
         float y = 0f;
         x = mc.fontRendererObj.getStringWidth(CurrentText);
         y = mc.fontRendererObj.FONT_HEIGHT * hotBar.getScale();
-        return ApecUtils.addVec(getCurrentAnchorPoint(), new Vector2f(x, y));
+        return new Vector2f(x, y);
     }
 
 }

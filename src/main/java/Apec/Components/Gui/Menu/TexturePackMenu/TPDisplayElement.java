@@ -19,6 +19,7 @@ public class TPDisplayElement implements ITPDrawableElement {
     protected ResourceLocation icon;
     protected TPRVDownloadButton dbutton;
     protected TPRVDropDownButton ddbutton;
+    protected List<TPRVConnectionButton> connectionButtons = new ArrayList<TPRVConnectionButton>();
     protected TexturePackRegistryViewer.TPRVGuiScreen parent;
 
     public final int elementLength = 300;
@@ -28,6 +29,7 @@ public class TPDisplayElement implements ITPDrawableElement {
 
     public int descriptionHeight = 0;
 
+    public boolean hasConnections;
     public boolean hasDescription;
     public boolean hasDownload;
     public boolean showDescription;
@@ -47,9 +49,12 @@ public class TPDisplayElement implements ITPDrawableElement {
         this.texturepack = texturepack;
         this.parent = parent;
         this.dbutton = button;
+
+        this.hasConnections = !texturepack.connections.equals("NULL");
         this.hasDescription = !texturepack.description.equals("NULL");
         this.reqOptifine = texturepack.requiresOptifine.equals("TRUE");
         this.reqNEU = texturepack.requiresNeu.equals("TRUE");
+
         if (hasDescription) {
             List<String> lines = new ArrayList<String>();
             String[] nonFormattedLines = this.texturepack.description.split("\n");
@@ -63,17 +68,17 @@ public class TPDisplayElement implements ITPDrawableElement {
         }
     }
 
-    //TODO:add paging
-
     public int draw(int y, int mouseX, int mouseY, ScaledResolution sr, Minecraft mc) {
         if (visible) {
             int _offset = getOffset();
             if (y > sr.getScaledHeight() || y + _offset < 0) {
                 if (this.hasDescription) this.ddbutton.visible = false;
+                if (this.hasConnections) for (TPRVConnectionButton connectionButton : connectionButtons) connectionButton.visible = false;
                 this.dbutton.visible = false;
                 return _offset;
             }
 
+            if (this.hasConnections) for (TPRVConnectionButton connectionButton : connectionButtons) connectionButton.visible = true;
             if (this.hasDescription) this.ddbutton.visible = true;
             this.dbutton.visible = true;
 
@@ -96,6 +101,11 @@ public class TPDisplayElement implements ITPDrawableElement {
 
             this.dbutton.xPosition = cornerXRight - 5 - dbutton.width;
             this.dbutton.yPosition = cornerYBottom - 5 - dbutton.height;
+
+            for (int i = 0;i < connectionButtons.size();i++) {
+                connectionButtons.get(i).xPosition = cornerXRight - 5 - connectionButtons.get(i).width - 15 * i;
+                connectionButtons.get(i).yPosition = cornerYBottom - 5 - dbutton.height - 2 - connectionButtons.get(i).height;
+            }
 
             parent.drawRect(cornerXLeft, cornerYTop, cornerXRight, cornerYBottom, 0xaa000000);
 
@@ -181,6 +191,10 @@ public class TPDisplayElement implements ITPDrawableElement {
         this.ddbutton = button;
     }
 
+    public void addConnectionButton(TPRVConnectionButton button) {
+        this.connectionButtons.add(button);
+    }
+
     public int getOffset() {
         return 5 + this.elementHeight + (this.hasDownload ? downloadSectionHeight : 0) + (this.hasDescription ? dropDownButtonHeight : 0) + (this.showDescription ? descriptionHeight : 0);
     }
@@ -236,6 +250,12 @@ public class TPDisplayElement implements ITPDrawableElement {
             ddbutton.visible = false;
             ddbutton.xPosition = 99999;
         }
+        if (hasConnections) {
+            for (TPRVConnectionButton connectionButton : connectionButtons) {
+                connectionButton.visible = false;
+                connectionButton.xPosition = 99999;
+            }
+        }
     }
 
     public void show() {
@@ -243,6 +263,11 @@ public class TPDisplayElement implements ITPDrawableElement {
         dbutton.visible = true;
         if (hasDescription) {
             ddbutton.visible = true;
+        }
+        if (hasConnections) {
+            for (TPRVConnectionButton connectionButton : connectionButtons) {
+                connectionButton.visible = true;
+            }
         }
     }
 

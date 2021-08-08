@@ -6,6 +6,7 @@ import Apec.Components.Gui.GuiIngame.GUIComponentID;
 import Apec.Components.Gui.GuiIngame.TextComponent;
 import Apec.DataInterpretation.DataExtractor;
 import Apec.Settings.SettingID;
+import Apec.Utils.MultiColorString;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
@@ -18,6 +19,7 @@ public class MpText extends TextComponent {
     }
 
     int stringWidth = 0;
+    private MultiColorString mainMccs = new MultiColorString();
 
     @Override
     public void draw(DataExtractor.PlayerStats ps, DataExtractor.ScoreBoardData sd, DataExtractor.OtherData od, ScaledResolution sr, boolean editingMode) {
@@ -27,9 +29,25 @@ public class MpText extends TextComponent {
             GlStateManager.scale(scale, scale, scale);
             Vector2f StatBar = ApecUtils.scalarMultiply(getCurrentAnchorPoint(),oneOverScale);
 
+            boolean showOp = ApecMain.Instance.settingsManager.getSettingState(SettingID.SHOW_OP_BAR);
+
             String MPString = ps.Mp + "/" + ps.BaseMp + " MP";
-            ApecUtils.drawThiccBorderString(MPString, (int) (StatBar.x - mc.fontRendererObj.getStringWidth(MPString)), (int) (StatBar.y - 10), 0x1139bd);
-            stringWidth = Minecraft.getMinecraft().fontRendererObj.getStringWidth(MPString);
+
+            if (ps.Op != 0) {
+                if (showOp) {
+                    String OPString = ps.Op + "/" + ps.BaseOp + " OP";
+                    mainMccs.setString(new String[]{OPString + " ", MPString + " MP"}, new int[]{ 0x1966AD, 0x1139bd });
+                } else {
+                    int totalMp = ps.Op + ps.Mp;
+                    mainMccs.setString(new String[]{Integer.toString(totalMp),"/" + ps.BaseMp}, new int[]{ 0x1966AD, 0x1139bd });
+                }
+            } else {
+                mainMccs.setString(new String[]{MPString}, new int[]{ 0x1139bd });
+            }
+
+            stringWidth = mainMccs.getStringWidth();
+            mainMccs.setXY((int) (StatBar.x - stringWidth), (int) (StatBar.y - 10));
+            mainMccs.render();
 
             GlStateManager.popMatrix();
         }
@@ -42,7 +60,7 @@ public class MpText extends TextComponent {
 
     @Override
     public Vector2f getBoundingPoint() {
-        return ApecUtils.addVec(getCurrentAnchorPoint(),new Vector2f(-stringWidth*scale,-11*scale));
+        return new Vector2f(-stringWidth*scale,-11*scale);
     }
 
 }

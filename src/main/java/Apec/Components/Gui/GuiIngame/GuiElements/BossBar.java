@@ -36,6 +36,6 @@ public class BossBar extends GUIComponent {
 
     @Override
     public Vector2f getBoundingPoint() {
-        return ApecUtils.addVec(getCurrentAnchorPoint(),new Vector2f(183,13));
+        return new Vector2f(183,13);
     }
 }

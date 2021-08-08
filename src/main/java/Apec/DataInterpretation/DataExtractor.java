@@ -38,6 +38,7 @@ public class DataExtractor {
     private final char HpSymbol = '\u2764';
     private final char DfSymbol = '\u2748';
     private final char MnSymbol = '\u270e';
+    private final char OverflowSymbol = '\u02ac';
 
     private final String endRaceSymbol = "THE END RACE";
     private final String woodRacingSymbol = "WOODS RACING";
@@ -59,6 +60,7 @@ public class DataExtractor {
     private int lastDefence = 0;
     private int baseAp = 0;
     private int lastAp = 1 , lastBaseAp = 1;
+    private int baseOp = 1;
 
     private String lastHour = "",lastDate = "",lastZone = "";
 
@@ -531,6 +533,27 @@ public class DataExtractor {
         }
 
         try {
+            // Overflow mana
+            {
+                String segmentedString = ApecUtils.segmentString(actionBarData,String.valueOf(OverflowSymbol),'\u00a7',OverflowSymbol,1,1);
+                if (segmentedString != null) {
+                    int value = Integer.parseInt(ApecUtils.removeAllCodes(segmentedString));
+                    playerStats.Op = value;
+                    if (baseOp < value) {
+                        baseOp = value;
+                    }
+                    playerStats.BaseOp = baseOp;
+                } else {
+                    playerStats.Op = 0;
+                    playerStats.BaseOp = 0;
+                    baseOp = 0;
+                }
+            }
+        } catch (Exception err) {
+
+        }
+
+        try {
             // Skill
             String segmentString = ApecUtils.segmentString(actionBarData, ")", '+', ' ', 1, 1, ApecUtils.SegmentationOptions.ALL_INSTANCES_LEFT);
 
@@ -646,8 +669,8 @@ public class DataExtractor {
      *    -trials of fire
      *    -wood race
      *    -the end race
-     * ##################
-     * -boss data
+     *    -secrets
+     *    etc.
      */
 
     private OtherData ProcessOtherData (ScoreBoardData sd) {
@@ -813,6 +836,8 @@ public class DataExtractor {
         public int BaseHp;
         public int Ap; // Absorption Points
         public int BaseAp; // Base Absorption
+        public int Op; // Overflow points
+        public int BaseOp; // Base Overflow points
         public int Mp;
         public int BaseMp;
         public int Defence;

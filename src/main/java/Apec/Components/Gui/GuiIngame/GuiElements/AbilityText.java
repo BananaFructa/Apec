@@ -34,7 +34,7 @@ public class AbilityText extends GUIComponent {
         GlStateManager.scale(scale,scale,scale);
         AnchorPosition.y = mpText.getAnchorPointPosition().y;
         if (mpText.getDeltaPosition().length() == 0 && this.getDeltaPosition().length() == 0 && ApecMain.Instance.settingsManager.getSettingState(SettingID.MP_TEXT)) {
-            AnchorPosition.x = mpText.getBoundingPoint().x - 5;
+            AnchorPosition.x = mpText.getCurrentBoundingPoint().x - 5;
         } else {
             AnchorPosition.x = mpText.getAnchorPointPosition().x;
         }
@@ -58,6 +58,6 @@ public class AbilityText extends GUIComponent {
 
     @Override
     public Vector2f getBoundingPoint() {
-        return ApecUtils.addVec(getCurrentAnchorPoint(),new Vector2f(-stringWidth*scale,-11*scale));
+        return new Vector2f(-stringWidth*scale,-11*scale);
     }
 }

@@ -30,7 +30,7 @@ public class CustomizationGuiSlider extends GuiButton {
             GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
             if (this.hovered) drawRect(this.xPosition,this.yPosition,this.xPosition+this.width,this.yPosition+this.height,0x1adddddd);
             this.mouseDragged(mc, mouseX, mouseY);
-            Vector2f v = this.guiComponent.getBoundingPoint();
+            Vector2f v = this.guiComponent.getCurrentBoundingPoint();
             this.xPosition = (int)v.x - 2;
             this.yPosition = (int)v.y - 2;
             if (userDragging) {
@@ -42,7 +42,7 @@ public class CustomizationGuiSlider extends GuiButton {
         public void changeVale(int mouseX,int mouseY) {
         ScaledResolution sr = new ScaledResolution(Minecraft.getMinecraft());
         Vector2f realAnchor = this.guiComponent.getCurrentAnchorPoint();
-        Vector2f boundingPoint = this.guiComponent.getBoundingPoint();
+        Vector2f boundingPoint = this.guiComponent.getCurrentBoundingPoint();
         int differenceX = (mouseX - this.initialX) * (realAnchor.x < boundingPoint.x ? 1 : -1);
         int differenceY = (mouseY - this.initialY) * (realAnchor.y < boundingPoint.y ? 1 : -1);
 

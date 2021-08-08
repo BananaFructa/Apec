@@ -46,7 +46,7 @@ public class XpText extends TextComponent {
 
     @Override
     public Vector2f getBoundingPoint() {
-        return ApecUtils.addVec(getCurrentAnchorPoint(),new Vector2f(-stringWidth*scale,-11*scale));
+        return new Vector2f(-stringWidth*scale,-11*scale);
     }
 
 }

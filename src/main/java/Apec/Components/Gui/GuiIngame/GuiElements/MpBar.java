@@ -1,6 +1,7 @@
 package Apec.Components.Gui.GuiIngame.GuiElements;
 
 import Apec.ApecMain;
+import Apec.Settings.SettingsManager;
 import Apec.Utils.ApecUtils;
 import Apec.Components.Gui.GuiIngame.GUIComponent;
 import Apec.Components.Gui.GuiIngame.GUIComponentID;
@@ -31,10 +32,22 @@ public class MpBar extends GUIComponent {
 
             float mpFactor = ps.Mp > ps.BaseMp ? 1 :(float) ps.Mp / (float) ps.BaseMp;
 
+            boolean showOp = ApecMain.Instance.settingsManager.getSettingState(SettingID.SHOW_OP_BAR);
+
             mc.renderEngine.bindTexture(new ResourceLocation(ApecMain.modId, "gui/statBars.png"));
 
-            gi.drawTexturedModalRect((int) StatBar.x, (int) StatBar.y, 0, 10, 182, 5);
-            gi.drawTexturedModalRect((int) StatBar.x, (int) StatBar.y, 0, 15, (int) (mpFactor * 182f), 5);
+            if (ps.Op != 0 && showOp) {
+
+                float opFactor = ps.Op > ps.BaseOp ? 1 : (float)ps.Op / (float)ps.BaseOp; // for safety's sake
+
+                gi.drawTexturedModalRect((int) StatBar.x, (int) StatBar.y, 0, 70, 182, 5);
+                gi.drawTexturedModalRect((int) StatBar.x , (int) StatBar.y , 0, 75, (int)(opFactor * 49), 5);
+                gi.drawTexturedModalRect((int) StatBar.x  + 51, (int) StatBar.y , 51, 75, (int) (mpFactor * 131f), 5);
+
+            } else {
+                gi.drawTexturedModalRect((int) StatBar.x, (int) StatBar.y, 0, 10, 182, 5);
+                gi.drawTexturedModalRect((int) StatBar.x, (int) StatBar.y, 0, 15, (int) (mpFactor * 182f), 5);
+            }
         }
         GlStateManager.popMatrix();
     }
@@ -46,7 +59,7 @@ public class MpBar extends GUIComponent {
 
     @Override
     public Vector2f getBoundingPoint() {
-        return ApecUtils.addVec(getCurrentAnchorPoint(),new Vector2f(182*scale,5*scale));
+        return new Vector2f(182*scale,5*scale);
     }
 
 }

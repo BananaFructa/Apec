@@ -47,6 +47,6 @@ public class HorseJumpBar extends GUIComponent {
 
     @Override
     public Vector2f getBoundingPoint() {
-        return ApecUtils.addVec(getCurrentAnchorPoint(),new Vector2f(5 * scale, 71 * scale));
+        return new Vector2f(5 * scale, 71 * scale);
     }
 }

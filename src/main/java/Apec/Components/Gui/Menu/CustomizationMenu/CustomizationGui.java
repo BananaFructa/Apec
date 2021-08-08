@@ -150,7 +150,7 @@ public class CustomizationGui extends GuiScreen {
         for (GUIComponent component : components) {
             if (!(component instanceof InfoBox)) {
                 Vector2f pos = component.getCurrentAnchorPoint();
-                Vector2f b_pos = component.getBoundingPoint();
+                Vector2f b_pos = component.getCurrentBoundingPoint();
                 xSnapPoints.add(sr.getScaledWidth()/2);
                 xSnapPoints.add((int) pos.x);
                 ySnapPoints.add((int) pos.y);

@@ -73,6 +73,6 @@ public class InventoryTraffic extends TextComponent {
 
     @Override
     public Vector2f getBoundingPoint() {
-        return ApecUtils.addVec(getCurrentAnchorPoint(),new Vector2f(65*scale,75*scale));
+        return new Vector2f(65*scale,75*scale);
     }
 }

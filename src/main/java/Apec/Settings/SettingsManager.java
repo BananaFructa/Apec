@@ -23,6 +23,7 @@ public class SettingsManager {
         add(new Setting(HP_BAR,true));
         add(new Setting(HP_TEXT,true));
         add(new Setting(SHOW_ABSORPTION_BAR,true));
+        add(new Setting(SHOW_OP_BAR,true));
         add(new Setting(MP_BAR,true));
         add(new Setting(MP_TEXT,true));
         add(new Setting(XP_BAR,true));
@@ -86,6 +87,7 @@ public class SettingsManager {
         put(INFO_BOX_ANIMATION,new Tuple<String, String>("Bottom Bar Animation","A slide down animation for the bottom box when i chat"));
         put(SHOW_ABILITY_TEXT,new Tuple<String, String>("Show ability text","Shows the ability text at the mana bar"));
         put(SHOW_ABSORPTION_BAR,new Tuple<String, String>("Show absorption bar","Shows the absorption bar"));
+        put(SHOW_OP_BAR,new Tuple<String, String>("Show overflow mana bar","Shows the overflow mana bar"));
         put(HP_TEXT,new Tuple<String, String>("Show HP Text","Shows the HP text"));
         put(MP_TEXT,new Tuple<String, String>("Show MP Text","Shows the MP text"));
         put(XP_TEXT,new Tuple<String, String>("Show XP Text","Shows the XP text"));

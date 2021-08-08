@@ -14,6 +14,15 @@ import java.util.List;
 
 public class GUIComponent {
 
+    /**
+     * How a position of an element is dictated:
+     * Each element has 3 vectors:
+     *      - the anchor position : the default position of the element
+     *      - the delta position : the difference vector between where the element should be and the anchor position
+     *      - the bounding point : the difference vector between the sum of the anchor position and delta position and the position of another point which represents
+     *      the other corner of the rectangle that encapsulates the gui component when the customization gui is opened
+     */
+
     protected Minecraft mc = Minecraft.getMinecraft();
 
     protected GUIModifier guiModifier;
@@ -125,39 +134,61 @@ public class GUIComponent {
      * Gets the distance vector between the anchor position and the current position
      */
     public Vector2f getDeltaPosition() {
+
         return this.delta_position;
+
     }
 
     /**
      * Gives the distance vector between the position of the element and the position of the point that describes the rectangle in which the element is confined
      */
+    public Vector2f getCurrentBoundingPoint() {
+        return ApecUtils.addVec(getCurrentAnchorPoint(),getBoundingPoint());
+    }
+
     public Vector2f getBoundingPoint() {
         return new Vector2f(0, 0);
     }
 
     /**
-     * Gets the scale of the element
+     * @return the scale of the element
      */
     public float getScale() {
         return this.scale;
     }
 
+    /**
+     * @return 1 / the scale of the element
+     */
     public float getOneOverScale() {
         return oneOverScale;
     }
+
+    /**
+     * @return A list of the anchor points of the sub elements
+     */
 
     public List<Vector2f> getSubElementsAnchorPoints() {
         return new ArrayList<Vector2f>();
     }
 
-    public List<Vector2f> getSubElementsRealAnchorPoints() {
+    /**
+     * @return A list of the current anchor points of the sub elements
+     */
+    public List<Vector2f> getSubElementsCurrentAnchorPoints() {
         return ApecUtils.AddVecListToList(getSubElementsAnchorPoints(), getSubElementsDeltaPositions());
     }
 
+    /**
+     * @return A list of the bounding points of the sub elements
+     */
     public List<Vector2f> getSubElementsBoundingPoints() {
         return new ArrayList<Vector2f>();
     }
 
+    /**
+     * @return A list of the delta positions of the sub elements
+     */
     public List<Vector2f> getSubElementsDeltaPositions() {
         return this.subComponentDeltas;
     }

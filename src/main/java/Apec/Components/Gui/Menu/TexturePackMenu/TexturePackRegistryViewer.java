@@ -213,6 +213,7 @@ public class TexturePackRegistryViewer extends Component {
                 if (scrollOffset > limit && finishedLoading) scrollOffset = limit;
 
                 drawButtons(mouseX,mouseY,TPRVDownloadButton.class);
+                drawButtons(mouseX,mouseY,TPRVConnectionButton.class);
 
                 drawRect(0, 0, sr.getScaledWidth(), 15, 0xff000000);
                 String pageText = (currentPage + 1) + "/" + totalPages;
@@ -280,6 +281,7 @@ public class TexturePackRegistryViewer extends Component {
                 this.clearButtonsOfType(TPRVDownloadButton.class);
                 this.clearButtonsOfType(TPRVDropDownButton.class);
                 this.clearButtonsOfType(TPRVTabButton.class);
+                this.clearButtonsOfType(TPRVConnectionButton.class);
             }
 
             final TexturePackRegistryViewer.TPRVGuiScreen instance = this;
@@ -302,6 +304,19 @@ public class TexturePackRegistryViewer extends Component {
                                     element.setDdbutton(dropDownButton);
                                     buttonList.add(dropDownButton);
                                 }
+
+                                if (element.hasConnections) {
+                                    String[] connections = tp.connections.split(" ");
+                                    for (String connection : connections) {
+                                        if (!connection.contains("^")) continue;
+                                        String[] pair = connection.split("\\^");
+                                        TPRVConnectionType type = TPRVConnectionType.parseConnection(pair[0]);
+                                        TPRVConnectionButton cbutton = new TPRVConnectionButton(type,pair[1]);
+                                        element.addConnectionButton(cbutton);
+                                        buttonList.add(cbutton);
+                                    }
+                                }
+
                                 elements.add(element);
                             }
                         }
@@ -411,6 +426,11 @@ public class TexturePackRegistryViewer extends Component {
                     } else if (button instanceof TPRVTabButton) {
                         if (button.mousePressed(mc,mouseX,mouseY)) {
                             ((TPRVTabButton)button).onClick();
+                            break;
+                        }
+                    } else if (button instanceof TPRVConnectionButton) {
+                        if (button.mousePressed(mc,mouseX,mouseY)) {
+                            ((TPRVConnectionButton)button).onClick();
                             break;
                         }
                     }

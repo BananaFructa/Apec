@@ -50,9 +50,9 @@ public class CustomizationGuiButton extends GuiButton {
             Vector2f v, rv;
             if (SubComponent == -1) {
                 v = this.guiComponent.getCurrentAnchorPoint();
-                rv = this.guiComponent.getBoundingPoint();
+                rv = this.guiComponent.getCurrentBoundingPoint();
             } else {
-                v = ApecUtils.addVec(this.guiComponent.getCurrentAnchorPoint(),this.guiComponent.getSubElementsRealAnchorPoints().get(SubComponent));
+                v = ApecUtils.addVec(this.guiComponent.getCurrentAnchorPoint(),this.guiComponent.getSubElementsCurrentAnchorPoints().get(SubComponent));
                 rv = ApecUtils.addVec(this.guiComponent.getCurrentAnchorPoint(),this.guiComponent.getSubElementsBoundingPoints().get(SubComponent));
             }
             if (v.x < rv.x && v.y < rv.y) {
@@ -153,7 +153,7 @@ public class CustomizationGuiButton extends GuiButton {
     public void userStartedDragging(int mouseX,int mouseY) {
         initialPos = this.guiComponent.getCurrentAnchorPoint();
         if (SubComponent != -1) {
-            initialPos = ApecUtils.addVec(initialPos,this.guiComponent.getSubElementsRealAnchorPoints().get(SubComponent));
+            initialPos = ApecUtils.addVec(initialPos,this.guiComponent.getSubElementsCurrentAnchorPoints().get(SubComponent));
         }
         initialPos.x -= mouseX;
         initialPos.y -= mouseY;
