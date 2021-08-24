@@ -30,7 +30,7 @@ public class HpText extends TextComponent {
             Vector2f StatBar = ApecUtils.scalarMultiply(getCurrentAnchorPoint(),oneOverScale);
 
             int addedHp = ps.Hp + ps.Ap;
-            String HPString = (!showAP && ps.Ap != 0 ? "\u00a7e" + addedHp + "\u00a7r" : ps.Hp) + "/" + ps.BaseHp + " HP";
+            String HPString = (!showAP && ps.Ap != 0 ? "\u00a7e" + addedHp + "\u00a7r" : ps.Hp) + "/" + ps.BaseHp + " HP" + (ps.HealDuration != 0 ? " +" + ps.HealDuration +"/s " + ps.HealDurationTicker : "");
             ApecUtils.drawThiccBorderString(HPString, (int) (StatBar.x - mc.fontRendererObj.getStringWidth(HPString)), (int) (StatBar.y - 10), 0xd10808);
             stringWidth = mc.fontRendererObj.getStringWidth(HPString);
 

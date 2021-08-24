@@ -25,7 +25,11 @@ import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import org.apache.commons.lang3.reflect.FieldUtils;
+import org.lwjgl.Sys;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -39,6 +43,7 @@ public class DataExtractor {
     private final char DfSymbol = '\u2748';
     private final char MnSymbol = '\u270e';
     private final char OverflowSymbol = '\u02ac';
+    private final char[] healDurationSymbols = new char[] { '\u2586', '\u2585', '\u2584', '\u2583', '\u2582', '\u2581' };
 
     private final String endRaceSymbol = "THE END RACE";
     private final String woodRacingSymbol = "WOODS RACING";
@@ -51,6 +56,8 @@ public class DataExtractor {
     private final String giantMushroomSymbol = "GIANT MUSHROOM RACE";
     private final String precursorRuinsSymbol = "PRECURSOR RUINS RACE";
     private final String reviveSymbol = "Revive";
+    private final String armadilloName = "Armadillo";
+    private final String treasureMetalDetectorSymbol = "TREASURE:";
 
     private boolean alreadyShowedTabError = false;
     private boolean alreadyShowedScrErr = false;
@@ -111,9 +118,26 @@ public class DataExtractor {
                 || event.message.getUnformattedText().contains(String.valueOf(MnSymbol))
                 || event.message.getUnformattedText().contains(reviveSymbol)
                 || event.message.getUnformattedText().contains(chickenRaceSymbol)) // For some reason this race doesn't show the mana
+                || event.message.getUnformattedText().contains(armadilloName)
         ) {
             IsDeadInTheCatacombs = event.message.getUnformattedText().contains(reviveSymbol);
             actionBarData = event.message.getUnformattedText();
+            /** used for sampling data when developing
+            try {
+                File f = new File("config/Apec/debug");
+                f.createNewFile();
+                FileWriter fw = new FileWriter(f,true);
+                char[] c = actionBarData.toCharArray();
+                fw.write('\n' + actionBarData + ' ');
+                for (char c_ : c) {
+                    fw.write(Integer.toString((int)c_));
+                    fw.write(' ');
+                }
+                fw.write('\n');
+                fw.close();
+            } catch (IOException exception) {
+                exception.printStackTrace();
+            }*/
         } else if (!event.message.getUnformattedText().contains("<") && !event.message.getUnformattedText().contains(":")){
 
             String msg = ApecUtils.removeAllCodes(event.message.getUnformattedText());
@@ -550,7 +574,28 @@ public class DataExtractor {
                 }
             }
         } catch (Exception err) {
+            err.printStackTrace();
+        }
 
+        try {
+            // Heal Duration
+            {
+                String segmentedSrtring = null;
+                char ticker = '\0';
+                for (char _c : healDurationSymbols) {
+                    ticker = _c;
+                    segmentedSrtring = ApecUtils.segmentString(actionBarData,String.valueOf(_c),'+',_c,1,1);
+                    if (segmentedSrtring != null) break;
+                }
+                if (segmentedSrtring != null) {
+                    playerStats.HealDuration = Integer.parseInt(ApecUtils.removeAllCodes(segmentedSrtring).replace("+","")); //remove all codes for safety
+                    playerStats.HealDurationTicker = ticker;
+                } else {
+                    playerStats.HealDuration = 0;
+                }
+            }
+        } catch (Exception err) {
+            err.printStackTrace();
         }
 
         try {
@@ -675,6 +720,7 @@ public class DataExtractor {
 
     private OtherData ProcessOtherData (ScoreBoardData sd) {
         OtherData otherData = new OtherData();
+        if (actionBarData == null) return otherData;
         String endRace = ApecUtils.segmentString(actionBarData,endRaceSymbol,'\u00a7',' ',2,2);
         String woodRacing = ApecUtils.segmentString(actionBarData,woodRacingSymbol,'\u00a7',' ',2,2);
         String dps = ApecUtils.segmentString(actionBarData,dpsSymbol,'\u00a7',' ',1,1);
@@ -693,7 +739,7 @@ public class DataExtractor {
         if (dps != null) otherData.ExtraInfo.add(dps);
         if (secrets != null) otherData.ExtraInfo.add(secrets);
         // The condition is like this to make sure the actionData is not null
-        if (actionBarData != null ? actionBarData.contains("Revive") : false) {
+        if (actionBarData.contains("Revive")) {
             otherData.ExtraInfo.add(actionBarData);
         }
         // The revive message also contais the word second so we have to be sure is not that one
@@ -703,6 +749,22 @@ public class DataExtractor {
         if (crystalRace != null) otherData.ExtraInfo.add(crystalRace);
         if (mushroomRace != null) otherData.ExtraInfo.add(mushroomRace);
         if (precursorRace != null) otherData.ExtraInfo.add(precursorRace);
+
+        if (actionBarData.contains(armadilloName)) {
+            String segmentEnergy = ApecUtils.segmentString(actionBarData,"/",'\u00a7','\0' /*placeholder*/,2,1, ApecUtils.SegmentationOptions.TOTALLY_INCLUSIVE);
+            if (segmentEnergy != null) {
+                String[] values = ApecUtils.removeAllCodes(segmentEnergy).split("/");
+                otherData.ArmadilloEnergy = Integer.parseInt(values[0]);
+                otherData.ArmadilloBaseEnergy = Integer.parseInt(values[1]);
+            }
+        }
+
+        if (actionBarData.contains(treasureMetalDetectorSymbol)) {
+            String segmentedString = ApecUtils.segmentString(actionBarData,treasureMetalDetectorSymbol,'\u00a7','m',2,1, ApecUtils.SegmentationOptions.TOTALLY_INCLUSIVE);
+            if (segmentedString != null) {
+                otherData.ExtraInfo.add(segmentedString);
+            }
+        }
 
         if (ApecMain.Instance.settingsManager.getSettingState(SettingID.SHOW_POTIONS_EFFECTS)) {
 
@@ -834,6 +896,8 @@ public class DataExtractor {
     public class PlayerStats {
         public int Hp;
         public int BaseHp;
+        public int HealDuration;
+        public char HealDurationTicker;
         public int Ap; // Absorption Points
         public int BaseAp; // Base Absorption
         public int Op; // Overflow points
@@ -852,6 +916,8 @@ public class DataExtractor {
 
         public ArrayList<String> ExtraInfo  = new ArrayList<String>();
         public ArrayList<EventIDs> currentEvents = new ArrayList<EventIDs>();
+        public int ArmadilloEnergy;
+        public int ArmadilloBaseEnergy;
 
     }
 

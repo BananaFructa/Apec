@@ -17,7 +17,7 @@ public class VersionChecker {
             connection.setUseCaches(false);
             Scanner s = new Scanner(connection.getInputStream());
             connection.connect();
-            return "experimental2";
+            return s.nextLine();
         } catch (Exception e) {
             return "NULL";
         }
