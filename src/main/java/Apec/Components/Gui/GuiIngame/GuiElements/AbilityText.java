@@ -41,9 +41,11 @@ public class AbilityText extends GUIComponent {
         if ((ApecMain.Instance.settingsManager.getSettingState(SettingID.SHOW_ABILITY_TEXT) && ps.IsAbilityShown) || editingMode) {
             stringWidth = mc.fontRendererObj.getStringWidth(ps.AbilityText);
             Vector2f rap = ApecUtils.scalarMultiply(getCurrentAnchorPoint(),oneOverScale);
+
+            double xOffset = Math.floor(stringWidth / 2);
             ApecUtils.drawThiccBorderString(
                     ps.AbilityText,
-                    (int)(rap.x - mc.fontRendererObj.getStringWidth(ps.AbilityText)),
+                    (int)(rap.x - mc.fontRendererObj.getStringWidth(ps.AbilityText) + xOffset),
                     (int)(rap.y - 10),
                     0xffffffff
             );
