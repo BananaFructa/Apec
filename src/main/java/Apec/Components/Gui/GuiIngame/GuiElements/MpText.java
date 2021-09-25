@@ -31,7 +31,7 @@ public class MpText extends TextComponent {
 
             boolean showOp = ApecMain.Instance.settingsManager.getSettingState(SettingID.SHOW_OP_BAR);
 
-            String MPString = ps.Mp + "/" + ps.BaseMp + " MP";
+            String MPString = ps.Mp + "/" + ps.BaseMp;
 
             if (ps.Op != 0) {
                 if (showOp) {

@@ -13,6 +13,7 @@ public enum GUIComponentID {
     INFO_BOX,
     HOT_BAR,
     HP_TEXT,
+    HEAL_TEXT,
     MP_TEXT,
     XP_TEXT,
     SKILL_TEXT,
@@ -21,5 +22,6 @@ public enum GUIComponentID {
     ABILITY_TEXT,
     DEFENCE_TEXT,
     BOSS_HEALTH,
-    JUMP_BAR
+    JUMP_BAR,
+    EDIT_GRID
 }

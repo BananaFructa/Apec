@@ -27,6 +27,7 @@ public enum SettingID {
     SHOW_ABILITY_TEXT,
     SHOW_ABSORPTION_BAR,
     HP_TEXT,
+    HEAL_TEXT,
     MP_TEXT,
     XP_TEXT,
     AIR_TEXT,
@@ -42,6 +43,6 @@ public enum SettingID {
     COMPATIBILITY_SAFETY,
     BB_ON_TOP,
     CUSTOM_TOOL_TIP,
-    SHOW_OP_BAR
-
+    SHOW_OP_BAR,
+    EDIT_GRID
 }

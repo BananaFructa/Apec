@@ -22,6 +22,7 @@ public class SettingsManager {
         add(new Setting(AUTO_ENABLE,true));
         add(new Setting(HP_BAR,true));
         add(new Setting(HP_TEXT,true));
+        add(new Setting(HEAL_TEXT,true));
         add(new Setting(SHOW_ABSORPTION_BAR,true));
         add(new Setting(SHOW_OP_BAR,true));
         add(new Setting(MP_BAR,true));
@@ -59,6 +60,7 @@ public class SettingsManager {
         add(new Setting(BORDER_TYPE,true));
         //add(new Setting(OVERWRITE_GUI,false));
         add(new Setting(SHOW_DEBUG_MESSAGES,false));
+        add(new Setting(EDIT_GRID,false));
     }};
 
     /** Hashmap that holds the titles and descriptions of each setting */
@@ -89,6 +91,7 @@ public class SettingsManager {
         put(SHOW_ABSORPTION_BAR,new Tuple<String, String>("Show absorption bar","Shows the absorption bar"));
         put(SHOW_OP_BAR,new Tuple<String, String>("Show overflow mana bar","Shows the overflow mana bar"));
         put(HP_TEXT,new Tuple<String, String>("Show HP Text","Shows the HP text"));
+        put(HEAL_TEXT,new Tuple<String, String>("Show Healing Text","Shows the Healing text"));
         put(MP_TEXT,new Tuple<String, String>("Show MP Text","Shows the MP text"));
         put(XP_TEXT,new Tuple<String, String>("Show XP Text","Shows the XP text"));
         put(AIR_TEXT,new Tuple<String, String>("Show Air text","Shows the air text"));
@@ -103,6 +106,7 @@ public class SettingsManager {
         put(COMPATIBILITY_SAFETY,new Tuple<String, String>("Compatibility Safety","Ensures that certain features that might break some mods are disabled"));
         put(BB_ON_TOP,new Tuple<String,String>("Info bar on top","Puts the info bar on top instead of on the bottom"));
         put(CUSTOM_TOOL_TIP,new Tuple<String,String>("Custom tool tip","Shows extra icons above the item tool tip."));
+        put(EDIT_GRID,new Tuple<String,String>("Edit Grid","Shows a grid in editing mode."));
     }};
 
     /** Cache for setting states */

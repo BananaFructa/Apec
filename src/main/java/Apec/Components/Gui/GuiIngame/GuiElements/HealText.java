@@ -10,10 +10,10 @@ import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
 import org.lwjgl.util.vector.Vector2f;
 
-public class HpText extends TextComponent {
+public class HealText extends TextComponent {
 
-    public HpText () {
-        super(GUIComponentID.HP_TEXT);
+    public HealText () {
+        super(GUIComponentID.HEAL_TEXT);
     }
 
     int stringWidth = 0;
@@ -22,23 +22,18 @@ public class HpText extends TextComponent {
     public void draw(DataExtractor.PlayerStats ps, DataExtractor.ScoreBoardData sd,DataExtractor.OtherData od, ScaledResolution sr,boolean editingMode) {
         super.draw(ps,sd,od,sr,editingMode);
         GlStateManager.pushMatrix();
-        if (ApecMain.Instance.settingsManager.getSettingState(SettingID.HP_TEXT)) {
+        if (ApecMain.Instance.settingsManager.getSettingState(SettingID.HEAL_TEXT)) {
             GlStateManager.scale(scale, scale, scale);
-
-            boolean showAP = ApecMain.Instance.settingsManager.getSettingState(SettingID.SHOW_ABSORPTION_BAR);
 
             Vector2f StatBar = ApecUtils.scalarMultiply(getCurrentAnchorPoint(),oneOverScale);
 
-            int addedHp = ps.Hp + ps.Ap;
-            String HPString = (!showAP && ps.Ap != 0 ? "\u00a7e" + addedHp + "\u00a7r" : ps.Hp) + "/" + ps.BaseHp;
-            ApecUtils.drawThiccBorderString(HPString, (int) (StatBar.x - mc.fontRendererObj.getStringWidth(HPString)), (int) (StatBar.y - 10), 0xd10808);
-            stringWidth = mc.fontRendererObj.getStringWidth(HPString);
+            String healString = (ps.HealDuration != 0 ? " +" + ps.HealDuration +"/s " + ps.HealDurationTicker : "");
 
-
-            if (ps.Ap != 0 && showAP) {
-                String APString = ps.Ap + "/" + ps.BaseAp + " AP";
-                ApecUtils.drawThiccBorderString(APString, (int) (StatBar.x - 5 - mc.fontRendererObj.getStringWidth(APString) - mc.fontRendererObj.getStringWidth(HPString)), (int) (StatBar.y - 10), 0x1966AD);
+            if(editingMode){
+                healString = " +" + "170" +"/s " + "\u2585";
             }
+            ApecUtils.drawThiccBorderString(healString, (int) (StatBar.x - mc.fontRendererObj.getStringWidth(healString)), (int) (StatBar.y - 10), 0xd10808);
+            stringWidth = mc.fontRendererObj.getStringWidth(healString);
         }
         GlStateManager.popMatrix();
     }
