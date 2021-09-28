@@ -73,6 +73,7 @@ public class GUIModifier extends Component {
         add(new AbilityText());
         add(new BossBar());
         add(new EditGrid());
+        add(new PowderInfo());
     }};
 
     public GUIModifier() {
@@ -156,9 +157,11 @@ public class GUIModifier extends Component {
         DataExtractor.PlayerStats ps;
         DataExtractor.ScoreBoardData sd;
         DataExtractor.OtherData od;
+        DataExtractor.TabStats ts;
         ps = ApecMain.Instance.dataExtractor.getPlayerStats();
         sd = ApecMain.Instance.dataExtractor.getScoreBoardData();
         od = ApecMain.Instance.dataExtractor.getOtherData();
+        ts = ApecMain.Instance.dataExtractor.getTabStats();
         try {
             GlStateManager.enableBlend();
             GlStateManager.color(1,1,1,1);
@@ -166,13 +169,13 @@ public class GUIModifier extends Component {
             for (GUIComponent component : GUIComponents) {
                 if (shouldBlockF3(component)) continue;
                 GlStateManager.pushMatrix();
-                component.drawTex(ps, sd, od, sr,mc.currentScreen instanceof CustomizationGui);
+                component.drawTex(ps, sd, od, ts, sr,mc.currentScreen instanceof CustomizationGui);
                 GlStateManager.popMatrix();
             }
             for (GUIComponent component : GUIComponents) {
                 if (shouldBlockF3(component)) continue;
                 GlStateManager.pushMatrix();
-                component.draw(ps, sd, od, sr,mc.currentScreen instanceof CustomizationGui);
+                component.draw(ps, sd, od, ts, sr,mc.currentScreen instanceof CustomizationGui);
                 GlStateManager.popMatrix();
             }
         } catch (Exception e) {

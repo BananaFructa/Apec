@@ -23,5 +23,6 @@ public enum GUIComponentID {
     DEFENCE_TEXT,
     BOSS_HEALTH,
     JUMP_BAR,
-    EDIT_GRID
+    EDIT_GRID,
+    POWDER_DISPLAY
 }

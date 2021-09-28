@@ -17,8 +17,8 @@ public class ExtraInfo extends TextComponent {
     }
 
     @Override
-    public void draw(DataExtractor.PlayerStats ps, DataExtractor.ScoreBoardData sd,DataExtractor.OtherData od, ScaledResolution sr,boolean editingMode) {
-        super.draw(ps,sd,od,sr,editingMode);
+    public void draw(DataExtractor.PlayerStats ps, DataExtractor.ScoreBoardData sd,DataExtractor.OtherData od, DataExtractor.TabStats ts, ScaledResolution sr,boolean editingMode) {
+        super.draw(ps,sd,od,ts,sr,editingMode);
         GlStateManager.pushMatrix();
         GlStateManager.scale(scale,scale,scale);
         Vector2f ExtraScoreInfo = ApecUtils.scalarMultiply(getCurrentAnchorPoint(),oneOverScale);

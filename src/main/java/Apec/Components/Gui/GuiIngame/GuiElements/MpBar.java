@@ -21,8 +21,8 @@ public class MpBar extends GUIComponent {
     }
 
     @Override
-    public void drawTex(DataExtractor.PlayerStats ps, DataExtractor.ScoreBoardData sd, DataExtractor.OtherData od, ScaledResolution sr,boolean editingMode) {
-        super.drawTex(ps,sd,od,sr,editingMode);
+    public void drawTex(DataExtractor.PlayerStats ps, DataExtractor.ScoreBoardData sd, DataExtractor.OtherData od, DataExtractor.TabStats ts, ScaledResolution sr,boolean editingMode) {
+        super.drawTex(ps,sd,od,ts,sr,editingMode);
         GlStateManager.pushMatrix();
         GlStateManager.scale(scale,scale,scale);
         if (ApecMain.Instance.settingsManager.getSettingState(SettingID.MP_BAR)) {

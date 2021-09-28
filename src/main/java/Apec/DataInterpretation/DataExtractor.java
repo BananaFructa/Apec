@@ -13,6 +13,7 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.network.NetworkPlayerInfo;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.scoreboard.Score;
 import net.minecraft.scoreboard.ScoreObjective;
@@ -33,6 +34,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.lang.Integer;
 
 public class DataExtractor {
 
@@ -58,6 +60,17 @@ public class DataExtractor {
     private final String reviveSymbol = "Revive";
     private final String armadilloName = "Armadillo";
     private final String treasureMetalDetectorSymbol = "TREASURE:";
+
+    private final String attackSpeedSymbol = "Attack Speed: \u2694";
+    private final String bankSymbol = "Bank:";
+    private final String mithrilPowderSymbol = "Mithril Powder:";
+    private final String gemstonePowderSymbol = "Gemstone Powder:";
+    private final String strengthSymbol = "Strength: \u2741";
+    private final String speedSymbol = "Speed: \u2726";
+    private final String critDamageSymbol = "Crit Damage: \u2620";
+    private final String critChanceSymbol = "Crit Chance: \u2623";
+    private final String mayorSymbol = "Winner:";
+    private final String petSitterSymbol = "Pet Sitter:";
 
     private boolean alreadyShowedTabError = false;
     private boolean alreadyShowedScrErr = false;
@@ -106,6 +119,7 @@ public class DataExtractor {
     private List<String> scoreBoardLines;
     private ScoreBoardData scoreBoardData = new ScoreBoardData();
     private OtherData otherData;
+    private TabStats tabStats;
 
     public boolean isInSkyblock = false; // This flag is true if the player is in skyblock
 
@@ -199,6 +213,8 @@ public class DataExtractor {
                 this.playerStats = this.ProcessPlayerStats();
 
                 this.otherData = this.ProcessOtherData(this.scoreBoardData);
+
+                this.tabStats = this.ProcessTabList();
 
                 if (hasRecievedATradeRequest || hasSentATradeRequest) {
                     tradeTicks++;
@@ -483,6 +499,86 @@ public class DataExtractor {
         return this.scoreBoardData;
     }
 
+    /*
+    public String Bank;
+        public int GemstonePowder;
+        public int MithrilPowder;
+        public int Speed;
+        public int Strength;
+        public int CritChance;
+        public int CritDamage;
+        public int AttackSpeed;
+        public String Commission1;
+        public String Commission2;
+        public String Commission3;
+        public String Commission4;
+        public String Forge1;
+        public String Forge2;
+        public String Forge3;
+        public String Forge4;
+        public String Mayor;
+        public String CookieBuff;
+        public String PetSitter;
+    */
+
+    private TabStats ProcessTabList () {
+        TabStats tabStats = new TabStats();
+        try {
+            Collection<NetworkPlayerInfo> players = Minecraft.getMinecraft().getNetHandler().getPlayerInfoMap();
+            for (NetworkPlayerInfo player : players){
+                String name = ApecUtils.removeAllCodes(Minecraft.getMinecraft().ingameGUI.getTabList().getPlayerName(player));
+                if(ApecUtils.containedByCharSequence(name,bankSymbol)){
+                    tabStats.Bank = name.replace(bankSymbol,"").replace(" ","");
+                    continue;
+                }
+                if(ApecUtils.containedByCharSequence(name,gemstonePowderSymbol)){
+                    tabStats.GemstonePowder = name.replace(gemstonePowderSymbol,"").replace(" ","");
+                    continue;
+                }
+                if(ApecUtils.containedByCharSequence(name,mithrilPowderSymbol)){
+                    tabStats.MithrilPowder = name.replace(mithrilPowderSymbol,"").replace(" ","");
+                    continue;
+                }
+                if(ApecUtils.containedByCharSequence(name,strengthSymbol)){
+                    tabStats.Strength = name.replace(strengthSymbol,"").replace(" ","");
+                    continue;
+                }
+                if(ApecUtils.containedByCharSequence(name,speedSymbol)){
+                    tabStats.Speed = name.replace(speedSymbol,"").replace(" ","");
+                    continue;
+                }
+                if(ApecUtils.containedByCharSequence(name,critChanceSymbol)){
+                    tabStats.CritChance = name.replace(critChanceSymbol,"").replace(" ","");
+                    continue;
+                }
+                if(ApecUtils.containedByCharSequence(name,critDamageSymbol)){
+                    tabStats.CritDamage = name.replace(critDamageSymbol,"").replace(" ","");
+                    continue;
+                }
+                if(ApecUtils.containedByCharSequence(name,attackSpeedSymbol)){
+                    tabStats.AttackSpeed = name.replace(attackSpeedSymbol,"").replace(" ","");
+                    continue;
+                }
+                if(ApecUtils.containedByCharSequence(name,mayorSymbol)){
+                    tabStats.Mayor = name.replace(mayorSymbol,"").replace(" ","");
+                    continue;
+                }
+                if(ApecUtils.containedByCharSequence(name,petSitterSymbol)){
+                    tabStats.PetSitter = name.replace(petSitterSymbol,"").replace(" ","");
+                    continue;
+                }
+            }
+            return tabStats;
+        } catch (Exception e) {
+            System.out.println(e);
+            return this.tabStats;
+        }
+    }
+
+    public TabStats getTabStats () {
+        return this.tabStats;
+    }
+
     /**
      * Player Stats
      * -health
@@ -610,7 +706,7 @@ public class DataExtractor {
             }
 
             if (inBetweenBrackets != null) {
-                percentage = praseSkillPercentage(inBetweenBrackets);
+                percentage = parseSkillPercentage(inBetweenBrackets);
             }
 
             if (percentage != -1f) {
@@ -624,7 +720,7 @@ public class DataExtractor {
             } else {
                 if (ApecMain.Instance.settingsManager.getSettingState(SettingID.ALWAYS_SHOW_SKILL) && !lastSkillXp.equals("")) {
                     String wholeString = ApecUtils.removeAllCodes(lastSkillXp);
-                    percentage = praseSkillPercentage(ApecUtils.segmentString(lastSkillXp, "(", '(', ')', 1, 1, ApecUtils.SegmentationOptions.TOTALLY_EXCLUSIVE));
+                    percentage = parseSkillPercentage(ApecUtils.segmentString(lastSkillXp, "(", '(', ')', 1, 1, ApecUtils.SegmentationOptions.TOTALLY_EXCLUSIVE));
 
                     playerStats.SkillIsShown = true;
                     playerStats.SkillInfo = wholeString;
@@ -689,7 +785,7 @@ public class DataExtractor {
      * @param skillInfo = The text between brackets of the skill xp string
      * @return the precentege of completion until next skill level
      */
-    float praseSkillPercentage(String skillInfo) {
+    float parseSkillPercentage(String skillInfo) {
         if (skillInfo == null) return -1f;
         if (skillInfo.contains("%")) {
             skillInfo = skillInfo.replace("%","");
@@ -910,6 +1006,29 @@ public class DataExtractor {
         public boolean SkillIsShown;
         public boolean IsAbilityShown;
         public String AbilityText = "\u00a7b-00 Mana (\u00a76Some Ability\u00a7b)";
+    }
+
+    public class TabStats {
+        public String Bank;
+        public String GemstonePowder;
+        public String MithrilPowder;
+        public String Speed;
+        public String Strength;
+        public String CritChance;
+        public String CritDamage;
+        public String AttackSpeed;
+        public String Commission1;
+        public String Commission2;
+        public String Commission3;
+        public String Commission4;
+        public String Forge1;
+        public String Forge2;
+        public String Forge3;
+        public String Forge4;
+        public String Mayor;
+        public String CookieBuff;
+        public String Profile;
+        public String PetSitter;
     }
 
     public class OtherData {

@@ -542,4 +542,27 @@ public class ApecUtils {
         Object[] arr = list.toArray();
         return Arrays.copyOf(arr,arr.length,type);
     }
+
+    public static boolean isInDwarvenMines(String zone){
+        String[] zones = {"Dwarven Mines","Dwarven Village", "The Lift", "Cliffside Veins",
+            "Royal Mines", "The Mist", "Forge Basin",
+            "The Forge", "Ramparts Quarry", "Upper Mines",
+            "Royal Palace", "Royal Quarters", "Grand Library",
+            "Far Reserve", "Goblin Burrows", "Great Ice Wall",
+            "Divan's Gateway", "Hanging Court", "Barracks of Heroes",
+            "Crystal Hollows", "Jungle", "Precursor Remnants", 
+            "Fairy Grotto", "Lost Precursor City", "Jungle Temple",
+            "Goblin Queen's Den", "Goblin King's Lair", "Crystal Nucleus",
+            "Mithril Deposits", "Goblin Holdout", "Mines of Divan",
+            "Khazad-dm", "Magma Fields"};
+
+        zone = removeAllCodes(zone).replaceAll("[^a-zA-Z0-9\\s]", "").trim();
+
+        for (String z : zones){
+            if (z.equals(zone)) { return true; }
+        }
+        return false;
+    }
+
+
 }

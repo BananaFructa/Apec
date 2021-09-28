@@ -21,7 +21,7 @@ public class AirBar extends GUIComponent {
     }
 
     @Override
-    public void drawTex(DataExtractor.PlayerStats ps, DataExtractor.ScoreBoardData sd, DataExtractor.OtherData od, ScaledResolution sr,boolean editingMode) {
+    public void drawTex(DataExtractor.PlayerStats ps, DataExtractor.ScoreBoardData sd, DataExtractor.OtherData od, DataExtractor.TabStats ts, ScaledResolution sr,boolean editingMode) {
 
         GlStateManager.pushMatrix();
         GlStateManager.scale(scale,scale,scale);

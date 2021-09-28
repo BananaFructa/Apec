@@ -20,8 +20,8 @@ public class HorseJumpBar extends GUIComponent {
     }
 
     @Override
-    public void drawTex(DataExtractor.PlayerStats ps, DataExtractor.ScoreBoardData sd, DataExtractor.OtherData od, ScaledResolution sr, boolean editingMode) {
-        super.drawTex(ps, sd, od, sr, editingMode);
+    public void drawTex(DataExtractor.PlayerStats ps, DataExtractor.ScoreBoardData sd, DataExtractor.OtherData od, DataExtractor.TabStats ts, ScaledResolution sr, boolean editingMode) {
+        super.drawTex(ps, sd, od, ts, sr, editingMode);
         float charge = mc.thePlayer.getHorseJumpPower();
 
         if (editingMode && od.ArmadilloEnergy == 0) charge = 1f;

@@ -16,11 +16,11 @@ public class HealText extends TextComponent {
         super(GUIComponentID.HEAL_TEXT);
     }
 
-    int stringWidth = 0;
+    private int stringWidth = 0;
 
     @Override
-    public void draw(DataExtractor.PlayerStats ps, DataExtractor.ScoreBoardData sd,DataExtractor.OtherData od, ScaledResolution sr,boolean editingMode) {
-        super.draw(ps,sd,od,sr,editingMode);
+    public void draw(DataExtractor.PlayerStats ps, DataExtractor.ScoreBoardData sd,DataExtractor.OtherData od, DataExtractor.TabStats ts, ScaledResolution sr,boolean editingMode) {
+        super.draw(ps,sd,od,ts,sr,editingMode);
         GlStateManager.pushMatrix();
         if (ApecMain.Instance.settingsManager.getSettingState(SettingID.HEAL_TEXT)) {
             GlStateManager.scale(scale, scale, scale);
@@ -32,8 +32,9 @@ public class HealText extends TextComponent {
             if(editingMode){
                 healString = " +" + "170" +"/s " + "\u2585";
             }
-            ApecUtils.drawThiccBorderString(healString, (int) (StatBar.x - mc.fontRendererObj.getStringWidth(healString)), (int) (StatBar.y - 10), 0xd10808);
             stringWidth = mc.fontRendererObj.getStringWidth(healString);
+            ApecUtils.drawThiccBorderString(healString, (int) (StatBar.x - stringWidth), (int) (StatBar.y - 10), 0xd10808);
+            
         }
         GlStateManager.popMatrix();
     }

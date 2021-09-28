@@ -16,11 +16,13 @@ public class HpText extends TextComponent {
         super(GUIComponentID.HP_TEXT);
     }
 
-    int stringWidth = 0;
+    private boolean centered = false;
+
+    private int stringWidth = 0;
 
     @Override
-    public void draw(DataExtractor.PlayerStats ps, DataExtractor.ScoreBoardData sd,DataExtractor.OtherData od, ScaledResolution sr,boolean editingMode) {
-        super.draw(ps,sd,od,sr,editingMode);
+    public void draw(DataExtractor.PlayerStats ps, DataExtractor.ScoreBoardData sd,DataExtractor.OtherData od, DataExtractor.TabStats ts, ScaledResolution sr,boolean editingMode) {
+        super.draw(ps,sd,od,ts,sr,editingMode);
         GlStateManager.pushMatrix();
         if (ApecMain.Instance.settingsManager.getSettingState(SettingID.HP_TEXT)) {
             GlStateManager.scale(scale, scale, scale);
@@ -45,7 +47,7 @@ public class HpText extends TextComponent {
 
     @Override
     public Vector2f getAnchorPointPosition() {
-        return guiModifier.applyGlobalChanges(this,new Vector2f(g_sr.getScaledWidth() - 190 + 112 + 70, 15));
+        return centered ? this.guiModifier.applyGlobalChanges(this,new Vector2f((int) ((stringWidth * 0.5f)), 0)) : guiModifier.applyGlobalChanges(this,new Vector2f(g_sr.getScaledWidth() - 190 + 112 + 70, 15));
     }
 
     @Override

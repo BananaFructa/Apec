@@ -24,14 +24,14 @@ public class InfoBox extends GUIComponent {
     float yDecremetor = 0;
 
     public InfoBox() {
-        super(GUIComponentID.INFO_BOX,5);
+        super(GUIComponentID.INFO_BOX,10);
     }
 
-    public int PurseStringLength = 0,BitsLength = 0,ZoneStringLength = 0,DefenceStringLength = 0,TimeStringLength = 0;
+    public int PurseStringLength = 0,BitsLength = 0,ZoneStringLength = 0,DefenceStringLength = 0,TimeStringLength = 0, SpeedStringLength = 0, StrengthStringLength = 0, CCStringLength = 0, CDStringLength = 0, ASStringLength = 0;
 
     @Override
-    public void drawTex(DataExtractor.PlayerStats ps, DataExtractor.ScoreBoardData sd, DataExtractor.OtherData od, ScaledResolution sr, boolean editingMode) {
-        super.drawTex(ps, sd, od, sr, editingMode);
+    public void drawTex(DataExtractor.PlayerStats ps, DataExtractor.ScoreBoardData sd, DataExtractor.OtherData od, DataExtractor.TabStats ts, ScaledResolution sr, boolean editingMode) {
+        super.drawTex(ps, sd, od, ts, sr, editingMode);
         Vector2f GuiPos = getCurrentAnchorPoint();
 
         boolean UseIcons = ApecMain.Instance.settingsManager.getSettingState(SettingID.INFO_BOX_ICONS);
@@ -64,7 +64,7 @@ public class InfoBox extends GUIComponent {
     }
 
     @Override
-    public void draw(DataExtractor.PlayerStats ps, DataExtractor.ScoreBoardData sd,DataExtractor.OtherData od, ScaledResolution sr,boolean editingMode) {
+    public void draw(DataExtractor.PlayerStats ps, DataExtractor.ScoreBoardData sd,DataExtractor.OtherData od, DataExtractor.TabStats ts, ScaledResolution sr,boolean editingMode) {
         GlStateManager.pushMatrix();
         if (ApecMain.Instance.settingsManager.getSettingState(SettingID.USE_AUTO_SCALING_BB)) {
             if (mc.gameSettings.guiScale == 0) {
@@ -80,7 +80,7 @@ public class InfoBox extends GUIComponent {
             scale = 1;
         }
         GlStateManager.scale(scale, scale, 1);
-        super.draw(ps, sd, od, sr, editingMode);
+        super.draw(ps, sd, od, ts, sr, editingMode);
         boolean isInChat = Minecraft.getMinecraft().currentScreen instanceof GuiChat;
         float fps = Minecraft.getDebugFPS();
         if (ApecMain.Instance.settingsManager.getSettingState(SettingID.INFO_BOX_ANIMATION) && !ApecMain.Instance.settingsManager.getSettingState(SettingID.BB_ON_TOP)) {
@@ -103,6 +103,12 @@ public class InfoBox extends GUIComponent {
         String zoneText = (UseIcons ? ApecUtils.RemoveCharSequence("\u23E3", sd.Zone) : sd.Zone);
         String defenceText = (UseIcons ? "\u00a7a" + ps.Defence : "\u00a7a" + ps.Defence + " Defence");
         String bitText = (UseIcons ? ApecUtils.RemoveCharSequence("Bits: ",sd.Bits) : sd.Bits);
+        String speedText = "\u2726" + ts.Speed;
+        String strengthText = "\u2741" + ts.Strength;
+        String critChanceText = "\u2623" + ts.CritChance;
+        String critDamageText = "\u2620" + ts.CritDamage;
+        String attackSpeedText = "\u2694" + ts.AttackSpeed;
+
         boolean inTheCatacombs = ApecMain.Instance.dataExtractor.isInTheCatacombs;
         mc.fontRendererObj.drawString(
                 purseText,
@@ -133,10 +139,60 @@ public class InfoBox extends GUIComponent {
             );
         }
 
+        if (ApecMain.Instance.settingsManager.getSettingState(SettingID.SHOW_SPEED) || editingMode) {
+            mc.fontRendererObj.drawString(
+                    speedText,
+                    (int) (GuiPos.x + 20 + (subComponentDeltas.get(5).getX()) * oneOverScale + 500),
+                    (int) ((GuiPos.y + subComponentDeltas.get(5).getY()) * oneOverScale),
+                    0xffffff
+            );
+        }
+        if (ApecMain.Instance.settingsManager.getSettingState(SettingID.SHOW_STRENGTH) || editingMode) {
+            mc.fontRendererObj.drawString(
+                    strengthText,
+                    (int) (GuiPos.x + 20 + (subComponentDeltas.get(6).getX()) * oneOverScale + 540),
+                    (int) ((GuiPos.y + subComponentDeltas.get(6).getY()) * oneOverScale),
+                    0xFF5555
+            );
+        }
+
+        if (ApecMain.Instance.settingsManager.getSettingState(SettingID.SHOW_CRIT_CHANCE) || editingMode) {
+            mc.fontRendererObj.drawString(
+                    critChanceText,
+                    (int) (GuiPos.x + 20 + (subComponentDeltas.get(7).getX()) * oneOverScale + 580),
+                    (int) ((GuiPos.y + subComponentDeltas.get(7).getY()) * oneOverScale),
+                    0x5555FF
+            );
+        }
+
+        if (ApecMain.Instance.settingsManager.getSettingState(SettingID.SHOW_CRIT_DAMAGE) || editingMode) {
+            mc.fontRendererObj.drawString(
+                    critDamageText,
+                    (int) (GuiPos.x + 20 + (subComponentDeltas.get(8).getX()) * oneOverScale + 620),
+                    (int) ((GuiPos.y + subComponentDeltas.get(8).getY()) * oneOverScale),
+                    0x5555FF
+            );
+        }
+
+        if (ApecMain.Instance.settingsManager.getSettingState(SettingID.SHOW_ATTACK_SPEED) || editingMode) {
+            mc.fontRendererObj.drawString(
+                    attackSpeedText,
+                    (int) (GuiPos.x + 20 + (subComponentDeltas.get(9).getX()) * oneOverScale + 660),
+                    (int) ((GuiPos.y + subComponentDeltas.get(9).getY()) * oneOverScale),
+                    0xFFFF55
+            );
+        }
+
         PurseStringLength = mc.fontRendererObj.getStringWidth(purseText);
         BitsLength = mc.fontRendererObj.getStringWidth(bitText);
         ZoneStringLength = mc.fontRendererObj.getStringWidth(zoneText);
         DefenceStringLength = mc.fontRendererObj.getStringWidth(defenceText);
+        SpeedStringLength = mc.fontRendererObj.getStringWidth(speedText);
+        StrengthStringLength = mc.fontRendererObj.getStringWidth(strengthText);
+        CCStringLength = mc.fontRendererObj.getStringWidth(critChanceText);
+        CDStringLength = mc.fontRendererObj.getStringWidth(critDamageText);
+        ASStringLength = mc.fontRendererObj.getStringWidth(attackSpeedText);
+
         TimeStringLength = mc.fontRendererObj.getStringWidth(sd.Date + " " + sd.Hour);
 
         mc.fontRendererObj.drawString(
@@ -170,6 +226,11 @@ public class InfoBox extends GUIComponent {
             add(new Vector2f(220*scale + 20 * scale, 6*scale));
             add(new Vector2f(360*scale + 20 * scale, 6*scale));
             add(new Vector2f((g_sr.getScaledWidth() - 20), 6*scale));
+            add(new Vector2f(500*scale + 20 * scale, 6*scale));
+            add(new Vector2f(540*scale + 20 * scale, 6*scale));
+            add(new Vector2f(580*scale + 20 * scale, 6*scale));
+            add(new Vector2f(620*scale + 20 * scale, 6*scale));
+            add(new Vector2f(660*scale + 20 * scale, 6*scale));
         }};
     }
 
@@ -184,6 +245,11 @@ public class InfoBox extends GUIComponent {
             add(new Vector2f(ZoneStringLength + (UseIcons ? zoneAddX : 0)*scale, 10*scale));
             add(new Vector2f(DefenceStringLength + (UseIcons ? 10 : 0)*scale, 10*scale));
             add(new Vector2f(-TimeStringLength-(getCurrentAnchorPoint().x)*scale, 10*scale));
+            add(new Vector2f(SpeedStringLength, 10*scale));
+            add(new Vector2f(StrengthStringLength, 10*scale));
+            add(new Vector2f(CCStringLength, 10*scale));
+            add(new Vector2f(CDStringLength, 10*scale));
+            add(new Vector2f(ASStringLength, 10*scale));
             // Since the x is relative to the side of the screen and not the parent's x position i removed it's relativity
             // I can do that since the bottom bar cannot be moved so no wack shit is going to happen
         }};
