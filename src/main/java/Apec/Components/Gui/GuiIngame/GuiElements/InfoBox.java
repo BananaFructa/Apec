@@ -24,10 +24,13 @@ public class InfoBox extends GUIComponent {
     float yDecremetor = 0;
 
     public InfoBox() {
-        super(GUIComponentID.INFO_BOX,10);
+        super(GUIComponentID.INFO_BOX,12);
     }
 
-    public int PurseStringLength = 0,BitsLength = 0,ZoneStringLength = 0,DefenceStringLength = 0,TimeStringLength = 0, SpeedStringLength = 0, StrengthStringLength = 0, CCStringLength = 0, CDStringLength = 0, ASStringLength = 0;
+    public int  PurseStringWidth = 0, BitsLength = 0, ZoneStringWidth = 0,
+                DefenceStringWidth = 0, TimeStringWidth = 0, SpeedStringWidth = 0,
+                StrengthStringWidth = 0, CCStringWidth = 0, CDStringWidth = 0,
+                ASStringWidth = 0, GPStringWidth = 0, MPStringWidth = 0;
 
     @Override
     public void drawTex(DataExtractor.PlayerStats ps, DataExtractor.ScoreBoardData sd, DataExtractor.OtherData od, DataExtractor.TabStats ts, ScaledResolution sr, boolean editingMode) {
@@ -108,6 +111,8 @@ public class InfoBox extends GUIComponent {
         String critChanceText = "\u2623" + ts.CritChance;
         String critDamageText = "\u2620" + ts.CritDamage;
         String attackSpeedText = "\u2694" + ts.AttackSpeed;
+        String gemstonePowderText = "\u1805" + ts.GemstonePowder;
+        String mithrilPowderText = "\u1805" + ts.MithrilPowder;
 
         boolean inTheCatacombs = ApecMain.Instance.dataExtractor.isInTheCatacombs;
         ApecUtils.drawThiccBorderString(
@@ -142,7 +147,7 @@ public class InfoBox extends GUIComponent {
         if (ApecMain.Instance.settingsManager.getSettingState(SettingID.SHOW_SPEED) || editingMode) {
             ApecUtils.drawThiccBorderString(
                     speedText,
-                    (int) (GuiPos.x + 20 + (subComponentDeltas.get(5).getX()) * oneOverScale + 500),
+                    (int) (GuiPos.x + 20 + (subComponentDeltas.get(5).getX()) * oneOverScale + 460),
                     (int) ((GuiPos.y + subComponentDeltas.get(5).getY()) * oneOverScale),
                     0xffffff
             );
@@ -150,7 +155,7 @@ public class InfoBox extends GUIComponent {
         if (ApecMain.Instance.settingsManager.getSettingState(SettingID.SHOW_STRENGTH) || editingMode) {
             ApecUtils.drawThiccBorderString(
                     strengthText,
-                    (int) (GuiPos.x + 20 + (subComponentDeltas.get(6).getX()) * oneOverScale + 540),
+                    (int) (GuiPos.x + 20 + (subComponentDeltas.get(6).getX()) * oneOverScale + 500),
                     (int) ((GuiPos.y + subComponentDeltas.get(6).getY()) * oneOverScale),
                     0xFF5555
             );
@@ -159,7 +164,7 @@ public class InfoBox extends GUIComponent {
         if (ApecMain.Instance.settingsManager.getSettingState(SettingID.SHOW_CRIT_CHANCE) || editingMode) {
             ApecUtils.drawThiccBorderString(
                     critChanceText,
-                    (int) (GuiPos.x + 20 + (subComponentDeltas.get(7).getX()) * oneOverScale + 580),
+                    (int) (GuiPos.x + 20 + (subComponentDeltas.get(7).getX()) * oneOverScale + 540),
                     (int) ((GuiPos.y + subComponentDeltas.get(7).getY()) * oneOverScale),
                     0x5555FF
             );
@@ -168,7 +173,7 @@ public class InfoBox extends GUIComponent {
         if (ApecMain.Instance.settingsManager.getSettingState(SettingID.SHOW_CRIT_DAMAGE) || editingMode) {
             ApecUtils.drawThiccBorderString(
                     critDamageText,
-                    (int) (GuiPos.x + 20 + (subComponentDeltas.get(8).getX()) * oneOverScale + 620),
+                    (int) (GuiPos.x + 20 + (subComponentDeltas.get(8).getX()) * oneOverScale + 580),
                     (int) ((GuiPos.y + subComponentDeltas.get(8).getY()) * oneOverScale),
                     0x5555FF
             );
@@ -177,23 +182,45 @@ public class InfoBox extends GUIComponent {
         if (ApecMain.Instance.settingsManager.getSettingState(SettingID.SHOW_ATTACK_SPEED) || editingMode) {
             ApecUtils.drawThiccBorderString(
                     attackSpeedText,
-                    (int) (GuiPos.x + 20 + (subComponentDeltas.get(9).getX()) * oneOverScale + 660),
+                    (int) (GuiPos.x + 20 + (subComponentDeltas.get(9).getX()) * oneOverScale + 620),
                     (int) ((GuiPos.y + subComponentDeltas.get(9).getY()) * oneOverScale),
                     0xFFFF55
             );
         }
 
-        PurseStringLength = mc.fontRendererObj.getStringWidth(purseText);
-        BitsLength = mc.fontRendererObj.getStringWidth(bitText);
-        ZoneStringLength = mc.fontRendererObj.getStringWidth(zoneText);
-        DefenceStringLength = mc.fontRendererObj.getStringWidth(defenceText);
-        SpeedStringLength = mc.fontRendererObj.getStringWidth(speedText);
-        StrengthStringLength = mc.fontRendererObj.getStringWidth(strengthText);
-        CCStringLength = mc.fontRendererObj.getStringWidth(critChanceText);
-        CDStringLength = mc.fontRendererObj.getStringWidth(critDamageText);
-        ASStringLength = mc.fontRendererObj.getStringWidth(attackSpeedText);
+        if(!ApecMain.Instance.settingsManager.getSettingState(SettingID.SEPARATE_POWDER_DISPLAY)){
+            if (ApecMain.Instance.settingsManager.getSettingState(SettingID.SHOW_MITHRIL_POWDER) || editingMode) {
+                ApecUtils.drawThiccBorderString(
+                        mithrilPowderText,
+                        (int) (GuiPos.x + 20 + (subComponentDeltas.get(10).getX()) * oneOverScale + 640),
+                        (int) ((GuiPos.y + subComponentDeltas.get(10).getY()) * oneOverScale),
+                        0x00AA00
+                );
+            }
+    
+            if (ApecMain.Instance.settingsManager.getSettingState(SettingID.SHOW_GEMSTONE_POWDER) || editingMode) {
+                ApecUtils.drawThiccBorderString(
+                        gemstonePowderText,
+                        (int) (GuiPos.x + 20 + (subComponentDeltas.get(11).getX()) * oneOverScale + 700),
+                        (int) ((GuiPos.y + subComponentDeltas.get(11).getY()) * oneOverScale),
+                        0xFF55FF
+                );
+            }
+        }
 
-        TimeStringLength = mc.fontRendererObj.getStringWidth(sd.Date + " " + sd.Hour);
+        PurseStringWidth = mc.fontRendererObj.getStringWidth(purseText);
+        BitsLength = mc.fontRendererObj.getStringWidth(bitText);
+        ZoneStringWidth = mc.fontRendererObj.getStringWidth(zoneText);
+        DefenceStringWidth = mc.fontRendererObj.getStringWidth(defenceText);
+        SpeedStringWidth = mc.fontRendererObj.getStringWidth(speedText);
+        StrengthStringWidth = mc.fontRendererObj.getStringWidth(strengthText);
+        CCStringWidth = mc.fontRendererObj.getStringWidth(critChanceText);
+        CDStringWidth = mc.fontRendererObj.getStringWidth(critDamageText);
+        ASStringWidth = mc.fontRendererObj.getStringWidth(attackSpeedText);
+        GPStringWidth = mc.fontRendererObj.getStringWidth(gemstonePowderText);
+        MPStringWidth = mc.fontRendererObj.getStringWidth(mithrilPowderText);
+
+        TimeStringWidth = mc.fontRendererObj.getStringWidth(sd.Date + " " + sd.Hour);
 
         ApecUtils.drawThiccBorderString(
                 sd.Date + " " + sd.Hour,
@@ -226,11 +253,13 @@ public class InfoBox extends GUIComponent {
             add(new Vector2f(220*scale + 20 * scale, 6*scale));
             add(new Vector2f(360*scale + 20 * scale, 6*scale));
             add(new Vector2f((g_sr.getScaledWidth() - 20), 6*scale));
+            add(new Vector2f(460*scale + 20 * scale, 6*scale));
             add(new Vector2f(500*scale + 20 * scale, 6*scale));
             add(new Vector2f(540*scale + 20 * scale, 6*scale));
             add(new Vector2f(580*scale + 20 * scale, 6*scale));
             add(new Vector2f(620*scale + 20 * scale, 6*scale));
-            add(new Vector2f(660*scale + 20 * scale, 6*scale));
+            add(new Vector2f(640*scale + 20 * scale, 6*scale));
+            add(new Vector2f(700*scale + 20 * scale, 6*scale));
         }};
     }
 
@@ -240,16 +269,18 @@ public class InfoBox extends GUIComponent {
         boolean inTheCatacombs = ApecMain.Instance.dataExtractor.isInTheCatacombs;
         final int zoneAddX = (inTheCatacombs ? 5 : 9);
         List<Vector2f> RelativeVectors = new ArrayList<Vector2f>(4) {{
-            add(new Vector2f(PurseStringLength  + (UseIcons ? 9 : 0)*scale, 10*scale));
+            add(new Vector2f(PurseStringWidth  + (UseIcons ? 9 : 0)*scale, 10*scale));
             add(new Vector2f( BitsLength + (UseIcons ? 9 : 0)*scale, 10*scale));
-            add(new Vector2f(ZoneStringLength + (UseIcons ? zoneAddX : 0)*scale, 10*scale));
-            add(new Vector2f(DefenceStringLength + (UseIcons ? 10 : 0)*scale, 10*scale));
-            add(new Vector2f(-TimeStringLength-(getCurrentAnchorPoint().x)*scale, 10*scale));
-            add(new Vector2f(SpeedStringLength, 10*scale));
-            add(new Vector2f(StrengthStringLength, 10*scale));
-            add(new Vector2f(CCStringLength, 10*scale));
-            add(new Vector2f(CDStringLength, 10*scale));
-            add(new Vector2f(ASStringLength, 10*scale));
+            add(new Vector2f(ZoneStringWidth + (UseIcons ? zoneAddX : 0)*scale, 10*scale));
+            add(new Vector2f(DefenceStringWidth + (UseIcons ? 10 : 0)*scale, 10*scale));
+            add(new Vector2f(-TimeStringWidth-(getCurrentAnchorPoint().x)*scale, 10*scale));
+            add(new Vector2f(SpeedStringWidth, 10*scale));
+            add(new Vector2f(StrengthStringWidth, 10*scale));
+            add(new Vector2f(CCStringWidth, 10*scale));
+            add(new Vector2f(CDStringWidth, 10*scale));
+            add(new Vector2f(ASStringWidth, 10*scale));
+            add(new Vector2f(MPStringWidth, 10*scale));
+            add(new Vector2f(GPStringWidth, 10*scale));
             // Since the x is relative to the side of the screen and not the parent's x position i removed it's relativity
             // I can do that since the bottom bar cannot be moved so no wack shit is going to happen
         }};

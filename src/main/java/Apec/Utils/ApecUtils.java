@@ -544,7 +544,8 @@ public class ApecUtils {
     }
 
     public static boolean isInDwarvenMines(String zone){
-        String[] zones = {"Dwarven Mines","Dwarven Village", "The Lift", "Cliffside Veins",
+        String[] zones = {
+            "Dwarven Mines","Dwarven Village", "The Lift",
             "Royal Mines", "The Mist", "Forge Basin",
             "The Forge", "Ramparts Quarry", "Upper Mines",
             "Royal Palace", "Royal Quarters", "Grand Library",
@@ -554,7 +555,7 @@ public class ApecUtils {
             "Fairy Grotto", "Lost Precursor City", "Jungle Temple",
             "Goblin Queen's Den", "Goblin King's Lair", "Crystal Nucleus",
             "Mithril Deposits", "Goblin Holdout", "Mines of Divan",
-            "Khazad-dm", "Magma Fields"};
+            "Khazad-dm", "Magma Fields",  "Cliffside Veins"};
 
         zone = removeAllCodes(zone).replaceAll("[^a-zA-Z0-9\\s]", "").trim();
 

@@ -61,7 +61,9 @@ public class SettingsManager {
         //add(new Setting(OVERWRITE_GUI,false));
         add(new Setting(SHOW_DEBUG_MESSAGES,false));
         add(new Setting(EDIT_GRID,false));
-        add(new Setting(POWDER_DISPLAY, true));
+        add(new Setting(SEPARATE_POWDER_DISPLAY, true));
+        add(new Setting(SHOW_MITHRIL_POWDER, true));
+        add(new Setting(SHOW_GEMSTONE_POWDER, true));
         add(new Setting(SHOW_SPEED, true));
         add(new Setting(SHOW_STRENGTH, true));
         add(new Setting(SHOW_CRIT_CHANCE, true));
@@ -113,7 +115,9 @@ public class SettingsManager {
         put(BB_ON_TOP,new Tuple<String,String>("Info bar on top","Puts the info bar on top instead of on the bottom"));
         put(CUSTOM_TOOL_TIP,new Tuple<String,String>("Custom tool tip","Shows extra icons above the item tool tip."));
         put(EDIT_GRID,new Tuple<String,String>("Edit Grid","Shows a grid in editing mode."));
-        put(POWDER_DISPLAY, new Tuple<String,String> ("Show Powder","Show mithril/gemstone powder."));
+        put(SEPARATE_POWDER_DISPLAY, new Tuple<String,String> ("Seperate Powder Display","Separates mithril/gemstone powder from the info bar."));
+        put(SHOW_MITHRIL_POWDER, new Tuple<String,String> ("Show Mithril Powder","Show mithril powder."));
+        put(SHOW_GEMSTONE_POWDER, new Tuple<String,String> ("Show Gemstone Powder","Show gemstone powder."));
         put(SHOW_SPEED, new Tuple<String,String> ("Show Speed","Show speed in the info box."));
         put(SHOW_STRENGTH, new Tuple<String,String> ("Show Strength","Show strength in the info box."));
         put(SHOW_CRIT_CHANCE, new Tuple<String,String> ("Show Crit Chance","Show crit chance in the info box."));

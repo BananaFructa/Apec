@@ -87,6 +87,9 @@ public class DataExtractor {
     private String lastSkillXp = "";
     private String lastPurse = "";
 
+    private String lastGemstonePowder = "???";
+    private String lastMithrilPowder = "???";
+
     private final String sendTradeRequestMsg = "You have sent a trade request to";
     private final String expireSentTradeRequest = "Your /trade request to";
 
@@ -533,11 +536,17 @@ public class DataExtractor {
                 }
                 if(ApecUtils.containedByCharSequence(name,gemstonePowderSymbol)){
                     tabStats.GemstonePowder = name.replace(gemstonePowderSymbol,"").replace(" ","");
+                    lastGemstonePowder = tabStats.GemstonePowder;
                     continue;
+                }else{
+                    tabStats.GemstonePowder = lastGemstonePowder;
                 }
                 if(ApecUtils.containedByCharSequence(name,mithrilPowderSymbol)){
                     tabStats.MithrilPowder = name.replace(mithrilPowderSymbol,"").replace(" ","");
+                    lastMithrilPowder = tabStats.MithrilPowder;
                     continue;
+                }else{
+                    tabStats.MithrilPowder = lastMithrilPowder;
                 }
                 if(ApecUtils.containedByCharSequence(name,strengthSymbol)){
                     tabStats.Strength = name.replace(strengthSymbol,"").replace(" ","");
@@ -1010,8 +1019,8 @@ public class DataExtractor {
 
     public class TabStats {
         public String Bank;
-        public String GemstonePowder;
         public String MithrilPowder;
+        public String GemstonePowder;
         public String Speed;
         public String Strength;
         public String CritChance;
