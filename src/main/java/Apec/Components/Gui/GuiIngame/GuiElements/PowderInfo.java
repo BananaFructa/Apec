@@ -27,7 +27,7 @@ public class PowderInfo extends GUIComponent {
         super.draw(ps,sd,od,ts,sr,editingMode);
         GlStateManager.pushMatrix();
         
-        if (ApecMain.Instance.settingsManager.getSettingState(SettingID.POWDER_DISPLAY) && ApecUtils.isInDwarvenMines(sd.Zone)) {
+        if (ApecMain.Instance.settingsManager.getSettingState(SettingID.POWDER_DISPLAY) && (ApecUtils.isInDwarvenMines(sd.Zone) || editingMode)) {
             GlStateManager.scale(scale, scale, scale);
             String gemstonePowder = "\u2727: " + (String) (ts.GemstonePowder != null && !ts.GemstonePowder.isEmpty() ? ts.GemstonePowder : "0");
             String mithrilPowder = "\u1805: " + (String) (ts.MithrilPowder != null && !ts.GemstonePowder.isEmpty() ? ts.MithrilPowder : "0");
@@ -35,8 +35,8 @@ public class PowderInfo extends GUIComponent {
             mithrilWidth = mc.fontRendererObj.getStringWidth(mithrilPowder);
             gemstoneWidth = mc.fontRendererObj.getStringWidth(gemstonePowder);
 
-            ApecUtils.drawThiccBorderString(mithrilPowder, (int) (subComponentDeltas.get(0).getX() - mithrilWidth), (int) (subComponentDeltas.get(0).getY() - 10), 0x00AA00);
-            ApecUtils.drawThiccBorderString(gemstonePowder, (int) (subComponentDeltas.get(1).getX() - gemstoneWidth), (int) (subComponentDeltas.get(1).getY() - 20), 0xFF55FF);
+            ApecUtils.drawThiccBorderString(mithrilPowder, (int) (100 + subComponentDeltas.get(0).getX() - mithrilWidth), (int) (subComponentDeltas.get(0).getY() - 10), 0x00AA00);
+            ApecUtils.drawThiccBorderString(gemstonePowder, (int) (100 + subComponentDeltas.get(1).getX() - gemstoneWidth), (int) (subComponentDeltas.get(1).getY() - 20), 0xFF55FF);
             
         }
         GlStateManager.popMatrix();
@@ -50,8 +50,8 @@ public class PowderInfo extends GUIComponent {
     @Override
     public List<Vector2f> getSubElementsAnchorPoints() {
         return new ArrayList<Vector2f>() {{
-            add(new Vector2f(0, -1*scale));
-            add(new Vector2f(0, -11*scale));
+            add(new Vector2f(100, -1*scale));
+            add(new Vector2f(100, -11*scale));
         }};
     }
 

@@ -110,28 +110,28 @@ public class InfoBox extends GUIComponent {
         String attackSpeedText = "\u2694" + ts.AttackSpeed;
 
         boolean inTheCatacombs = ApecMain.Instance.dataExtractor.isInTheCatacombs;
-        mc.fontRendererObj.drawString(
+        ApecUtils.drawThiccBorderString(
                 purseText,
                 (int) (GuiPos.x + 20 + (subComponentDeltas.get(0).getX() + (UseIcons ? 9 : 0)) * oneOverScale),
                 (int) ((GuiPos.y + subComponentDeltas.get(0).getY()) * oneOverScale),
-                0xffffff, false
+                0xffffff
         );
-        mc.fontRendererObj.drawString(
+        ApecUtils.drawThiccBorderString(
                 bitText,
                 (int) (GuiPos.x + 20 + (subComponentDeltas.get(1).getX() + (UseIcons ? 9 : 0)) * oneOverScale + 120),
                 (int) ((GuiPos.y + subComponentDeltas.get(1).getY()) * oneOverScale),
-                0xffffff, false
+                0xffffff
         );
         int zoneAddX = (inTheCatacombs ? 5 : 9) ;
-        mc.fontRendererObj.drawString(
+        ApecUtils.drawThiccBorderString(
                 zoneText,
                 (int) (GuiPos.x + 20 + (subComponentDeltas.get(2).getX() + (UseIcons ? zoneAddX : 0)) * oneOverScale + 220),
                 (int) ((GuiPos.y + subComponentDeltas.get(2).getY()) * oneOverScale),
-                0xffffff, false
+                0xffffff
         );
 
         if (!ApecMain.Instance.settingsManager.getSettingState(SettingID.USE_DEFENCE_OUT_OF_BB) || editingMode) {
-            mc.fontRendererObj.drawString(
+            ApecUtils.drawThiccBorderString(
                     defenceText,
                     (int) (GuiPos.x + 20 + (subComponentDeltas.get(3).getX() + (UseIcons ? 10 : 0)) * oneOverScale + 360),
                     (int) ((GuiPos.y + subComponentDeltas.get(3).getY()) * oneOverScale),
@@ -140,7 +140,7 @@ public class InfoBox extends GUIComponent {
         }
 
         if (ApecMain.Instance.settingsManager.getSettingState(SettingID.SHOW_SPEED) || editingMode) {
-            mc.fontRendererObj.drawString(
+            ApecUtils.drawThiccBorderString(
                     speedText,
                     (int) (GuiPos.x + 20 + (subComponentDeltas.get(5).getX()) * oneOverScale + 500),
                     (int) ((GuiPos.y + subComponentDeltas.get(5).getY()) * oneOverScale),
@@ -148,7 +148,7 @@ public class InfoBox extends GUIComponent {
             );
         }
         if (ApecMain.Instance.settingsManager.getSettingState(SettingID.SHOW_STRENGTH) || editingMode) {
-            mc.fontRendererObj.drawString(
+            ApecUtils.drawThiccBorderString(
                     strengthText,
                     (int) (GuiPos.x + 20 + (subComponentDeltas.get(6).getX()) * oneOverScale + 540),
                     (int) ((GuiPos.y + subComponentDeltas.get(6).getY()) * oneOverScale),
@@ -157,7 +157,7 @@ public class InfoBox extends GUIComponent {
         }
 
         if (ApecMain.Instance.settingsManager.getSettingState(SettingID.SHOW_CRIT_CHANCE) || editingMode) {
-            mc.fontRendererObj.drawString(
+            ApecUtils.drawThiccBorderString(
                     critChanceText,
                     (int) (GuiPos.x + 20 + (subComponentDeltas.get(7).getX()) * oneOverScale + 580),
                     (int) ((GuiPos.y + subComponentDeltas.get(7).getY()) * oneOverScale),
@@ -166,7 +166,7 @@ public class InfoBox extends GUIComponent {
         }
 
         if (ApecMain.Instance.settingsManager.getSettingState(SettingID.SHOW_CRIT_DAMAGE) || editingMode) {
-            mc.fontRendererObj.drawString(
+            ApecUtils.drawThiccBorderString(
                     critDamageText,
                     (int) (GuiPos.x + 20 + (subComponentDeltas.get(8).getX()) * oneOverScale + 620),
                     (int) ((GuiPos.y + subComponentDeltas.get(8).getY()) * oneOverScale),
@@ -175,7 +175,7 @@ public class InfoBox extends GUIComponent {
         }
 
         if (ApecMain.Instance.settingsManager.getSettingState(SettingID.SHOW_ATTACK_SPEED) || editingMode) {
-            mc.fontRendererObj.drawString(
+            ApecUtils.drawThiccBorderString(
                     attackSpeedText,
                     (int) (GuiPos.x + 20 + (subComponentDeltas.get(9).getX()) * oneOverScale + 660),
                     (int) ((GuiPos.y + subComponentDeltas.get(9).getY()) * oneOverScale),
@@ -195,10 +195,10 @@ public class InfoBox extends GUIComponent {
 
         TimeStringLength = mc.fontRendererObj.getStringWidth(sd.Date + " " + sd.Hour);
 
-        mc.fontRendererObj.drawString(
+        ApecUtils.drawThiccBorderString(
                 sd.Date + " " + sd.Hour,
                 (int) ((sr.getScaledWidth() - 15 + delta_position.x + subComponentDeltas.get(4).getX()) * oneOverScale - mc.fontRendererObj.getStringWidth(sd.Date + " " + sd.Hour)),
-                (int) ((GuiPos.y + delta_position.y + subComponentDeltas.get(4).getY()) * oneOverScale), 0xffffff, false
+                (int) ((GuiPos.y + delta_position.y + subComponentDeltas.get(4).getY()) * oneOverScale), 0xffffff
         );
         GlStateManager.scale(1, 1, 1);
         GlStateManager.popMatrix();
