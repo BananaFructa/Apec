@@ -4,8 +4,15 @@ import Apec.ApecMain;
 import Apec.Settings.SettingID;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.init.Items;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
+import net.minecraft.nbt.NBTTagString;
 import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.StatCollector;
 import net.minecraft.util.Tuple;
 import net.minecraftforge.client.event.GuiOpenEvent;
 import org.apache.commons.lang3.reflect.FieldUtils;
@@ -17,6 +24,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+
+import com.google.common.collect.Lists;
 
 public class ApecUtils {
 
@@ -565,5 +574,20 @@ public class ApecUtils {
         return false;
     }
 
-
+    public static List<String> getItemLore(ItemStack item){
+        List<String> lore = new ArrayList<String>();
+        if (item.hasTagCompound() && item.getTagCompound().hasKey("display", 10)) {
+            NBTTagCompound nbtTagCompound = item.getTagCompound().getCompoundTag("display");
+            if (nbtTagCompound.getTagId("Lore") == 9) {
+                NBTTagList nbtTagList = nbtTagCompound.getTagList("Lore", 8);
+                int tagCount = nbtTagList.tagCount();
+                if (tagCount > 0) {
+                    for (int i = 0; i < nbtTagList.tagCount(); i++) {
+                        lore.add(nbtTagList.getStringTagAt(i));
+                    }
+                }
+            }
+        }
+        return lore;
+    }
 }

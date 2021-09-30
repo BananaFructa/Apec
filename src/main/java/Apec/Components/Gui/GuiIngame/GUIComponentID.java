@@ -24,5 +24,6 @@ public enum GUIComponentID {
     BOSS_HEALTH,
     JUMP_BAR,
     EDIT_GRID,
-    POWDER_DISPLAY
+    POWDER_DISPLAY,
+    DRILL_FUEL
 }

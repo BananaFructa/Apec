@@ -69,6 +69,7 @@ public class SettingsManager {
         add(new Setting(SHOW_CRIT_CHANCE, true));
         add(new Setting(SHOW_CRIT_DAMAGE, true));
         add(new Setting(SHOW_ATTACK_SPEED, true));
+        add(new Setting(DRILL_FUEL_BAR, true));
     }};
 
     /** Hashmap that holds the titles and descriptions of each setting */
@@ -123,6 +124,7 @@ public class SettingsManager {
         put(SHOW_CRIT_CHANCE, new Tuple<String,String> ("Show Crit Chance","Show crit chance in the info box."));
         put(SHOW_CRIT_DAMAGE, new Tuple<String,String> ("Show Crit Damage","Show crit damage in the info box."));
         put(SHOW_ATTACK_SPEED, new Tuple<String,String> ("Show Attack Speed","Show attack speed in the info box."));
+        put(DRILL_FUEL_BAR, new Tuple<String,String> ("Show Drill Fuel","Show a fuel bar for current drill."));
     }};
 
     /** Cache for setting states */
