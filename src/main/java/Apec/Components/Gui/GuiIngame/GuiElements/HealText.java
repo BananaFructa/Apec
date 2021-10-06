@@ -41,7 +41,7 @@ public class HealText extends TextComponent {
 
     @Override
     public Vector2f getAnchorPointPosition() {
-        return guiModifier.applyGlobalChanges(this,new Vector2f(g_sr.getScaledWidth() - 32, 15));
+        return guiModifier.applyGlobalChanges(this,new Vector2f(g_sr.getScaledWidth() - 84, 15));
     }
 
     @Override
