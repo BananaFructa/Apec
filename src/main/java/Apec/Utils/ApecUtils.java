@@ -3,7 +3,9 @@ package Apec.Utils;
 import Apec.ApecMain;
 import Apec.Settings.SettingID;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
@@ -33,6 +35,12 @@ public class ApecUtils {
     public static boolean inFMLFramework = false;
 
     private static String[] colorCodes = { "\u00a70","\u00a71","\u00a72","\u00a73","\u00a74","\u00a75","\u00a76","\u00a77","\u00a78","\u00a79","\u00a7a","\u00a7b","\u00a7c","\u00a7d","\u00a7e","\u00a7f" };
+
+    public static enum TextStyle {
+        VANILLA,
+        VANILLA_SHADOWS,
+        APEC_THICC
+    };
 
     private static HashMap <String,Integer> multipleNotations = new HashMap<String, Integer>() {{
             put("k",1000);
@@ -304,18 +312,33 @@ public class ApecUtils {
      * @param x = x position
      * @param y = y position
      * @param c = color
+     * @param v = text style default = APEC_THICC
      */
-    public static void drawThiccBorderString(String s,int x,int y,int c) {
-        String noColorCodeS = ApecUtils.removeColorCodes(s);
-        if (ApecMain.Instance.settingsManager.getSettingState(SettingID.BORDER_TYPE)) {
-            Minecraft.getMinecraft().fontRendererObj.drawString(noColorCodeS, x + 1, y, (c >> 24) << 24);
-            Minecraft.getMinecraft().fontRendererObj.drawString(noColorCodeS, x - 1, y, (c >> 24) << 24);
-            Minecraft.getMinecraft().fontRendererObj.drawString(noColorCodeS, x, y + 1, (c >> 24) << 24);
-            Minecraft.getMinecraft().fontRendererObj.drawString(noColorCodeS, x, y - 1, (c >> 24) << 24);
-            Minecraft.getMinecraft().fontRendererObj.drawString(s, x, y, c);
-        } else {
-            Minecraft.getMinecraft().fontRendererObj.drawStringWithShadow(s,x,y,c);
+    public static void drawStylizedString(String s,int x,int y,int c) {
+        if (ApecMain.Instance.settingsManager.getSettingState(SettingID.BORDER_TYPE)){
+            drawStylizedString(s, x, y, c, TextStyle.APEC_THICC);
+        }else{
+            drawStylizedString(s, x, y, c, TextStyle.VANILLA_SHADOWS);
         }
+    }
+    public static void drawStylizedString(String s,int x,int y,int c, TextStyle style) {
+        String noColorCodeS = ApecUtils.removeColorCodes(s);
+        switch(style){
+            case VANILLA_SHADOWS:
+                Minecraft.getMinecraft().fontRendererObj.drawStringWithShadow(s,x,y,c);
+                break;
+            case APEC_THICC:
+                Minecraft.getMinecraft().fontRendererObj.drawString(noColorCodeS, x + 1, y, (c >> 24) << 24);
+                Minecraft.getMinecraft().fontRendererObj.drawString(noColorCodeS, x - 1, y, (c >> 24) << 24);
+                Minecraft.getMinecraft().fontRendererObj.drawString(noColorCodeS, x, y + 1, (c >> 24) << 24);
+                Minecraft.getMinecraft().fontRendererObj.drawString(noColorCodeS, x, y - 1, (c >> 24) << 24);
+                Minecraft.getMinecraft().fontRendererObj.drawString(s, x, y, c);
+                break;
+            case VANILLA:
+            default:
+                Minecraft.getMinecraft().fontRendererObj.drawString(s,x,y,c);
+                break;
+        };
     }
 
     /**
@@ -552,6 +575,11 @@ public class ApecUtils {
         return Arrays.copyOf(arr,arr.length,type);
     }
 
+    /**
+     * @brief The function used to check if the zone is part of the Dwarven Mines / Crystal Hollows
+     * @param zone = String zone to be checked
+     */
+
     public static boolean isInDwarvenMines(String zone){
         String[] zones = {
             "Dwarven Mines","Dwarven Village", "The Lift",
@@ -574,6 +602,11 @@ public class ApecUtils {
         return false;
     }
 
+    /**
+     * @brief The function used to get the lore from an item as a list.
+     * @param item = ItemStack item to be checked
+     * @return lore as a List<String>
+     */
     public static List<String> getItemLore(ItemStack item){
         List<String> lore = new ArrayList<String>();
         if (item.hasTagCompound() && item.getTagCompound().hasKey("display", 10)) {
@@ -589,5 +622,57 @@ public class ApecUtils {
             }
         }
         return lore;
+    }
+    
+    /**
+     * @brief The function used to get the internal item name from an item.
+     * @param item = ItemStack item to be checked
+     * @return internal item id as String
+     */
+    public static String getInternalItemName(ItemStack item){
+        if (item.hasTagCompound() && item.getTagCompound().hasKey("ExtraAttributes", 10)) {
+            NBTTagCompound nbtTagCompound = item.getTagCompound().getCompoundTag("ExtraAttributes");
+            if(nbtTagCompound.hasKey("id", 8)) {
+                return nbtTagCompound.getString("id").replaceAll(":", "-");
+            } else {
+                return "";
+            }
+        }
+        return "";
+    }
+
+    /**
+     * @brief The function used to get the first item in a slot by the internal name.
+     * @param itemName = String item name to be checked
+     * @return internal slot as an int
+     */
+    public static int getFirstItemSlotByInternalName(String itemName){
+        return getFirstItemSlotByInternalName(new String[]{itemName});
+    }
+
+    /**
+     * @brief The function used to get the first item in a slot by the first internal name that matches.
+     * @param itemNames = String[] item names to be checked
+     * @return internal slot as an int
+     */
+    public static int getFirstItemSlotByInternalName(String[] itemNames){
+        if(itemNames.length > 0){
+            EntityPlayerSP player = Minecraft.getMinecraft().thePlayer;
+            if(player != null){
+                InventoryPlayer ip = player.inventory;
+                ItemStack[] inventory = ip.mainInventory;
+                for(int i = 0; i < inventory.length; i++){
+                    if(inventory[i] != null){
+                        String internalName = getInternalItemName(inventory[i]);
+                        for(String itemName : itemNames){
+                            if(internalName.equals(itemName)){
+                                return i;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return -1;
     }
 }

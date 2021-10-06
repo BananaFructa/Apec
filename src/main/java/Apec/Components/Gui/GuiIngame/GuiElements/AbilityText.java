@@ -17,7 +17,6 @@ public class AbilityText extends GUIComponent {
     private MpText mpText;
     private Vector2f AnchorPosition = new Vector2f(0,0);
     private int stringWidth = 0;
-    private boolean centered = true;
 
     public AbilityText() {
         super(GUIComponentID.ABILITY_TEXT);
@@ -43,7 +42,7 @@ public class AbilityText extends GUIComponent {
         if ((ApecMain.Instance.settingsManager.getSettingState(SettingID.SHOW_ABILITY_TEXT) && ps.IsAbilityShown) || editingMode) {
             stringWidth = mc.fontRendererObj.getStringWidth(ps.AbilityText);
             Vector2f rap = ApecUtils.scalarMultiply(getCurrentAnchorPoint(),oneOverScale);
-            ApecUtils.drawThiccBorderString(
+            ApecUtils.drawStylizedString(
                     ps.AbilityText,
                     (int)(rap.x - mc.fontRendererObj.getStringWidth(ps.AbilityText)),
                     (int)(rap.y - 10),
@@ -55,7 +54,7 @@ public class AbilityText extends GUIComponent {
 
     @Override
     public Vector2f getAnchorPointPosition() {
-        return centered ? this.guiModifier.applyGlobalChanges(this,new Vector2f((int) (AnchorPosition.x + (stringWidth * 0.5f)), AnchorPosition.y)) : this.guiModifier.applyGlobalChanges(this,AnchorPosition);
+        return ApecMain.Instance.settingsManager.getSettingState(SettingID.CENTER_ABILITY_TEXT) ? this.guiModifier.applyGlobalChanges(this,new Vector2f((int) (AnchorPosition.x + (stringWidth * 0.5f)), AnchorPosition.y)) : this.guiModifier.applyGlobalChanges(this,AnchorPosition);
     }
 
     @Override

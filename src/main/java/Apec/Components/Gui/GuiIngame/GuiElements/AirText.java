@@ -32,7 +32,7 @@ public class AirText extends GUIComponent {
                 float airPrec = (mc.thePlayer.getAir() / 300f) * 100;
                 if (airPrec < 0) airPrec = 0;
                 String ARString = (int) airPrec + "% Air";
-                ApecUtils.drawThiccBorderString(ARString, (int) (StatBar.x - mc.fontRendererObj.getStringWidth(ARString)), (int) (StatBar.y - 10), 0x8ba6b2);
+                ApecUtils.drawStylizedString(ARString, (int) (StatBar.x - mc.fontRendererObj.getStringWidth(ARString)), (int) (StatBar.y - 10), 0x8ba6b2);
                 stringWidth = Minecraft.getMinecraft().fontRendererObj.getStringWidth(ARString);
             }
         }

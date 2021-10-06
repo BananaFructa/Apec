@@ -22,7 +22,6 @@ public class SettingsManager {
         add(new Setting(AUTO_ENABLE,true));
         add(new Setting(HP_BAR,true));
         add(new Setting(HP_TEXT,true));
-        add(new Setting(HEAL_TEXT,true));
         add(new Setting(SHOW_ABSORPTION_BAR,true));
         add(new Setting(SHOW_OP_BAR,true));
         add(new Setting(MP_BAR,true));
@@ -60,16 +59,20 @@ public class SettingsManager {
         add(new Setting(BORDER_TYPE,true));
         //add(new Setting(OVERWRITE_GUI,false));
         add(new Setting(SHOW_DEBUG_MESSAGES,false));
+        add(new Setting(HEAL_TEXT,true));
         add(new Setting(EDIT_GRID,false));
-        add(new Setting(SEPARATE_POWDER_DISPLAY, true));
-        add(new Setting(SHOW_MITHRIL_POWDER, true));
-        add(new Setting(SHOW_GEMSTONE_POWDER, true));
-        add(new Setting(SHOW_SPEED, true));
-        add(new Setting(SHOW_STRENGTH, true));
-        add(new Setting(SHOW_CRIT_CHANCE, true));
-        add(new Setting(SHOW_CRIT_DAMAGE, true));
-        add(new Setting(SHOW_ATTACK_SPEED, true));
+        add(new Setting(SEPARATE_POWDER_DISPLAY, false));
+        add(new Setting(SHOW_MITHRIL_POWDER, false));
+        add(new Setting(SHOW_GEMSTONE_POWDER, false));
+        add(new Setting(SHOW_SPEED, false));
+        add(new Setting(SHOW_STRENGTH, false));
+        add(new Setting(SHOW_CRIT_CHANCE, false));
+        add(new Setting(SHOW_CRIT_DAMAGE, false));
+        add(new Setting(SHOW_ATTACK_SPEED, false));
         add(new Setting(DRILL_FUEL_BAR, true));
+        add(new Setting(SHOW_SOULFLOW, false));
+        add(new Setting(SEPARATE_SOULFLOW_DISPLAY, true));
+        add(new Setting(CENTER_ABILITY_TEXT, false));
     }};
 
     /** Hashmap that holds the titles and descriptions of each setting */
@@ -100,7 +103,6 @@ public class SettingsManager {
         put(SHOW_ABSORPTION_BAR,new Tuple<String, String>("Show absorption bar","Shows the absorption bar"));
         put(SHOW_OP_BAR,new Tuple<String, String>("Show overflow mana bar","Shows the overflow mana bar"));
         put(HP_TEXT,new Tuple<String, String>("Show HP Text","Shows the HP text"));
-        put(HEAL_TEXT,new Tuple<String, String>("Show Healing Text","Shows the Healing text"));
         put(MP_TEXT,new Tuple<String, String>("Show MP Text","Shows the MP text"));
         put(XP_TEXT,new Tuple<String, String>("Show XP Text","Shows the XP text"));
         put(AIR_TEXT,new Tuple<String, String>("Show Air text","Shows the air text"));
@@ -115,6 +117,7 @@ public class SettingsManager {
         put(COMPATIBILITY_SAFETY,new Tuple<String, String>("Compatibility Safety","Ensures that certain features that might break some mods are disabled"));
         put(BB_ON_TOP,new Tuple<String,String>("Info bar on top","Puts the info bar on top instead of on the bottom"));
         put(CUSTOM_TOOL_TIP,new Tuple<String,String>("Custom tool tip","Shows extra icons above the item tool tip."));
+        put(HEAL_TEXT,new Tuple<String, String>("Separate Healing Text","Separates the Healing text from the HP Display."));
         put(EDIT_GRID,new Tuple<String,String>("Edit Grid","Shows a grid in editing mode."));
         put(SEPARATE_POWDER_DISPLAY, new Tuple<String,String> ("Seperate Powder Display","Separates mithril/gemstone powder from the info bar."));
         put(SHOW_MITHRIL_POWDER, new Tuple<String,String> ("Show Mithril Powder","Show mithril powder."));
@@ -125,6 +128,9 @@ public class SettingsManager {
         put(SHOW_CRIT_DAMAGE, new Tuple<String,String> ("Show Crit Damage","Show crit damage in the info box."));
         put(SHOW_ATTACK_SPEED, new Tuple<String,String> ("Show Attack Speed","Show attack speed in the info box."));
         put(DRILL_FUEL_BAR, new Tuple<String,String> ("Show Drill Fuel","Show a fuel bar for current drill."));
+        put(SHOW_SOULFLOW, new Tuple<String,String> ("Show Soulflow","Show soulflow. Must have Soulflow Accessory in inventory."));
+        put(SEPARATE_SOULFLOW_DISPLAY, new Tuple<String,String> ("Separate Soulflow Display","Separates soulfow from the info bar."));
+        put(CENTER_ABILITY_TEXT, new Tuple<String,String> ("Center Abilities","Centers the Ability Text."));
     }};
 
     /** Cache for setting states */

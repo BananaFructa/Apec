@@ -10,30 +10,32 @@ import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
 import org.lwjgl.util.vector.Vector2f;
 
-public class HealText extends TextComponent {
+public class SoulflowDisplay extends TextComponent {
 
-    public HealText () {
-        super(GUIComponentID.HEAL_TEXT);
+    public SoulflowDisplay () {
+        super(GUIComponentID.SOULFLOW_TEXT);
     }
 
-    private int stringWidth = 0;
-
+    private int soulflowStringWidth = 0;
     @Override
     public void draw(DataExtractor.PlayerStats ps, DataExtractor.ScoreBoardData sd,DataExtractor.OtherData od, DataExtractor.TabStats ts, ScaledResolution sr,boolean editingMode) {
         super.draw(ps,sd,od,ts,sr,editingMode);
         GlStateManager.pushMatrix();
-        if (ApecMain.Instance.settingsManager.getSettingState(SettingID.HEAL_TEXT)) {
+        if ((ApecMain.Instance.settingsManager.getSettingState(SettingID.SHOW_SOULFLOW) && ApecMain.Instance.settingsManager.getSettingState(SettingID.SEPARATE_SOULFLOW_DISPLAY)) || editingMode) {
             GlStateManager.scale(scale, scale, scale);
 
             Vector2f StatBar = ApecUtils.scalarMultiply(getCurrentAnchorPoint(),oneOverScale);
 
-            String healString = (ps.HealDuration != 0 ? " +" + ps.HealDuration +"/s " + ps.HealDurationTicker : "");
+            String soulflowString = ps.Soulflow + "\u2e0e";
 
             if(editingMode){
-                healString = " +" + "170" +"/s " + "\u2585";
+                soulflowString = "123456\u2e0e";
             }
-            stringWidth = mc.fontRendererObj.getStringWidth(healString);
-            ApecUtils.drawStylizedString(healString, (int) (StatBar.x - stringWidth), (int) (StatBar.y - 10), 0xd10808);
+
+            soulflowStringWidth = mc.fontRendererObj.getStringWidth(soulflowString);
+            if(ps.Soulflow > -1 || editingMode){
+                ApecUtils.drawStylizedString(soulflowString, (int) (StatBar.x - soulflowStringWidth), (int) (StatBar.y - 10), 0x00AAAA);
+            }
             
         }
         GlStateManager.popMatrix();
@@ -41,12 +43,12 @@ public class HealText extends TextComponent {
 
     @Override
     public Vector2f getAnchorPointPosition() {
-        return guiModifier.applyGlobalChanges(this,new Vector2f(g_sr.getScaledWidth() - 32, 15));
+        return guiModifier.applyGlobalChanges(this,new Vector2f(g_sr.getScaledWidth() - 8, 92));
     }
 
     @Override
     public Vector2f getBoundingPoint() {
-        return new Vector2f(-stringWidth*scale,-11*scale);
+        return new Vector2f(-soulflowStringWidth*scale,-11*scale);
     }
 
 }

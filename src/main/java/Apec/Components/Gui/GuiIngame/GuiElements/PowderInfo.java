@@ -27,19 +27,21 @@ public class PowderInfo extends GUIComponent {
         super.draw(ps,sd,od,ts,sr,editingMode);
         GlStateManager.pushMatrix();
         
-        if (ApecMain.Instance.settingsManager.getSettingState(SettingID.SEPARATE_POWDER_DISPLAY) && (ApecUtils.isInDwarvenMines(sd.Zone) || editingMode)) {
+        if (ApecMain.Instance.settingsManager.getSettingState(SettingID.SEPARATE_POWDER_DISPLAY) || editingMode) {
             GlStateManager.scale(scale, scale, scale);
+
+            Vector2f Pos = ApecUtils.scalarMultiply(this.getSubElementsAnchorPoints().get(0),oneOverScale);
             
-            if(ApecMain.Instance.settingsManager.getSettingState(SettingID.SHOW_MITHRIL_POWDER)){
+            if(ApecMain.Instance.settingsManager.getSettingState(SettingID.SHOW_MITHRIL_POWDER)&& !ts.MithrilPowder.isEmpty() || editingMode){
                 String mithrilPowderText = "\u1805" + ts.MithrilPowder;
                 mithrilStringWidth = mc.fontRendererObj.getStringWidth(mithrilPowderText);
-                ApecUtils.drawThiccBorderString(mithrilPowderText, (int) (100 + subComponentDeltas.get(0).getX() - mithrilStringWidth), (int) (subComponentDeltas.get(0).getY() - 10), 0x00AA00);
+                ApecUtils.drawStylizedString(mithrilPowderText, (int) (Pos.x + subComponentDeltas.get(0).getX() - mithrilStringWidth), (int) (Pos.y + subComponentDeltas.get(0).getY() - 10), 0x00AA00);
             }
 
-            if(ApecMain.Instance.settingsManager.getSettingState(SettingID.SHOW_GEMSTONE_POWDER)){
+            if(ApecMain.Instance.settingsManager.getSettingState(SettingID.SHOW_GEMSTONE_POWDER)&& !ts.GemstonePowder.isEmpty() || editingMode){
                 String gemstonePowderText = "\u1805" + ts.GemstonePowder;
                 gemstoneStringWidth = mc.fontRendererObj.getStringWidth(gemstonePowderText);
-                ApecUtils.drawThiccBorderString(gemstonePowderText, (int) (100 + subComponentDeltas.get(1).getX() - gemstoneStringWidth), (int) (subComponentDeltas.get(1).getY() - 20), 0xFF55FF);
+                ApecUtils.drawStylizedString(gemstonePowderText, (int) (Pos.x + subComponentDeltas.get(1).getX() - gemstoneStringWidth), (int) (Pos.y + subComponentDeltas.get(1).getY() + 10), 0xFF55FF);
             }
 
         }
@@ -54,8 +56,8 @@ public class PowderInfo extends GUIComponent {
     @Override
     public List<Vector2f> getSubElementsAnchorPoints() {
         return new ArrayList<Vector2f>() {{
-            add(new Vector2f(100, -1*scale));
-            add(new Vector2f(100, -11*scale));
+            add(new Vector2f(g_sr.getScaledWidth() - 8, 112));
+            add(new Vector2f(g_sr.getScaledWidth() - 8, 132));
         }};
     }
 

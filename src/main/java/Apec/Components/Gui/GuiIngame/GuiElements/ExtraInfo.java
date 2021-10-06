@@ -33,7 +33,7 @@ public class ExtraInfo extends TextComponent {
 
         if (!ei.isEmpty()) {
             for (int i = 0;i < ei.size();i++) {
-                ApecUtils.drawThiccBorderString(ei.get(i), (int)(ExtraScoreInfo.x), (int) (ExtraScoreInfo.y + i * 11), 0x0ffffff);
+                ApecUtils.drawStylizedString(ei.get(i), (int)(ExtraScoreInfo.x), (int) (ExtraScoreInfo.y + i * 11), 0x0ffffff);
             }
         }
         GlStateManager.popMatrix();

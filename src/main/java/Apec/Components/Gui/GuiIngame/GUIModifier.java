@@ -75,6 +75,7 @@ public class GUIModifier extends Component {
         add(new EditGrid());
         add(new PowderInfo());
         add(new DrillFuelBar());
+        add(new SoulflowDisplay());
     }};
 
     public GUIModifier() {

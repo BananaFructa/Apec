@@ -17,19 +17,23 @@ public class EditGrid extends GUIComponent {
     public EditGrid () {
         super(GUIComponentID.EDIT_GRID);
     }
+
     @Override
     public void drawTex(DataExtractor.PlayerStats ps, DataExtractor.ScoreBoardData sd,DataExtractor.OtherData od, DataExtractor.TabStats ts, ScaledResolution sr,boolean editingMode) {
         super.drawTex(ps,sd,od,ts,sr,editingMode);
         GlStateManager.pushMatrix();
         if (ApecMain.Instance.settingsManager.getSettingState(SettingID.EDIT_GRID) & editingMode) {
             GuiIngame gi = Minecraft.getMinecraft().ingameGUI;
-            int scalar = 15;
             int width = mc.displayWidth;
             int height = mc.displayHeight;
+            int scalar = 15;
+
             for(int i=0; i < width; i = i + scalar){
+                if(i==0){continue;}
                 gi.drawRect(i,0,i + 1,height,0xC8C8C8C8);
             }
             for(int j=0; j < height; j = j + scalar){
+                if(j==0){continue;}
                 gi.drawRect(0,j,width,j + 1,0xC8C8C8C8);
             }
         }

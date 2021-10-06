@@ -51,14 +51,14 @@ public class InventoryTraffic extends TextComponent {
                     if (sles.get(i).quant == 0 || sles.get(i).text.contains("\u00a78") || sles.get(i).text.contains("\u00a77")) {
                         _i++;
                     } else if (sles.get(i).quant < 0) {
-                        ApecUtils.drawThiccBorderString("-" + Math.abs(sles.get(i).quant), (int)(subtrListPos.x), (int)(subtrListPos.y + (sles.size() - 1 - i - _i) * 11), 0xd10404 | ((int) alpha << 24));
+                        ApecUtils.drawStylizedString("-" + Math.abs(sles.get(i).quant), (int)(subtrListPos.x), (int)(subtrListPos.y + (sles.size() - 1 - i - _i) * 11), 0xd10404 | ((int) alpha << 24));
                         xToStart = mc.fontRendererObj.getStringWidth("-" + Math.abs(sles.get(i).quant));
                     } else {
-                        ApecUtils.drawThiccBorderString("+" + Math.abs(sles.get(i).quant), (int)(subtrListPos.x), (int)( subtrListPos.y + (sles.size() - 1 - i - _i) * 11), 0x0ccc39 | ((int) alpha << 24));
+                        ApecUtils.drawStylizedString("+" + Math.abs(sles.get(i).quant), (int)(subtrListPos.x), (int)( subtrListPos.y + (sles.size() - 1 - i - _i) * 11), 0x0ccc39 | ((int) alpha << 24));
                         xToStart = mc.fontRendererObj.getStringWidth("+" + Math.abs(sles.get(i).quant));
                     }
                     if (sles.get(i).quant != 0 && !sles.get(i).text.contains("\u00a78") && !sles.get(i).text.contains("\u00a77"))
-                        ApecUtils.drawThiccBorderString(" " + sles.get(i).text, (int)(subtrListPos.x + xToStart), (int)( subtrListPos.y + (sles.size() - 1 - i - _i) * 11), 0xffffff | ((int) alpha << 24));
+                        ApecUtils.drawStylizedString(" " + sles.get(i).text, (int)(subtrListPos.x + xToStart), (int)( subtrListPos.y + (sles.size() - 1 - i - _i) * 11), 0xffffff | ((int) alpha << 24));
 
                 }
             }

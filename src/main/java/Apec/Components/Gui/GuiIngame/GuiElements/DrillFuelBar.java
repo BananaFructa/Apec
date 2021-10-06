@@ -35,24 +35,27 @@ public class DrillFuelBar extends GUIComponent {
 
     @SubscribeEvent
     public void onTick(TickEvent.ClientTickEvent event) {
-        if(mc.thePlayer != null){
+        if(mc.thePlayer != null && ApecMain.Instance.settingsManager.getSettingState(SettingID.DRILL_FUEL_BAR)){
             try{
                 ItemStack item = mc.thePlayer.getHeldItem();
                 if(item != null){
-                    List<String> lore = ApecUtils.getItemLore(item);
-                    fuelAmount = -1.0f;
-                    for (String s : lore){
-                        if(s.contains("Fuel:")){
-                            String[] values = ApecUtils.removeAllCodes(s).replace("Fuel:", "").replace(",", "").replace(" ", "").split("/");
-                            String currentFuel = values[0];
-                            String maxFuel = values[1];
-                            int mult = 1;
+                    String internalName = ApecUtils.getInternalItemName(item);
+                    if(internalName.contains("*_DRILL")){
+                        List<String> lore = ApecUtils.getItemLore(item);
+                        fuelAmount = -1.0f;
+                        for (String s : lore){
+                            if(s.contains("Fuel:")){
+                                String[] values = ApecUtils.removeAllCodes(s).replace("Fuel:", "").replace(",", "").replace(" ", "").split("/");
+                                String currentFuel = values[0];
+                                String maxFuel = values[1];
+                                int mult = 1;
 
-                            if(maxFuel.contains("k")){ mult = 1000; }
+                                if(maxFuel.contains("k")){ mult = 1000; }
 
-                            fuelAmount =  (((float) Integer.parseInt(currentFuel)) / (Integer.parseInt(maxFuel.substring(0, maxFuel.length() - 1)) * mult));
+                                fuelAmount =  (((float) Integer.parseInt(currentFuel)) / (Integer.parseInt(maxFuel.substring(0, maxFuel.length() - 1)) * mult));
 
-                            break;
+                                break;
+                            }
                         }
                     }
                 }

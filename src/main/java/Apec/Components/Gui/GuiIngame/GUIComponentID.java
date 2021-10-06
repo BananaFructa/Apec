@@ -25,5 +25,6 @@ public enum GUIComponentID {
     JUMP_BAR,
     EDIT_GRID,
     POWDER_DISPLAY,
-    DRILL_FUEL
+    DRILL_FUEL,
+    SOULFLOW_TEXT
 }

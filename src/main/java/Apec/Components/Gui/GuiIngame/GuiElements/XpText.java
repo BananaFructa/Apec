@@ -33,7 +33,7 @@ public class XpText extends TextComponent {
             } else {
                 XPString = "Lvl " + this.mc.thePlayer.experienceLevel + " XP";
             }
-            ApecUtils.drawThiccBorderString(XPString, (int) (StatBar.x - mc.fontRendererObj.getStringWidth(XPString)), (int) (StatBar.y - 10), 0x80ff20);
+            ApecUtils.drawStylizedString(XPString, (int) (StatBar.x - mc.fontRendererObj.getStringWidth(XPString)), (int) (StatBar.y - 10), 0x80ff20);
             stringWidth = Minecraft.getMinecraft().fontRendererObj.getStringWidth(XPString);
         }
         GlStateManager.popMatrix();

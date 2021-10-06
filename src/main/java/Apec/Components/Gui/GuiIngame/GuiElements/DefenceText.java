@@ -32,7 +32,7 @@ public class DefenceText extends GUIComponent {
 
             StringWidth = mc.fontRendererObj.getStringWidth(s);
 
-            ApecUtils.drawThiccBorderString("\u00a7aDefence " + ps.Defence, (int)(Pos.x)+1,(int)(Pos.y)+1 ,0xffffffff);
+            ApecUtils.drawStylizedString("\u00a7aDefence " + ps.Defence, (int)(Pos.x)+1,(int)(Pos.y)+1 ,0xffffffff);
 
         }
         GlStateManager.popMatrix();
