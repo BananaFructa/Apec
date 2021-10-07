@@ -248,7 +248,7 @@ public class InfoBox extends GUIComponent {
                         soulflowText,
                         (int) (GuiPos.x + 20 + (subComponentDeltas.get(12).getX() + (UseIcons ? 11 : 0)) * oneOverScale + 700),
                         (int) ((GuiPos.y + subComponentDeltas.get(12).getY()) * oneOverScale),
-                        0xFF55FF
+                        0x00AAAA
                 );
             }
         }
