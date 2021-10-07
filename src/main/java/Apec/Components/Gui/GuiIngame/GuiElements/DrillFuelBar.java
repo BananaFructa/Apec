@@ -40,7 +40,7 @@ public class DrillFuelBar extends GUIComponent {
                 ItemStack item = mc.thePlayer.getHeldItem();
                 if(item != null){
                     String internalName = ApecUtils.getInternalItemName(item);
-                    if(internalName.contains("*_DRILL")){
+                    if(internalName.contains("_DRILL")){
                         List<String> lore = ApecUtils.getItemLore(item);
                         fuelAmount = -1.0f;
                         for (String s : lore){

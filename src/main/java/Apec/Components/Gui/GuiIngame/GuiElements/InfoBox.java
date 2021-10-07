@@ -93,7 +93,7 @@ public class InfoBox extends GUIComponent {
             }
             if(!ApecMain.Instance.settingsManager.getSettingState(SettingID.SEPARATE_SOULFLOW_DISPLAY) || editingMode){
                 if (ApecMain.Instance.settingsManager.getSettingState(SettingID.SHOW_SOULFLOW) || editingMode) {
-                    gi.drawTexturedModalRect((int) (GuiPos.x + 20 + (subComponentDeltas.get(12).getX()) * oneOverScale + 700) + SoulflowStringWidth + 11,  (GuiPos.y + subComponentDeltas.get(12).getY()) * oneOverScale - 1, 110, 216, 9, 9);
+                    gi.drawTexturedModalRect((int) (GuiPos.x + 20 + (subComponentDeltas.get(12).getX()) * oneOverScale + 700) + SoulflowStringWidth + 3,  (GuiPos.y + subComponentDeltas.get(12).getY()) * oneOverScale - 1, 110, 216, 9, 9);
                 }
             }
         }
@@ -246,7 +246,7 @@ public class InfoBox extends GUIComponent {
             if (ApecMain.Instance.settingsManager.getSettingState(SettingID.SHOW_SOULFLOW) || editingMode) {
                 ApecUtils.drawStylizedString(
                         soulflowText,
-                        (int) (GuiPos.x + 20 + (subComponentDeltas.get(12).getX() + (UseIcons ? 11 : 0)) * oneOverScale + 700),
+                        (int) (GuiPos.x + 20 + (subComponentDeltas.get(12).getX()) * oneOverScale + 700),
                         (int) ((GuiPos.y + subComponentDeltas.get(12).getY()) * oneOverScale),
                         0x00AAAA
                 );
@@ -317,7 +317,7 @@ public class InfoBox extends GUIComponent {
         final int zoneAddX = (inTheCatacombs ? 5 : 9);
         List<Vector2f> RelativeVectors = new ArrayList<Vector2f>(13) {{
             add(new Vector2f(PurseStringWidth  + (UseIcons ? 9 : 0)*scale, 10*scale));
-            add(new Vector2f( BitsLength + (UseIcons ? 9 : 0)*scale, 10*scale));
+            add(new Vector2f(BitsLength + (UseIcons ? 9 : 0)*scale, 10*scale));
             add(new Vector2f(ZoneStringWidth + (UseIcons ? zoneAddX : 0)*scale, 10*scale));
             add(new Vector2f(DefenceStringWidth + (UseIcons ? 10 : 0)*scale, 10*scale));
             add(new Vector2f(-TimeStringWidth-(getCurrentAnchorPoint().x)*scale, 10*scale));
