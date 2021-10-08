@@ -54,13 +54,14 @@ public class DrillFuelBar extends GUIComponent {
 
                                 fuelAmount =  (((float) Integer.parseInt(currentFuel)) / (Integer.parseInt(maxFuel.substring(0, maxFuel.length() - 1)) * mult));
 
-                                break;
+                                return;
                             }
                         }
                     }
                 }
             }catch(Exception e){}
         }
+        fuelAmount = -1f;
     }
 
     @Override
