@@ -53,7 +53,6 @@ public class GUIModifier extends Component {
         add(new InfoBox()); // The block box with the things that used to be in the scoreboard
         add(new HpBar());
         add(new HpText());
-        add(new HealText());
         add(new MpBar());
         add(new MpText());
         add(new XpBar());
@@ -72,6 +71,7 @@ public class GUIModifier extends Component {
         add(new EventLister());
         add(new AbilityText());
         add(new BossBar());
+        add(new HealText());
         add(new EditGrid());
         add(new PowderInfo());
         add(new DrillFuelBar());

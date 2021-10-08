@@ -59,7 +59,7 @@ public class SettingsManager {
         add(new Setting(BORDER_TYPE,true));
         //add(new Setting(OVERWRITE_GUI,false));
         add(new Setting(SHOW_DEBUG_MESSAGES,false));
-        add(new Setting(HEAL_TEXT,true));
+        add(new Setting(HEAL_TEXT,false));
         add(new Setting(EDIT_GRID,false));
         add(new Setting(SEPARATE_POWDER_DISPLAY, false));
         add(new Setting(SHOW_MITHRIL_POWDER, false));
@@ -71,7 +71,7 @@ public class SettingsManager {
         add(new Setting(SHOW_ATTACK_SPEED, false));
         add(new Setting(DRILL_FUEL_BAR, true));
         add(new Setting(SHOW_SOULFLOW, false));
-        add(new Setting(SEPARATE_SOULFLOW_DISPLAY, true));
+        add(new Setting(SEPARATE_SOULFLOW_DISPLAY, false));
         add(new Setting(CENTER_ABILITY_TEXT, false));
     }};
 
