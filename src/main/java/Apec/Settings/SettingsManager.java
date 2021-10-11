@@ -1,11 +1,15 @@
 package Apec.Settings;
 
+import Apec.ApecMain;
 import Apec.Events.ApecSettingChangedState;
 import Apec.Utils.ApecUtils;
 import net.minecraft.util.Tuple;
 import net.minecraftforge.common.MinecraftForge;
+import org.json.*;
+import scala.util.parsing.json.JSON;
 
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -19,60 +23,60 @@ public class SettingsManager {
 
     /** List which contains all settings */
     public List<Setting> settings = new ArrayList<Setting>() {{
-        add(new Setting(AUTO_ENABLE,true));
-        add(new Setting(HP_BAR,true));
-        add(new Setting(HP_TEXT,true));
-        add(new Setting(SHOW_ABSORPTION_BAR,true));
-        add(new Setting(SHOW_OP_BAR,true));
-        add(new Setting(MP_BAR,true));
-        add(new Setting(MP_TEXT,true));
-        add(new Setting(XP_BAR,true));
-        add(new Setting(XP_TEXT,true));
-        add(new Setting(SHOW_AIR_BAR,true));
-        add(new Setting(AIR_TEXT,true));
-        add(new Setting(SHOW_SKILL_XP,true));
-        add(new Setting(SKILL_TEXT,true));
-        add(new Setting(COLORED_SKILL_XP,true));
-        add(new Setting(ALWAYS_SHOW_SKILL,false));
-        add(new Setting(SHOW_WARNING,true));
-        add(new Setting(INVENTORY_TRAFFIC,true));
-        add(new Setting(SHOW_POTIONS_EFFECTS,true));
-        add(new Setting(COMPACT_POTION,false));
+        add(new Setting("autoEnable", AUTO_ENABLE, CategoryID.GENERAL,true));
+        add(new Setting("showHPBar",HP_BAR, CategoryID.GUI,true));
+        add(new Setting("showHPText",HP_TEXT, CategoryID.GUI,true));
+        add(new Setting("showAPBar", SHOW_ABSORPTION_BAR, CategoryID.GUI,true));
+        add(new Setting("showOPBar", SHOW_OP_BAR, CategoryID.GUI,true));
+        add(new Setting("showMPBar", MP_BAR, CategoryID.GUI,true));
+        add(new Setting("showMPText", MP_TEXT, CategoryID.GUI,true));
+        add(new Setting("showXPBar", XP_BAR, CategoryID.GUI,true));
+        add(new Setting("showXPText", XP_TEXT, CategoryID.GUI,true));
+        add(new Setting("showAirBar", SHOW_AIR_BAR, CategoryID.GUI,true));
+        add(new Setting("showAirText", AIR_TEXT, CategoryID.GUI,true));
+        add(new Setting("showSkillXP", SHOW_SKILL_XP, CategoryID.GUI,true));
+        add(new Setting("showSkillText", SKILL_TEXT, CategoryID.GUI,true));
+        add(new Setting("coloredSkillXP",COLORED_SKILL_XP, CategoryID.GUI,true));
+        add(new Setting("alwaysShowskill", ALWAYS_SHOW_SKILL, CategoryID.GUI,false));
+        add(new Setting("showWarnings", SHOW_WARNING, CategoryID.GUI,true));
+        add(new Setting("showInventoryTraffic", INVENTORY_TRAFFIC, CategoryID.GUI,true));
+        add(new Setting("showPotionEffects", SHOW_POTIONS_EFFECTS, CategoryID.GUI,true));
+        add(new Setting("compactPotionEffects", COMPACT_POTION, CategoryID.GUI,false));
         //add(new Setting(HIDE_NIGHT_VISION,false));
-        add(new Setting(CUSTOM_TOOL_TIP,true));
-        add(new Setting(SHOW_EFFECTS_AS_IN_TAB,true));
-        add(new Setting(SHOW_CURRENT_SERVER,false));
-        add(new Setting(ITEM_HIGHLIGHT_TEXT,false));
-        add(new Setting(NPC_GUI,true));
-        add(new Setting(MENU_GUI,true));
-        add(new Setting(GUIS_WHEN_DISABLED, false));
-        add(new Setting(SHOW_ABILITY_TEXT,true));
-        add(new Setting(BB_ON_TOP,false));
-        add(new Setting(USE_DEFENCE_OUT_OF_BB,false));
-        add(new Setting(USE_AUTO_SCALING_BB,true));
-        add(new Setting(COMPATIBILITY_SAFETY,true));
-        add(new Setting(HIDE_IN_F3,false));
-        add(new Setting(SNAP_IN_EDITING,true));
+        add(new Setting("customTooltips", CUSTOM_TOOL_TIP, CategoryID.GUI,true));
+        add(new Setting("showEffectsAsTab", SHOW_EFFECTS_AS_IN_TAB, CategoryID.GUI,true));
+        add(new Setting("showCurrentServer", SHOW_CURRENT_SERVER, CategoryID.GUI,false));
+        add(new Setting("showItemHighlightText", ITEM_HIGHLIGHT_TEXT, CategoryID.GUI,false));
+        add(new Setting("enableCustomNPCGUI", NPC_GUI, CategoryID.GUI,true));
+        add(new Setting("enableCustomMenuGUI",MENU_GUI, CategoryID.GUI,true));
+        add(new Setting("allowGUIWhenDisabled", GUIS_WHEN_DISABLED, CategoryID.GENERAL, false));
+        add(new Setting("showAbilityText", SHOW_ABILITY_TEXT, CategoryID.GUI,true));
+        add(new Setting("infoBarOnTop", BB_ON_TOP, CategoryID.GUI,false));
+        add(new Setting("separateDefence", USE_DEFENCE_OUT_OF_BB, CategoryID.GUI,false));
+        add(new Setting("autoScaleInfoBar", USE_AUTO_SCALING_BB, CategoryID.GUI,true));
+        add(new Setting("enableCompatibilitySafety", COMPATIBILITY_SAFETY, CategoryID.GENERAL,true));
+        add(new Setting("hideGUIInF3", HIDE_IN_F3, CategoryID.GENERAL,false));
+        add(new Setting("enableSnapInEditing", SNAP_IN_EDITING, CategoryID.GENERAL,true));
         //add(new Setting(SHOW_CACHED_PURSE_IN_DUNGEONS,true));
-        add(new Setting(INFO_BOX_ANIMATION,true));
-        add(new Setting(INFO_BOX_ICONS,true));
-        add(new Setting(BORDER_TYPE,true));
+        add(new Setting("enableInfoBarAnimation", INFO_BOX_ANIMATION, CategoryID.GUI,true));
+        add(new Setting("useInfoBarIcons", INFO_BOX_ICONS, CategoryID.GUI,true));
+        add(new Setting("useOutlinedText", BORDER_TYPE, CategoryID.GUI,true));
         //add(new Setting(OVERWRITE_GUI,false));
-        add(new Setting(SHOW_DEBUG_MESSAGES,false));
-        add(new Setting(HEAL_TEXT,false));
-        add(new Setting(EDIT_GRID,false));
-        add(new Setting(SEPARATE_POWDER_DISPLAY, false));
-        add(new Setting(SHOW_MITHRIL_POWDER, false));
-        add(new Setting(SHOW_GEMSTONE_POWDER, false));
-        add(new Setting(SHOW_SPEED, false));
-        add(new Setting(SHOW_STRENGTH, false));
-        add(new Setting(SHOW_CRIT_CHANCE, false));
-        add(new Setting(SHOW_CRIT_DAMAGE, false));
-        add(new Setting(SHOW_ATTACK_SPEED, false));
-        add(new Setting(DRILL_FUEL_BAR, true));
-        add(new Setting(SHOW_SOULFLOW, false));
-        add(new Setting(SEPARATE_SOULFLOW_DISPLAY, false));
-        add(new Setting(CENTER_ABILITY_TEXT, false));
+        add(new Setting("showDebugMessages", SHOW_DEBUG_MESSAGES, CategoryID.GENERAL,true));
+        add(new Setting("showHealText", HEAL_TEXT, CategoryID.GUI,false));
+        add(new Setting("showEditGrid", EDIT_GRID, CategoryID.GENERAL,false));
+        add(new Setting("separatePowderDisplay", SEPARATE_POWDER_DISPLAY, CategoryID.GUI, false));
+        add(new Setting("showMithrilPowder", SHOW_MITHRIL_POWDER, CategoryID.GUI, false));
+        add(new Setting("showGemstonePowder", SHOW_GEMSTONE_POWDER, CategoryID.GUI, false));
+        add(new Setting("showSpeed", SHOW_SPEED, CategoryID.GUI, false));
+        add(new Setting("showStrength", SHOW_STRENGTH, CategoryID.GUI, false));
+        add(new Setting("showCritChance", SHOW_CRIT_CHANCE, CategoryID.GUI, false));
+        add(new Setting("showCritDamage", SHOW_CRIT_DAMAGE, CategoryID.GUI, false));
+        add(new Setting("showAttackSpeed", SHOW_ATTACK_SPEED, CategoryID.GUI, false));
+        add(new Setting("showDrillFuelBar", DRILL_FUEL_BAR, CategoryID.GUI, true));
+        add(new Setting("showSoulflow", SHOW_SOULFLOW, CategoryID.GUI, false));
+        add(new Setting("separateSoulflowDisplay", SEPARATE_SOULFLOW_DISPLAY, CategoryID.GUI, false));
+        add(new Setting("useCenteredAbilityText", CENTER_ABILITY_TEXT, CategoryID.GUI, false));
     }};
 
     /** Hashmap that holds the titles and descriptions of each setting */
@@ -168,6 +172,7 @@ public class SettingsManager {
             }
         }
         MinecraftForge.EVENT_BUS.post(new ApecSettingChangedState(settingID,state));
+        //this.SaveLegacySettings();
         this.SaveSettings();
     }
 
@@ -198,29 +203,74 @@ public class SettingsManager {
     /**
      * @brief Saves the setting data to disk
      */
-    public void SaveSettings() {
+    public void SaveLegacySettings() {
         try {
             new File("config/Apec").mkdirs();
             new File("config/Apec/Settings.txt").createNewFile();
             FileWriter fw = new FileWriter("config/Apec/Settings.txt");
             String s = "";
             for (int i = 0;i < settings.size();i++) {
-                s += settings.get(i).settingID.ordinal() + "-" + (settings.get(i).enabled ? "t" : "f");
+                s += settings.get(i).settingID.name() + "-" + (settings.get(i).enabled ? "t" : "f");
                 if (i != settings.size() - 1) s += "\n";
             }
             fw.write(s);
             fw.close();
         } catch (IOException e) {
+            ApecUtils.showMessage("[\u00A72Apec\u00A7f] There was an error saving legacy settings!");
+        }
+    }
+
+    public void SaveSettings() {
+        try {
+            new File("config/Apec").mkdirs();
+            new File("config/Apec/Settings.json").createNewFile();
+            FileWriter fw = new FileWriter("config/Apec/Settings.json");
+
+            JSONObject array = new JSONObject();
+
+            JSONObject general = new JSONObject();
+            general.put("version", ApecMain.version);
+
+            JSONObject settings = new JSONObject();
+
+            for (Setting setting : this.settings) {
+                settings.put(setting.settingKey, setting.enabled);
+            }
+
+            array.put("general", general);
+            array.put("settings", settings);
+
+            fw.write(array.toString(1));
+            fw.close();
+        } catch (Exception e) {
             ApecUtils.showMessage("[\u00A72Apec\u00A7f] There was an error saving settings!");
+        }
+
+    }
+
+    public void LoadSettings() {
+        try{
+            File file = new File("config/Apec/Settings.json");
+            String json = new Scanner(file).useDelimiter("\\Z").next();
+            JSONObject loaded = new JSONObject(json.toString());
+            String version = loaded.getJSONObject("general").getString("version");
+
+            JSONObject settings = loaded.getJSONObject("settings");
+            for (Setting setting : this.settings){
+                this.setSettingStateWithNoSaving(setting.settingID,settings.getBoolean(setting.settingKey));
+            }
+        } catch (Exception e) {
+            System.out.println("[\u00A72Apec\u00A7f] There was an error reading settings!");
         }
     }
 
     /**
      * @brief Loads and sets the setting data from disk
      */
-    public void LoadSettings() {
+    public void LoadLegacySettings() {
         try {
-            Scanner scanner = new Scanner(new File("config/Apec/Settings.txt"));
+            File legacy = new File("config/Apec/Settings.txt");
+            Scanner scanner = new Scanner(legacy);
             while (scanner.hasNextLine()) {
                 String s = scanner.nextLine();
                 try {
@@ -238,8 +288,14 @@ public class SettingsManager {
                 }
             }
             scanner.close();
+
+            boolean deleted = legacy.delete(); // delete legacy settings file.
+            if(deleted){
+                this.SaveSettings();
+                ApecUtils.showMessage("[\u00A72Apec\u00A7f] Deleted legacy settings file.");
+            }
         } catch (IOException e) {
-            ApecUtils.showMessage("[\u00A72Apec\u00A7f] There was an error reading settings!");
+            ApecUtils.showMessage("[\u00A72Apec\u00A7f] There was an error reading legacy settings!");
         }
     }
 
