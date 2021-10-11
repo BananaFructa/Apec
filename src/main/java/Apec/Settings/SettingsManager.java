@@ -292,7 +292,7 @@ public class SettingsManager {
             boolean deleted = legacy.delete(); // delete legacy settings file.
             if(deleted){
                 this.SaveSettings();
-                ApecUtils.showMessage("[\u00A72Apec\u00A7f] Deleted legacy settings file.");
+                System.out.println("[\u00A72Apec\u00A7f] Deleted legacy settings file.");
             }
         } catch (IOException e) {
             ApecUtils.showMessage("[\u00A72Apec\u00A7f] There was an error reading legacy settings!");
