@@ -13,7 +13,9 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.network.NetworkPlayerInfo;
 import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.scoreboard.Score;
 import net.minecraft.scoreboard.ScoreObjective;
 import net.minecraft.scoreboard.ScorePlayerTeam;
@@ -32,7 +34,10 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.lang.Integer;
 
 public class DataExtractor {
 
@@ -59,6 +64,40 @@ public class DataExtractor {
     private final String armadilloName = "Armadillo";
     private final String treasureMetalDetectorSymbol = "TREASURE:";
 
+    
+
+    private final String attackSpeedSymbol = "Attack Speed: \u2694";
+    private final String bankSymbol = "Bank:";
+    private final String mithrilPowderSymbol = "Mithril Powder:";
+    private final String gemstonePowderSymbol = "Gemstone Powder:";
+    private final String strengthSymbol = "Strength: \u2741";
+    private final String speedSymbol = "Speed: \u2726";
+    private final String critDamageSymbol = "Crit Damage: \u2620";
+    private final String critChanceSymbol = "Crit Chance: \u2623";
+
+    private enum TabSymbols {
+        INVALID,
+        ATTACK_SPEED,
+        BANK,
+        MITHRIL_POWDER,
+        GEMSTONE_POWDER,
+        STRENGTH,
+        SPEED,
+        CRIT_DAMAGE,
+        CRIT_CHANCE
+    };
+
+    private final Map<TabSymbols, String> tabSymbols = new HashMap<TabSymbols, String>(){{
+        put(TabSymbols.ATTACK_SPEED, attackSpeedSymbol);
+        put(TabSymbols.BANK, bankSymbol);
+        put(TabSymbols.MITHRIL_POWDER, mithrilPowderSymbol);
+        put(TabSymbols.GEMSTONE_POWDER, gemstonePowderSymbol);
+        put(TabSymbols.STRENGTH, strengthSymbol);
+        put(TabSymbols.SPEED, speedSymbol);
+        put(TabSymbols.CRIT_DAMAGE, critDamageSymbol);
+        put(TabSymbols.CRIT_CHANCE, critChanceSymbol);
+    }};
+
     private boolean alreadyShowedTabError = false;
     private boolean alreadyShowedScrErr = false;
 
@@ -73,6 +112,16 @@ public class DataExtractor {
 
     private String lastSkillXp = "";
     private String lastPurse = "";
+
+    private String lastGemstonePowder = "";
+    private String lastMithrilPowder = "";
+    private String lastAs = "0";
+    private String lastStr = "0";
+    private String lastSpd = "0";
+    private String lastCC = "0", lastCD = "0";
+
+    private int soulflowSlot = -1;
+    private int lastSoulflow = -1;
 
     private final String sendTradeRequestMsg = "You have sent a trade request to";
     private final String expireSentTradeRequest = "Your /trade request to";
@@ -106,6 +155,7 @@ public class DataExtractor {
     private List<String> scoreBoardLines;
     private ScoreBoardData scoreBoardData = new ScoreBoardData();
     private OtherData otherData;
+    private TabStats tabStats;
 
     public boolean isInSkyblock = false; // This flag is true if the player is in skyblock
 
@@ -199,6 +249,8 @@ public class DataExtractor {
                 this.playerStats = this.ProcessPlayerStats();
 
                 this.otherData = this.ProcessOtherData(this.scoreBoardData);
+
+                this.tabStats = this.ProcessTabList();
 
                 if (hasRecievedATradeRequest || hasSentATradeRequest) {
                     tradeTicks++;
@@ -483,6 +535,68 @@ public class DataExtractor {
         return this.scoreBoardData;
     }
 
+    private TabStats ProcessTabList () {
+        TabStats tabStats = new TabStats();
+        try {
+            Collection<NetworkPlayerInfo> players = Minecraft.getMinecraft().getNetHandler().getPlayerInfoMap();
+            for (NetworkPlayerInfo player : players){
+                if(player.getDisplayName() == null) { continue; }
+                String name = player.getDisplayName().getUnformattedText();
+
+                for(Map.Entry<TabSymbols, String> entry : tabSymbols.entrySet()){
+                    TabSymbols key = entry.getKey();
+                    String value = entry.getValue();
+                    if(ApecUtils.containedByCharSequence(name,value)){
+                        String stat = name.replace(value, "").replace(" ", "");
+                        switch(key){
+                            case BANK: tabStats.Bank = stat;
+                                break;
+                            case GEMSTONE_POWDER: tabStats.GemstonePowder = stat;
+                                lastGemstonePowder = tabStats.GemstonePowder;
+                                break;
+                            case MITHRIL_POWDER: tabStats.MithrilPowder = stat;
+                                lastMithrilPowder = tabStats.MithrilPowder;
+                                break;
+                            case STRENGTH: tabStats.Strength = stat;
+                                lastStr = stat;
+                                break;
+                            case SPEED: tabStats.Speed = stat;
+                                lastSpd = stat;
+                                break;
+                            case CRIT_CHANCE: tabStats.CritChance = stat;
+                                lastCC = stat;
+                                break;
+                            case CRIT_DAMAGE: tabStats.CritDamage = stat;
+                                lastCD = stat;
+                                break;
+                            case ATTACK_SPEED: tabStats.AttackSpeed = stat;
+                                lastAs = stat;
+                                break;
+                            default: 
+                                break;
+                        }
+                    }
+                }
+            }
+            //TODO: make this better
+            if(tabStats.GemstonePowder == null) { tabStats.GemstonePowder = lastGemstonePowder; }
+            if(tabStats.MithrilPowder == null) { tabStats.MithrilPowder = lastMithrilPowder; }
+            if(tabStats.Strength == null) { tabStats.Strength = lastStr; }
+            if(tabStats.Speed == null) { tabStats.Speed = lastSpd; }
+            if(tabStats.CritChance == null) { tabStats.CritChance = lastCC; }
+            if(tabStats.CritDamage == null) { tabStats.CritDamage = lastCD; }
+            if(tabStats.AttackSpeed == null) { tabStats.AttackSpeed = lastAs; }
+
+            return tabStats;
+        } catch (Exception ignored) {
+            return this.tabStats;
+        }
+    }
+
+    public TabStats getTabStats () {
+        return this.tabStats;
+    }
+
     /**
      * Player Stats
      * -health
@@ -491,6 +605,7 @@ public class DataExtractor {
      * -absorption
      * -skill xp
      * -air
+     * -overflow
      */
 
     private PlayerStats ProcessPlayerStats () {
@@ -610,7 +725,7 @@ public class DataExtractor {
             }
 
             if (inBetweenBrackets != null) {
-                percentage = praseSkillPercentage(inBetweenBrackets);
+                percentage = parseSkillPercentage(inBetweenBrackets);
             }
 
             if (percentage != -1f) {
@@ -624,7 +739,7 @@ public class DataExtractor {
             } else {
                 if (ApecMain.Instance.settingsManager.getSettingState(SettingID.ALWAYS_SHOW_SKILL) && !lastSkillXp.equals("")) {
                     String wholeString = ApecUtils.removeAllCodes(lastSkillXp);
-                    percentage = praseSkillPercentage(ApecUtils.segmentString(lastSkillXp, "(", '(', ')', 1, 1, ApecUtils.SegmentationOptions.TOTALLY_EXCLUSIVE));
+                    percentage = parseSkillPercentage(ApecUtils.segmentString(lastSkillXp, "(", '(', ')', 1, 1, ApecUtils.SegmentationOptions.TOTALLY_EXCLUSIVE));
 
                     playerStats.SkillIsShown = true;
                     playerStats.SkillInfo = wholeString;
@@ -682,14 +797,52 @@ public class DataExtractor {
             playerStats.Defence = lastDefence;
         }
 
+        try {
+            //SOULFLOW
+            {
+                int soulflow = getSoulflow();
+                playerStats.Soulflow = soulflow;
+                lastSoulflow = soulflow;
+            }
+        } catch (Exception err) {
+            soulflowSlot = -1;
+            playerStats.Soulflow = lastSoulflow;
+        }
+
         return playerStats;
+    }
+
+    private int getSoulflow(){
+        if(mc.thePlayer != null){
+            try{
+                if(soulflowSlot == -1){
+                    soulflowSlot = ApecUtils.getFirstItemSlotByInternalName(new String[]{"SOULFLOW_PILE", "SOULFLOW_BATTERY", "SOULFLOW_SUPERCELL"});
+                }else{
+                    ItemStack item = mc.thePlayer.inventory.mainInventory[soulflowSlot];
+                    if(item != null){
+                        List<String> lore = ApecUtils.getItemLore(item);
+                        for (String s : lore){
+                            if(s.contains("Internalized:")){
+                                s = ApecUtils.segmentString(ApecUtils.removeAllCodes(s), "\u2e0e", ' ', '\u2e0e', 1, 1, ApecUtils.SegmentationOptions.TOTALLY_EXCLUSIVE).replace(",", "");
+                                return Integer.parseInt(s);
+                            }
+                        }
+                    }else{
+                        soulflowSlot = -1;
+                    }
+                }
+            }catch(Exception e){
+                soulflowSlot = -1;
+            }
+        }
+        return -1;
     }
 
     /**
      * @param skillInfo = The text between brackets of the skill xp string
      * @return the precentege of completion until next skill level
      */
-    float praseSkillPercentage(String skillInfo) {
+    float parseSkillPercentage(String skillInfo) {
         if (skillInfo == null) return -1f;
         if (skillInfo.contains("%")) {
             skillInfo = skillInfo.replace("%","");
@@ -775,7 +928,6 @@ public class DataExtractor {
             }
 
         }
-
         otherData.currentEvents = getEvents(sd);
 
         return otherData;
@@ -910,6 +1062,18 @@ public class DataExtractor {
         public boolean SkillIsShown;
         public boolean IsAbilityShown;
         public String AbilityText = "\u00a7b-00 Mana (\u00a76Some Ability\u00a7b)";
+        public int Soulflow;
+    }
+
+    public class TabStats {
+        public String Bank;
+        public String MithrilPowder;
+        public String GemstonePowder;
+        public String Speed;
+        public String Strength;
+        public String CritChance;
+        public String CritDamage;
+        public String AttackSpeed;
     }
 
     public class OtherData {
@@ -918,7 +1082,6 @@ public class DataExtractor {
         public ArrayList<EventIDs> currentEvents = new ArrayList<EventIDs>();
         public int ArmadilloEnergy;
         public int ArmadilloBaseEnergy;
-
     }
 
 }

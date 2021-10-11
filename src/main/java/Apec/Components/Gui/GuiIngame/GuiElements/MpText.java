@@ -18,12 +18,13 @@ public class MpText extends TextComponent {
         super(GUIComponentID.MP_TEXT);
     }
 
-    int stringWidth = 0;
+    private int stringWidth = 0;
+    private boolean centered = false;
     private MultiColorString mainMccs = new MultiColorString();
 
     @Override
-    public void draw(DataExtractor.PlayerStats ps, DataExtractor.ScoreBoardData sd, DataExtractor.OtherData od, ScaledResolution sr, boolean editingMode) {
-        super.draw(ps,sd,od,sr,editingMode);
+    public void draw(DataExtractor.PlayerStats ps, DataExtractor.ScoreBoardData sd, DataExtractor.OtherData od, DataExtractor.TabStats ts, ScaledResolution sr, boolean editingMode) {
+        super.draw(ps,sd,od,ts,sr,editingMode);
         if (ApecMain.Instance.settingsManager.getSettingState(SettingID.MP_TEXT)) {
             GlStateManager.pushMatrix();
             GlStateManager.scale(scale, scale, scale);
@@ -31,7 +32,7 @@ public class MpText extends TextComponent {
 
             boolean showOp = ApecMain.Instance.settingsManager.getSettingState(SettingID.SHOW_OP_BAR);
 
-            String MPString = ps.Mp + "/" + ps.BaseMp + " MP";
+            String MPString = ps.Mp + "/" + ps.BaseMp;
 
             if (ps.Op != 0) {
                 if (showOp) {
@@ -52,10 +53,10 @@ public class MpText extends TextComponent {
             GlStateManager.popMatrix();
         }
     }
-
+    
     @Override
     public Vector2f getAnchorPointPosition() {
-        return this.guiModifier.applyGlobalChanges(this,new Vector2f(g_sr.getScaledWidth() - 190 + 112 + 70, 34));
+        return centered ? this.guiModifier.applyGlobalChanges(this,new Vector2f((int) ((stringWidth * 0.5f)), 0)) : this.guiModifier.applyGlobalChanges(this,new Vector2f(g_sr.getScaledWidth() - 190 + 112 + 70, 34));
     }
 
     @Override

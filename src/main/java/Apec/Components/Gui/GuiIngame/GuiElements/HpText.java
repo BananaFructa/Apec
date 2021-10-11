@@ -16,13 +16,13 @@ public class HpText extends TextComponent {
         super(GUIComponentID.HP_TEXT);
     }
 
-    int stringWidth = 0;
+    private int stringWidth = 0;
 
     @Override
-    public void draw(DataExtractor.PlayerStats ps, DataExtractor.ScoreBoardData sd,DataExtractor.OtherData od, ScaledResolution sr,boolean editingMode) {
-        super.draw(ps,sd,od,sr,editingMode);
-        GlStateManager.pushMatrix();
+    public void draw(DataExtractor.PlayerStats ps, DataExtractor.ScoreBoardData sd,DataExtractor.OtherData od, DataExtractor.TabStats ts, ScaledResolution sr,boolean editingMode) {
+        super.draw(ps,sd,od,ts,sr,editingMode);
         if (ApecMain.Instance.settingsManager.getSettingState(SettingID.HP_TEXT)) {
+            GlStateManager.pushMatrix();
             GlStateManager.scale(scale, scale, scale);
 
             boolean showAP = ApecMain.Instance.settingsManager.getSettingState(SettingID.SHOW_ABSORPTION_BAR);
@@ -30,22 +30,23 @@ public class HpText extends TextComponent {
             Vector2f StatBar = ApecUtils.scalarMultiply(getCurrentAnchorPoint(),oneOverScale);
 
             int addedHp = ps.Hp + ps.Ap;
-            String HPString = (!showAP && ps.Ap != 0 ? "\u00a7e" + addedHp + "\u00a7r" : ps.Hp) + "/" + ps.BaseHp + " HP" + (ps.HealDuration != 0 ? " +" + ps.HealDuration +"/s " + ps.HealDurationTicker : "");
-            ApecUtils.drawThiccBorderString(HPString, (int) (StatBar.x - mc.fontRendererObj.getStringWidth(HPString)), (int) (StatBar.y - 10), 0xd10808);
+            String HPString = (!showAP && ps.Ap != 0 ? "\u00a7e" + addedHp + "\u00a7r" : ps.Hp) + "/" + ps.BaseHp + " HP" + (ApecMain.Instance.settingsManager.getSettingState(SettingID.HEAL_TEXT) ? "" : (ps.HealDuration != 0 ? " +" + ps.HealDuration +"/s " + ps.HealDurationTicker : ""));
+
+            ApecUtils.drawStylizedString(HPString, (int) (StatBar.x - mc.fontRendererObj.getStringWidth(HPString)), (int) (StatBar.y - 10), 0xd10808);
             stringWidth = mc.fontRendererObj.getStringWidth(HPString);
 
 
             if (ps.Ap != 0 && showAP) {
                 String APString = ps.Ap + "/" + ps.BaseAp + " AP";
-                ApecUtils.drawThiccBorderString(APString, (int) (StatBar.x - 5 - mc.fontRendererObj.getStringWidth(APString) - mc.fontRendererObj.getStringWidth(HPString)), (int) (StatBar.y - 10), 0x1966AD);
+                ApecUtils.drawStylizedString(APString, (int) (StatBar.x - 32 - 5 - mc.fontRendererObj.getStringWidth(APString) - mc.fontRendererObj.getStringWidth(HPString)), (int) (StatBar.y - 10), 0x1966AD);
             }
+            GlStateManager.popMatrix();
         }
-        GlStateManager.popMatrix();
     }
 
     @Override
     public Vector2f getAnchorPointPosition() {
-        return guiModifier.applyGlobalChanges(this,new Vector2f(g_sr.getScaledWidth() - 190 + 112 + 70, 15));
+        return guiModifier.applyGlobalChanges(this,new Vector2f(g_sr.getScaledWidth() - 8, 15));
     }
 
     @Override

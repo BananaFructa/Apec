@@ -20,13 +20,15 @@ public class HorseJumpBar extends GUIComponent {
     }
 
     @Override
-    public void drawTex(DataExtractor.PlayerStats ps, DataExtractor.ScoreBoardData sd, DataExtractor.OtherData od, ScaledResolution sr, boolean editingMode) {
-        super.drawTex(ps, sd, od, sr, editingMode);
+    public void drawTex(DataExtractor.PlayerStats ps, DataExtractor.ScoreBoardData sd, DataExtractor.OtherData od, DataExtractor.TabStats ts, ScaledResolution sr, boolean editingMode) {
+        super.drawTex(ps, sd, od, ts, sr, editingMode);
         float charge = mc.thePlayer.getHorseJumpPower();
 
         if (editingMode && od.ArmadilloEnergy == 0) charge = 1f;
 
         if (charge > 0) {
+            
+
             GuiIngame gui = mc.ingameGUI;
 
             Vector2f pos = ApecUtils.scalarMultiply(getCurrentAnchorPoint(),this.oneOverScale);
@@ -34,12 +36,15 @@ public class HorseJumpBar extends GUIComponent {
 
             GlStateManager.scale(scale,scale,1);
             gui.drawTexturedModalRect(pos.x,pos.y,246,0,5,71);
+
             int height = (int)(71 * charge);
-            gui.drawTexturedModalRect(pos.x,pos.y + (71 - height),251,71 - height,5,height);
+            gui.drawTexturedModalRect(pos.x, pos.y + (71 - height), 251, 71 - height, 5, height);
 
         }
 
         if (od.ArmadilloEnergy != 0) {
+            
+
             GuiIngame gui = mc.ingameGUI;
 
             Vector2f pos = ApecUtils.scalarMultiply(getCurrentAnchorPoint(),this.oneOverScale);
@@ -48,7 +53,7 @@ public class HorseJumpBar extends GUIComponent {
             GlStateManager.scale(scale,scale,1);
             gui.drawTexturedModalRect(pos.x,pos.y,246,0,5,71);
             int height = (int)(71 * ((float)od.ArmadilloEnergy / od.ArmadilloBaseEnergy));
-            gui.drawTexturedModalRect(pos.x,pos.y + (71 - height),251,142 - height,5,height);
+            gui.drawTexturedModalRect(pos.x, pos.y + (71 - height), 251, 142 - height, 5, height);
         }
     }
 

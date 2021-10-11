@@ -20,7 +20,7 @@ public class DefenceText extends GUIComponent {
    }
 
     @Override
-    public void draw(DataExtractor.PlayerStats ps, DataExtractor.ScoreBoardData sd, DataExtractor.OtherData od, ScaledResolution sr, boolean editingMode) {
+    public void draw(DataExtractor.PlayerStats ps, DataExtractor.ScoreBoardData sd, DataExtractor.OtherData od, DataExtractor.TabStats ts, ScaledResolution sr, boolean editingMode) {
         GlStateManager.pushMatrix();
         GlStateManager.scale(scale,scale,scale);
         if (ApecMain.Instance.settingsManager.getSettingState(SettingID.USE_DEFENCE_OUT_OF_BB) || editingMode) {
@@ -32,7 +32,7 @@ public class DefenceText extends GUIComponent {
 
             StringWidth = mc.fontRendererObj.getStringWidth(s);
 
-            ApecUtils.drawThiccBorderString("\u00a7aDefence " + ps.Defence, (int)(Pos.x)+1,(int)(Pos.y)+1 ,0xffffffff);
+            ApecUtils.drawStylizedString("\u00a7aDefence " + ps.Defence, (int)(Pos.x)+1,(int)(Pos.y)+1 ,0xffffffff);
 
         }
         GlStateManager.popMatrix();

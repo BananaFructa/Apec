@@ -2,6 +2,7 @@ package Apec.Components.Gui.GuiIngame.GuiElements;
 
 import Apec.ApecMain;
 import Apec.Utils.ApecUtils;
+import Apec.ComponentId;
 import Apec.Components.Gui.GuiIngame.GUIComponent;
 import Apec.Components.Gui.GuiIngame.GUIComponentID;
 import Apec.Components.Gui.GuiIngame.GUIModifier;
@@ -28,8 +29,8 @@ public class AbilityText extends GUIComponent {
     }
 
     @Override
-    public void draw(DataExtractor.PlayerStats ps, DataExtractor.ScoreBoardData sd, DataExtractor.OtherData od, ScaledResolution sr, boolean editingMode) {
-        super.draw(ps, sd, od, sr, editingMode);
+    public void draw(DataExtractor.PlayerStats ps, DataExtractor.ScoreBoardData sd, DataExtractor.OtherData od, DataExtractor.TabStats ts, ScaledResolution sr, boolean editingMode) {
+        super.draw(ps, sd, od, ts, sr, editingMode);
         GlStateManager.pushMatrix();
         GlStateManager.scale(scale,scale,scale);
         AnchorPosition.y = mpText.getAnchorPointPosition().y;
@@ -41,7 +42,7 @@ public class AbilityText extends GUIComponent {
         if ((ApecMain.Instance.settingsManager.getSettingState(SettingID.SHOW_ABILITY_TEXT) && ps.IsAbilityShown) || editingMode) {
             stringWidth = mc.fontRendererObj.getStringWidth(ps.AbilityText);
             Vector2f rap = ApecUtils.scalarMultiply(getCurrentAnchorPoint(),oneOverScale);
-            ApecUtils.drawThiccBorderString(
+            ApecUtils.drawStylizedString(
                     ps.AbilityText,
                     (int)(rap.x - mc.fontRendererObj.getStringWidth(ps.AbilityText)),
                     (int)(rap.y - 10),
@@ -53,7 +54,7 @@ public class AbilityText extends GUIComponent {
 
     @Override
     public Vector2f getAnchorPointPosition() {
-        return this.guiModifier.applyGlobalChanges(this,AnchorPosition);
+        return ApecMain.Instance.settingsManager.getSettingState(SettingID.CENTER_ABILITY_TEXT) ? this.guiModifier.applyGlobalChanges(this,new Vector2f((int) (AnchorPosition.x + (stringWidth * 0.5f)), AnchorPosition.y)) : this.guiModifier.applyGlobalChanges(this,AnchorPosition);
     }
 
     @Override

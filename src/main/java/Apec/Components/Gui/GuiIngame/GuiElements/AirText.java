@@ -21,8 +21,8 @@ public class AirText extends GUIComponent {
     int stringWidth = 0;
 
     @Override
-    public void draw(DataExtractor.PlayerStats ps, DataExtractor.ScoreBoardData sd, DataExtractor.OtherData od, ScaledResolution sr, boolean editingMode) {
-        super.draw(ps,sd,od,sr,editingMode);
+    public void draw(DataExtractor.PlayerStats ps, DataExtractor.ScoreBoardData sd, DataExtractor.OtherData od, DataExtractor.TabStats ts, ScaledResolution sr, boolean editingMode) {
+        super.draw(ps,sd,od,ts,sr,editingMode);
         GlStateManager.pushMatrix();
         if (ApecMain.Instance.settingsManager.getSettingState(SettingID.AIR_TEXT)) {
             GlStateManager.scale(scale, scale, scale);
@@ -32,7 +32,7 @@ public class AirText extends GUIComponent {
                 float airPrec = (mc.thePlayer.getAir() / 300f) * 100;
                 if (airPrec < 0) airPrec = 0;
                 String ARString = (int) airPrec + "% Air";
-                ApecUtils.drawThiccBorderString(ARString, (int) (StatBar.x - mc.fontRendererObj.getStringWidth(ARString)), (int) (StatBar.y - 10), 0x8ba6b2);
+                ApecUtils.drawStylizedString(ARString, (int) (StatBar.x - mc.fontRendererObj.getStringWidth(ARString)), (int) (StatBar.y - 10), 0x8ba6b2);
                 stringWidth = Minecraft.getMinecraft().fontRendererObj.getStringWidth(ARString);
             }
         }

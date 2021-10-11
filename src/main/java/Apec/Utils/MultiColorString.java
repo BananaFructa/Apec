@@ -67,7 +67,7 @@ public class MultiColorString {
         int nowX = this.x;
         for (int i = 0; i < this.stringSet.length; i++) {
             if (this.stringSet != null) {
-                ApecUtils.drawThiccBorderString(stringSet[i], nowX + this.shiftValue, this.y, colorSet[i]);
+                ApecUtils.drawStylizedString(stringSet[i], nowX + this.shiftValue, this.y, colorSet[i]);
                 nowX += mc.fontRendererObj.getStringWidth(stringSet[i]);
             }
         }

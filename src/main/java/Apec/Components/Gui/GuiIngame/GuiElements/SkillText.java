@@ -24,8 +24,8 @@ public class SkillText extends TextComponent {
     int stringWidth = 0;
 
     @Override
-    public void draw(DataExtractor.PlayerStats ps, DataExtractor.ScoreBoardData sd, DataExtractor.OtherData od, ScaledResolution sr, boolean editingMode) {
-        super.draw(ps,sd,od,sr,editingMode);
+    public void draw(DataExtractor.PlayerStats ps, DataExtractor.ScoreBoardData sd, DataExtractor.OtherData od, DataExtractor.TabStats ts, ScaledResolution sr, boolean editingMode) {
+        super.draw(ps,sd,od,ts,sr,editingMode);
         GlStateManager.pushMatrix();
         if (ApecMain.Instance.settingsManager.getSettingState(SettingID.SKILL_TEXT)) {
             GlStateManager.scale(scale, scale, scale);
@@ -33,7 +33,7 @@ public class SkillText extends TextComponent {
             if (ps.SkillIsShown) {
                 stringWidth = Minecraft.getMinecraft().fontRendererObj.getStringWidth(ps.SkillInfo);
                 if (ps.SkillInfo.contains("Rune")) {
-                    ApecUtils.drawThiccBorderString(ps.SkillInfo, (int) (p.x), (int) (p.y - 10), 0x6B3694);
+                    ApecUtils.drawStylizedString(ps.SkillInfo, (int) (p.x), (int) (p.y - 10), 0x6B3694);
                 } else {
                     SkillType skillType =  SkillType.GetSkillType(ps.SkillInfo);
                     int color = 0x4ca7a8;
@@ -63,11 +63,11 @@ public class SkillText extends TextComponent {
                                 break;
                         }
                     }
-                    ApecUtils.drawThiccBorderString(ps.SkillInfo, (int) (p.x), (int) (p.y - 10), color);
+                    ApecUtils.drawStylizedString(ps.SkillInfo, (int) (p.x), (int) (p.y - 10), color);
                 }
             } else if (editingMode) {
                 stringWidth = Minecraft.getMinecraft().fontRendererObj.getStringWidth("+0.0 Farming (0/0)");
-                ApecUtils.drawThiccBorderString("+0.0 Farming (0/0)", (int) (p.x), (int) (p.y - 10), 0x4ca7a8);
+                ApecUtils.drawStylizedString("+0.0 Farming (0/0)", (int) (p.x), (int) (p.y - 10), 0x4ca7a8);
             }
         }
         GlStateManager.popMatrix();

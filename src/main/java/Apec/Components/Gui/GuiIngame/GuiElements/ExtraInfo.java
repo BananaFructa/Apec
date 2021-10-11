@@ -17,8 +17,8 @@ public class ExtraInfo extends TextComponent {
     }
 
     @Override
-    public void draw(DataExtractor.PlayerStats ps, DataExtractor.ScoreBoardData sd,DataExtractor.OtherData od, ScaledResolution sr,boolean editingMode) {
-        super.draw(ps,sd,od,sr,editingMode);
+    public void draw(DataExtractor.PlayerStats ps, DataExtractor.ScoreBoardData sd,DataExtractor.OtherData od, DataExtractor.TabStats ts, ScaledResolution sr,boolean editingMode) {
+        super.draw(ps,sd,od,ts,sr,editingMode);
         GlStateManager.pushMatrix();
         GlStateManager.scale(scale,scale,scale);
         Vector2f ExtraScoreInfo = ApecUtils.scalarMultiply(getCurrentAnchorPoint(),oneOverScale);
@@ -33,7 +33,7 @@ public class ExtraInfo extends TextComponent {
 
         if (!ei.isEmpty()) {
             for (int i = 0;i < ei.size();i++) {
-                ApecUtils.drawThiccBorderString(ei.get(i), (int)(ExtraScoreInfo.x), (int) (ExtraScoreInfo.y + i * 11), 0x0ffffff);
+                ApecUtils.drawStylizedString(ei.get(i), (int)(ExtraScoreInfo.x), (int) (ExtraScoreInfo.y + i * 11), 0x0ffffff);
             }
         }
         GlStateManager.popMatrix();

@@ -21,5 +21,10 @@ public enum GUIComponentID {
     ABILITY_TEXT,
     DEFENCE_TEXT,
     BOSS_HEALTH,
-    JUMP_BAR
+    JUMP_BAR,
+    HEAL_TEXT,
+    EDIT_GRID,
+    POWDER_DISPLAY,
+    DRILL_FUEL,
+    SOULFLOW_TEXT
 }
