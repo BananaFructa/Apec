@@ -6,8 +6,10 @@ import Apec.Utils.ApecUtils;
 import Apec.DataInterpretation.DataExtractor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraftforge.common.MinecraftForge;
 import org.lwjgl.util.vector.Vector2f;
+import scala.tools.nsc.SubComponent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +28,7 @@ public class GUIComponent {
     protected Minecraft mc = Minecraft.getMinecraft();
 
     protected GUIModifier guiModifier;
+    protected GUIComponent parent = null;
 
     protected Vector2f delta_position = new Vector2f(0, 0);
     protected List<Vector2f> subComponentDeltas = new ArrayList<Vector2f>();
@@ -36,6 +39,10 @@ public class GUIComponent {
     protected ScaledResolution g_sr;
 
     public boolean scalable = true;
+    public boolean editable = true;
+    public boolean enabled = true;
+
+    protected List<GUIComponent> subComponents = new ArrayList<GUIComponent>();
 
     public GUIComponent(GUIComponentID gUiComponentID) {
         this.gUiComponentID = gUiComponentID;
@@ -50,24 +57,6 @@ public class GUIComponent {
         }
     }
 
-    protected void DisableSubComponent(int s) {
-        DisabledSubComponents.add(s);
-    }
-
-    protected void EnableSubComponent(int s) {
-        int DisabledCount = DisabledSubComponents.size();
-        for (int i = 0; i < DisabledCount; i++) {
-            if (DisabledSubComponents.get(i) == s) {
-                DisabledSubComponents.remove(i);
-                break;
-            }
-        }
-    }
-
-    public boolean IsSubcomponentDisabled(int s) {
-        return DisabledSubComponents.contains(s);
-    }
-
     public GUIComponent(GUIComponentID gUiComponentID, boolean scalable) {
         this(gUiComponentID);
         this.scalable = scalable;
@@ -78,6 +67,8 @@ public class GUIComponent {
      */
     public void drawTex(DataExtractor.PlayerStats ps, DataExtractor.ScoreBoardData sd, DataExtractor.OtherData od, DataExtractor.TabStats ts, ScaledResolution sr, boolean editingMode) {
         g_sr = sr;
+
+        for (GUIComponent subComp : subComponents) subComp.drawTex(ps, sd, od, ts, sr, editingMode);
     }
 
     /**
@@ -85,13 +76,17 @@ public class GUIComponent {
      */
     public void draw(DataExtractor.PlayerStats ps, DataExtractor.ScoreBoardData sd, DataExtractor.OtherData od, DataExtractor.TabStats ts, ScaledResolution sr, boolean editingMode) {
         g_sr = sr;
+
+        for (GUIComponent subComp : subComponents) subComp.draw(ps, sd, od, ts, sr, editingMode);
     }
 
     /**
      * Is called before the editing menu is opened
      */
     public void editInit() {
-
+        for (GUIComponent subComp : subComponents) {
+            subComp.editInit();
+        }
     }
 
     /**
@@ -99,6 +94,9 @@ public class GUIComponent {
      */
     public void init() {
         guiModifier = ApecMain.Instance.getComponent(ComponentId.GUI_MODIFIER);
+        for (GUIComponent subComp : subComponents) {
+            subComp.init();
+        }
     }
 
     /**
@@ -119,7 +117,7 @@ public class GUIComponent {
      * The point at which the object is currently situated
      */
     public Vector2f getCurrentAnchorPoint() {
-        return ApecUtils.addVec(getAnchorPointPosition(), getDeltaPosition());
+        return ApecUtils.addVec(ApecUtils.addVec(getAnchorPointPosition(), getDeltaPosition()),this.getTotalParentOffset());
     }
 
     /**
@@ -128,6 +126,9 @@ public class GUIComponent {
     public void setScale(float s) {
         this.scale = s;
         this.oneOverScale = 1f/scale;
+        for (GUIComponent subComp : subComponents) {
+            subComp.setScale(s);
+        }
     }
 
     /**
@@ -168,47 +169,34 @@ public class GUIComponent {
      * @return A list of the anchor points of the sub elements
      */
 
-    public List<Vector2f> getSubElementsAnchorPoints() {
-        return new ArrayList<Vector2f>();
-    }
+    public List<GUIComponent> getSubComponentList() { return subComponents; }
 
-    /**
-     * @return A list of the current anchor points of the sub elements
-     */
-    public List<Vector2f> getSubElementsCurrentAnchorPoints() {
-        return ApecUtils.AddVecListToList(getSubElementsAnchorPoints(), getSubElementsDeltaPositions());
-    }
 
-    /**
-     * @return A list of the bounding points of the sub elements
-     */
-    public List<Vector2f> getSubElementsBoundingPoints() {
-        return new ArrayList<Vector2f>();
-    }
-
-    /**
-     * @return A list of the delta positions of the sub elements
-     */
-    public List<Vector2f> getSubElementsDeltaPositions() {
-        return this.subComponentDeltas;
-    }
-
-    public void setSubElementDeltaPosition(Vector2f dp, int id) {
-        this.subComponentDeltas.set(id, dp);
+    public void addSubComponent(GUIComponent child) {
+        child.parent = this;
+        subComponents.add(child);
     }
 
     public boolean hasSubComponents() {
-        return subComponentCount() != 0;
+        return !this.subComponents.isEmpty();
     }
 
     public int subComponentCount() {
-        return this.subComponentDeltas.size();
+        return this.subComponents.size();
+    }
+
+    public Vector2f getTotalParentOffset() {
+        if (this.parent != null) {
+            return ApecUtils.addVec(this.parent.getCurrentAnchorPoint(),this.parent.getTotalParentOffset());
+        } else {
+            return new Vector2f(0,0);
+        }
     }
 
     public void resetDeltaPositions() {
         this.delta_position = new Vector2f(0, 0);
-        for (int i = 0; i < this.subComponentDeltas.size(); i++) {
-            this.subComponentDeltas.set(i, new Vector2f(0, 0));
+        for (GUIComponent subComb : subComponents) {
+            subComb.resetDeltaPositions();
         }
     }
 

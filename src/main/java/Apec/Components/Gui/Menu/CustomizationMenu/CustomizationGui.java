@@ -45,19 +45,23 @@ public class CustomizationGui extends GuiScreen {
                 if (component.scalable)
                     this.buttonList.add(new CustomizationGuiSlider((int) v.x + 7, (int) v.y + 7, component));
             }
+
             if (component.hasSubComponents()) {
                 if (component instanceof InfoBox) {
-                    for (int i = 0; i < component.subComponentCount(); i++) {
-                        if (!component.IsSubcomponentDisabled(i))
-                        this.buttonList.add(new CustomizationGuiButton(component, i, xSnapPoints, ySnapPoints,true));
+                    for (GUIComponent subComp : component.getSubComponentList()) {
+                        if (subComp.enabled) {
+                            this.buttonList.add(new CustomizationGuiButton(subComp, xSnapPoints, ySnapPoints,true));
+                        }
                     }
                 } else {
-                    for (int i = 0; i < component.subComponentCount(); i++) {
-                        if (!component.IsSubcomponentDisabled(i))
-                        this.buttonList.add(new CustomizationGuiButton(component, i, xSnapPoints, ySnapPoints));
+                    for (GUIComponent subComp : component.getSubComponentList()) {
+                        if (subComp.enabled) {
+                            this.buttonList.add(new CustomizationGuiButton(subComp, xSnapPoints, ySnapPoints));
+                        }
                     }
                 }
             }
+
         }
         this.buttonList.add(new CustomizationResetButton(0,sr.getScaledWidth()/2 - 25,0,50,15));
     }
@@ -170,12 +174,12 @@ public class CustomizationGui extends GuiScreen {
             String s = "";
             for (int i = 0;i < components.size();i++) {
                 s += components.get(i).gUiComponentID.ordinal() + "#" + components.get(i).getDeltaPosition().x + "@" + components.get(i).getDeltaPosition().y + "@" + components.get(i).getScale();
-                if (components.get(i).hasSubComponents()) {
+                /*if (components.get(i).hasSubComponents()) {
                     for (int j = 0;j < components.get(i).subComponentCount();j++) {
                         Vector2f delta = components.get(i).getSubElementsDeltaPositions().get(j);
                         s += "\n" + components.get(i).gUiComponentID.ordinal() + "!" + j + "#" + delta.x + "@" + delta.y + "@" + "1.0";
                     }
-                }
+                }*/
                 if (i != components.size() - 1) s += "\n";
             }
             fw.write(s);

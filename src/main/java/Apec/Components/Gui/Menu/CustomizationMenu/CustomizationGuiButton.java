@@ -8,6 +8,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
+import org.lwjgl.Sys;
 import org.lwjgl.util.vector.Vector2f;
 
 import java.util.List;
@@ -23,7 +24,6 @@ public class CustomizationGuiButton extends GuiButton {
 
     List<Integer> xSnapPoint, ySnapPoints;
     GUIComponent guiComponent;
-    int SubComponent = -1;
     public boolean isUserDragging = false;
     private Vector2f fineTuned = new Vector2f(0,0);
     private boolean LockY = false;
@@ -34,12 +34,8 @@ public class CustomizationGuiButton extends GuiButton {
         this.xSnapPoint = xSnapPoint;
         this.ySnapPoints = ySnapPoints;
     }
-    public CustomizationGuiButton (GUIComponent component,int SubComponent,List<Integer> xSnapPoint, List<Integer> ySnapPoints) {
+    public CustomizationGuiButton (GUIComponent component,List<Integer> xSnapPoint, List<Integer> ySnapPoints,boolean LockY) {
         this(component,xSnapPoint,ySnapPoints);
-        this.SubComponent = SubComponent;
-    }
-    public CustomizationGuiButton (GUIComponent component,int SubComponent,List<Integer> xSnapPoint, List<Integer> ySnapPoints,boolean LockY) {
-        this(component,SubComponent,xSnapPoint,ySnapPoints);
         this.LockY = LockY;
     }
 
@@ -48,13 +44,10 @@ public class CustomizationGuiButton extends GuiButton {
         if (this.visible) {
             ScaledResolution sr = new ScaledResolution(mc);
             Vector2f v, rv;
-            if (SubComponent == -1) {
-                v = this.guiComponent.getCurrentAnchorPoint();
-                rv = this.guiComponent.getCurrentBoundingPoint();
-            } else {
-                v = ApecUtils.addVec(this.guiComponent.getCurrentAnchorPoint(),this.guiComponent.getSubElementsCurrentAnchorPoints().get(SubComponent));
-                rv = ApecUtils.addVec(this.guiComponent.getCurrentAnchorPoint(),this.guiComponent.getSubElementsBoundingPoints().get(SubComponent));
-            }
+
+            v = this.guiComponent.getCurrentAnchorPoint();
+            rv = this.guiComponent.getCurrentBoundingPoint();
+
             if (v.x < rv.x && v.y < rv.y) {
                 this.xPosition = (int) v.x;
                 this.yPosition = (int) v.y;
@@ -78,19 +71,18 @@ public class CustomizationGuiButton extends GuiButton {
             }
             GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
             this.hovered = mouseX >= this.xPosition && mouseY >= this.yPosition && mouseX < this.xPosition + this.width && mouseY < this.yPosition + this.height;
+            
             if (this.hovered)
                 drawRect(this.xPosition, this.yPosition, this.xPosition + this.width, this.yPosition + this.height, 0x3adddddd);
             else
                 drawRect(this.xPosition, this.yPosition, this.xPosition + this.width, this.yPosition + this.height, 0x6adddddd);
+
             this.mouseDragged(mc, mouseX, mouseY);
 
             if (isUserDragging) {
                 Vector2f anchor;
-                if (SubComponent == -1) {
-                    anchor = this.guiComponent.getAnchorPointPosition();
-                } else {
-                    anchor = ApecUtils.addVec(this.guiComponent.getSubElementsAnchorPoints().get(SubComponent), this.guiComponent.getAnchorPointPosition());
-                }
+
+                anchor = ApecUtils.addVec(this.guiComponent.getTotalParentOffset(), this.guiComponent.getAnchorPointPosition());
 
                 boolean isSnappedToPositionX = false;
                 boolean isSnappedToPositionY = false;
@@ -100,19 +92,12 @@ public class CustomizationGuiButton extends GuiButton {
                 isSnappedToPositionY = SnapResult.ySnap;
 
 
-                if (SubComponent == -1) {
-                    Vector2f Result = new Vector2f(
-                            isSnappedToPositionX ? SnapResult.vec.x + fineTuned.x : mouseX - anchor.x + fineTuned.x + initialPos.x,
-                            (isSnappedToPositionY ? SnapResult.vec.y + fineTuned.y : mouseY - anchor.y + fineTuned.y + initialPos.y) * (LockY ? 0 : 1)
-                    );
-                    this.guiComponent.setDeltaPosition(Result);
-                } else {
-                    Vector2f Result = new Vector2f(
-                            isSnappedToPositionX ? SnapResult.vec.x + fineTuned.x : mouseX - anchor.x + fineTuned.x + initialPos.x,
-                            (isSnappedToPositionY ? SnapResult.vec.y + fineTuned.y : mouseY - anchor.y + fineTuned.y + initialPos.y) * (LockY ? 0 : 1)
-                    );
-                    this.guiComponent.setSubElementDeltaPosition(Result, SubComponent);
-                }
+                Vector2f Result = new Vector2f(
+                        isSnappedToPositionX ? SnapResult.vec.x + fineTuned.x : mouseX - anchor.x + fineTuned.x + initialPos.x,
+                        (isSnappedToPositionY ? SnapResult.vec.y + fineTuned.y : mouseY - anchor.y + fineTuned.y + initialPos.y) * (LockY ? 0 : 1)
+                );
+                this.guiComponent.setDeltaPosition(Result);
+
             } else {
                 this.fineTuned = new Vector2f(0, 0);
             }
@@ -152,20 +137,13 @@ public class CustomizationGuiButton extends GuiButton {
 
     public void userStartedDragging(int mouseX,int mouseY) {
         initialPos = this.guiComponent.getCurrentAnchorPoint();
-        if (SubComponent != -1) {
-            initialPos = ApecUtils.addVec(initialPos,this.guiComponent.getSubElementsCurrentAnchorPoints().get(SubComponent));
-        }
         initialPos.x -= mouseX;
         initialPos.y -= mouseY;
         this.isUserDragging = true;
     }
 
     public void setDeltaToZero() {
-        if (SubComponent == -1) {
-            this.guiComponent.setDeltaPosition(new Vector2f(0, 0));
-        } else {
-            this.guiComponent.setSubElementDeltaPosition(new Vector2f(0,0),SubComponent);
-        }
+        this.guiComponent.setDeltaPosition(new Vector2f(0, 0));
     }
 
     public void fineRepositioning(Vector2f v) {
