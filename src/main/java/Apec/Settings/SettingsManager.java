@@ -77,6 +77,8 @@ public class SettingsManager {
         add(new Setting("showSoulflow", SHOW_SOULFLOW, CategoryID.GUI, false));
         add(new Setting("separateSoulflowDisplay", SEPARATE_SOULFLOW_DISPLAY, CategoryID.GUI, false));
         add(new Setting("useCenteredAbilityText", CENTER_ABILITY_TEXT, CategoryID.GUI, false));
+        add(new Setting("showWitherShield", WITHER_SHIELD, CategoryID.GUI, false));
+        add(new Setting("useCenteredWitherShield", CENTER_WITHER_SHIELD, CategoryID.GUI, false));
     }};
 
     /** Hashmap that holds the titles and descriptions of each setting */
@@ -135,6 +137,8 @@ public class SettingsManager {
         put(SHOW_SOULFLOW, new Tuple<String,String> ("Show Soulflow","Show soulflow. Must have Soulflow Accessory in inventory."));
         put(SEPARATE_SOULFLOW_DISPLAY, new Tuple<String,String> ("Separate Soulflow Display","Separates soulfow from the info bar."));
         put(CENTER_ABILITY_TEXT, new Tuple<String,String> ("Center Abilities","Centers the Ability Text."));
+        put(WITHER_SHIELD, new Tuple<String,String> ("Show Wither Shield","Shows if Wither Shield is ready."));
+        put(CENTER_WITHER_SHIELD, new Tuple<String,String> ("Center Wither Shield","Centers the Wither Shield CD."));
     }};
 
     /** Cache for setting states */

@@ -26,5 +26,6 @@ public enum GUIComponentID {
     EDIT_GRID,
     POWDER_DISPLAY,
     DRILL_FUEL,
-    SOULFLOW_TEXT
+    SOULFLOW_TEXT,
+    WITHER_SHIELD
 }

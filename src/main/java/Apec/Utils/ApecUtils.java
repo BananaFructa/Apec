@@ -17,6 +17,7 @@ import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.StatCollector;
 import net.minecraft.util.Tuple;
 import net.minecraftforge.client.event.GuiOpenEvent;
+import net.minecraftforge.common.util.Constants;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.lwjgl.util.vector.Vector2f;
 
@@ -28,6 +29,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import com.google.common.collect.Lists;
+import scala.collection.immutable.Stream;
 
 public class ApecUtils {
 
@@ -609,15 +611,12 @@ public class ApecUtils {
      */
     public static List<String> getItemLore(ItemStack item){
         List<String> lore = new ArrayList<String>();
-        if (item.hasTagCompound() && item.getTagCompound().hasKey("display", 10)) {
+        if (item.hasTagCompound() && item.getTagCompound().hasKey("display", Constants.NBT.TAG_COMPOUND)) {
             NBTTagCompound nbtTagCompound = item.getTagCompound().getCompoundTag("display");
-            if (nbtTagCompound.getTagId("Lore") == 9) {
-                NBTTagList nbtTagList = nbtTagCompound.getTagList("Lore", 8);
-                int tagCount = nbtTagList.tagCount();
-                if (tagCount > 0) {
-                    for (int i = 0; i < nbtTagList.tagCount(); i++) {
-                        lore.add(nbtTagList.getStringTagAt(i));
-                    }
+            if (nbtTagCompound.getTagId("Lore") == Constants.NBT.TAG_LIST) {
+                NBTTagList nbtTagList = nbtTagCompound.getTagList("Lore", Constants.NBT.TAG_STRING);
+                for (int i = 0; i < nbtTagList.tagCount(); i++) {
+                    lore.add(nbtTagList.getStringTagAt(i));
                 }
             }
         }

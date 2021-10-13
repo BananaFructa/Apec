@@ -37,11 +37,11 @@ public class DrillFuelBar extends GUIComponent {
     public void onTick(TickEvent.ClientTickEvent event) {
         if(mc.thePlayer != null && ApecMain.Instance.settingsManager.getSettingState(SettingID.DRILL_FUEL_BAR)){
             try{
-                ItemStack item = mc.thePlayer.getHeldItem();
-                if(item != null){
-                    String internalName = ApecUtils.getInternalItemName(item);
+                ItemStack heldItem = mc.thePlayer.getHeldItem();
+                if(heldItem != null){
+                    String internalName = ApecUtils.getInternalItemName(heldItem);
                     if(internalName.contains("_DRILL")){
-                        List<String> lore = ApecUtils.getItemLore(item);
+                        List<String> lore = ApecUtils.getItemLore(heldItem);
                         fuelAmount = -1.0f;
                         for (String s : lore){
                             if(s.contains("Fuel:")){
