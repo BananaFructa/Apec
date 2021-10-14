@@ -36,7 +36,7 @@ public class WitherShield extends GUIComponent {
 
     @SubscribeEvent
     public void onRightClickItem(PlayerInteractEvent event) {
-        if(ApecMain.Instance.settingsManager.getSettingState(SettingID.WITHER_SHIELD) && nextShield <= 3){
+        if(ApecMain.Instance.settingsManager.getSettingState(SettingID.WITHER_SHIELD) && nextShield <= 5){
             if(event.action == PlayerInteractEvent.Action.RIGHT_CLICK_AIR || event.action == PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK){
                 if(event.entityPlayer != null){
                     ItemStack heldItem = event.entityPlayer.getHeldItem();
