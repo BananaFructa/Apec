@@ -5,6 +5,8 @@ import Apec.Settings.SettingID;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.GuiIngame;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.IInventory;
@@ -12,10 +14,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagString;
-import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.EnumChatFormatting;
-import net.minecraft.util.StatCollector;
-import net.minecraft.util.Tuple;
+import net.minecraft.util.*;
 import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.common.util.Constants;
 import org.apache.commons.lang3.reflect.FieldUtils;
@@ -341,6 +340,27 @@ public class ApecUtils {
                 Minecraft.getMinecraft().fontRendererObj.drawString(s,x,y,c);
                 break;
         };
+    }
+    public static void drawStylizedStringWithIcon(String s, int x, int y, int c, Icon icon, boolean useIcons) {
+        drawStylizedStringWithIcon(s,x,y,c,icon,useIcons,false);
+    }
+    public static void drawStylizedStringWithIcon(String s, int x, int y, int c, Icon icon, boolean useIcons, boolean alignRight){
+        Minecraft mc = Minecraft.getMinecraft();
+        GuiIngame gi = mc.ingameGUI;
+        mc.renderEngine.bindTexture(new ResourceLocation(ApecMain.modId, icon.texture));
+        int stringWidth = mc.fontRendererObj.getStringWidth(s);
+        if(useIcons){
+            GlStateManager.color(255,255,255,255);
+            if(alignRight){
+                gi.drawTexturedModalRect(x + stringWidth + 2, y - 1, icon.x, icon.y, icon.w, icon.h);
+                drawStylizedString(s,x,y,c);
+            }else{
+                gi.drawTexturedModalRect(x, y - 1, icon.x, icon.y, icon.w, icon.h);
+                drawStylizedString(s,x + icon.w + 2,y,c);
+            }
+        }else{
+            drawStylizedString(s,x,y,c);
+        }
     }
 
     /**
@@ -673,5 +693,17 @@ public class ApecUtils {
             }
         }
         return -1;
+    }
+
+    public static class Icon{
+        private String texture;
+        private int x,y,w,h;
+        public Icon(String texture, int x, int y, int w, int h){
+            this.texture = texture;
+            this.x = x;
+            this.y = y;
+            this.w = w;
+            this.h = h;
+        }
     }
 }

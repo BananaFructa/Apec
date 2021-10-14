@@ -2,6 +2,7 @@ package Apec.Components.Gui.GuiIngame.GuiElements;
 
 import Apec.ApecMain;
 import Apec.Utils.ApecUtils;
+import Apec.Utils.ApecUtils.Icon;
 import Apec.Components.Gui.GuiIngame.GUIComponent;
 import Apec.Components.Gui.GuiIngame.GUIComponentID;
 import Apec.DataInterpretation.DataExtractor;
@@ -33,6 +34,16 @@ public class InfoBox extends GUIComponent {
                 AttackSpeedStringWidth = 0, GemstonePowderStringWidth = 0, MithrilPowderStringWidth = 0,
                 SoulflowStringWidth = 0;
 
+    public final Icon defenceIcon = new Icon("gui/statBars.png", 32, 215, 7, 10);
+    public final Icon speedIcon = new Icon("gui/statBars.png", 40, 216, 9, 9);
+    public final Icon strengthIcon  = new Icon("gui/statBars.png", 50, 216, 9, 9);
+    public final Icon critChanceIcon = new Icon("gui/statBars.png", 60, 216, 9, 9);
+    public final Icon critDamageIcon = new Icon("gui/statBars.png", 70, 216, 9, 9);
+    public final Icon attackSpeedIcon = new Icon("gui/statBars.png", 80, 216, 9, 9);
+    public final Icon mithrilPowderIcon = new Icon("gui/statBars.png", 90, 216, 9, 9);
+    public final Icon gemstonePowderIcon = new Icon("gui/statBars.png", 100, 216, 9, 9);
+    public final Icon soulflowIcon = new Icon("gui/statBars.png", 110, 216, 9, 9);
+
     @Override
     public void drawTex(DataExtractor.PlayerStats ps, DataExtractor.ScoreBoardData sd, DataExtractor.OtherData od, DataExtractor.TabStats ts, ScaledResolution sr, boolean editingMode) {
         super.drawTex(ps, sd, od, ts, sr, editingMode);
@@ -50,7 +61,6 @@ public class InfoBox extends GUIComponent {
         }
         GlStateManager.scale(scale,scale,1);
         if (UseIcons) {
-
             GuiPos.y += yDecremetor + 6*scale;
             mc.renderEngine.bindTexture(new ResourceLocation(ApecMain.modId, "gui/statBars.png"));
             gi.drawTexturedModalRect((int)(GuiPos.x + 20 + (subComponentDeltas.get(0).getX())*oneOverScale), (GuiPos.y+ subComponentDeltas.get(0).getY())*oneOverScale -1,1,216,6,9);
@@ -59,42 +69,6 @@ public class InfoBox extends GUIComponent {
                 gi.drawTexturedModalRect((int) (GuiPos.x + 20 + (subComponentDeltas.get(2).getX())*oneOverScale + 220 - 1), (GuiPos.y + subComponentDeltas.get(2).getY())*oneOverScale -1, 24, 216, 7, 8);
             } else {
                 gi.drawTexturedModalRect((int) (GuiPos.x + 20 + (subComponentDeltas.get(2).getX())*oneOverScale + 220), (GuiPos.y + subComponentDeltas.get(2).getY())*oneOverScale -1, 14, 216, 9, 9);
-            }
-            if (!ApecMain.Instance.settingsManager.getSettingState(SettingID.USE_DEFENCE_OUT_OF_BB) || editingMode) {
-                gi.drawTexturedModalRect((int) (GuiPos.x + 20 + (subComponentDeltas.get(3).getX()) * oneOverScale + 360),  (GuiPos.y + subComponentDeltas.get(3).getY()) * oneOverScale - 1, 32, 215, 7, 10);
-            }
-            if (ApecMain.Instance.settingsManager.getSettingState(SettingID.SHOW_SPEED) || editingMode) {
-                gi.drawTexturedModalRect((int) (GuiPos.x + 20 + (subComponentDeltas.get(5).getX()) * oneOverScale + 400),  (GuiPos.y + subComponentDeltas.get(5).getY()) * oneOverScale - 1, 40, 216, 9, 9);
-            }
-            if (ApecMain.Instance.settingsManager.getSettingState(SettingID.SHOW_STRENGTH) || editingMode) {
-                gi.drawTexturedModalRect((int) (GuiPos.x + 20 + (subComponentDeltas.get(6).getX()) * oneOverScale + 440),  (GuiPos.y + subComponentDeltas.get(6).getY()) * oneOverScale - 1, 50, 216, 9, 9);
-            }
-    
-            if (ApecMain.Instance.settingsManager.getSettingState(SettingID.SHOW_CRIT_CHANCE) || editingMode) {
-                gi.drawTexturedModalRect((int) (GuiPos.x + 20 + (subComponentDeltas.get(7).getX()) * oneOverScale + 480),  (GuiPos.y + subComponentDeltas.get(7).getY()) * oneOverScale - 1, 60, 216, 9, 9);
-            }
-    
-            if (ApecMain.Instance.settingsManager.getSettingState(SettingID.SHOW_CRIT_DAMAGE) || editingMode) {
-                gi.drawTexturedModalRect((int) (GuiPos.x + 20 + (subComponentDeltas.get(8).getX()) * oneOverScale + 520),  (GuiPos.y + subComponentDeltas.get(8).getY()) * oneOverScale - 1, 70, 216, 9, 9);
-            }
-    
-            if (ApecMain.Instance.settingsManager.getSettingState(SettingID.SHOW_ATTACK_SPEED) || editingMode) {
-                gi.drawTexturedModalRect((int) (GuiPos.x + 20 + (subComponentDeltas.get(9).getX()) * oneOverScale + 560),  (GuiPos.y + subComponentDeltas.get(9).getY()) * oneOverScale - 1, 80, 216, 9, 9);
-            }
-    
-            if(!ApecMain.Instance.settingsManager.getSettingState(SettingID.SEPARATE_POWDER_DISPLAY)){
-                if (ApecMain.Instance.settingsManager.getSettingState(SettingID.SHOW_MITHRIL_POWDER) || editingMode) {
-                    gi.drawTexturedModalRect((int) (GuiPos.x + 20 + (subComponentDeltas.get(10).getX()) * oneOverScale + 600),  (GuiPos.y + subComponentDeltas.get(10).getY()) * oneOverScale - 1, 90, 216, 9, 9);
-                }
-        
-                if (ApecMain.Instance.settingsManager.getSettingState(SettingID.SHOW_GEMSTONE_POWDER) || editingMode) {
-                    gi.drawTexturedModalRect((int) (GuiPos.x + 20 + (subComponentDeltas.get(11).getX()) * oneOverScale + 660),  (GuiPos.y + subComponentDeltas.get(11).getY()) * oneOverScale - 1, 100, 216, 9, 9);
-                }
-            }
-            if(!ApecMain.Instance.settingsManager.getSettingState(SettingID.SEPARATE_SOULFLOW_DISPLAY) || editingMode){
-                if (ApecMain.Instance.settingsManager.getSettingState(SettingID.SHOW_SOULFLOW) || editingMode) {
-                    gi.drawTexturedModalRect((int) (GuiPos.x + 20 + (subComponentDeltas.get(12).getX()) * oneOverScale + 700) + SoulflowStringWidth + 3,  (GuiPos.y + subComponentDeltas.get(12).getY()) * oneOverScale - 1, 110, 216, 9, 9);
-                }
             }
         }
         GlStateManager.scale(1,1,1);
@@ -170,85 +144,104 @@ public class InfoBox extends GUIComponent {
                 0xffffff
         );
 
-        if (!ApecMain.Instance.settingsManager.getSettingState(SettingID.USE_DEFENCE_OUT_OF_BB) || editingMode) {
-            ApecUtils.drawStylizedString(
+        if (!ApecMain.Instance.settingsManager.getSettingState(SettingID.USE_DEFENCE_OUT_OF_BB)) {
+            ApecUtils.drawStylizedStringWithIcon(
                     defenceText,
-                    (int) (GuiPos.x + 20 + (subComponentDeltas.get(3).getX() + (UseIcons ? 10 : 0)) * oneOverScale + 360),
+                    (int) (GuiPos.x + 20 + (subComponentDeltas.get(3).getX()) * oneOverScale + 360),
                     (int) ((GuiPos.y + subComponentDeltas.get(3).getY()) * oneOverScale),
-                    0xffffff
+                    0xffffff,
+                    defenceIcon,
+                    UseIcons
             );
         }
 
-        if (ApecMain.Instance.settingsManager.getSettingState(SettingID.SHOW_SPEED) || editingMode) {
-            ApecUtils.drawStylizedString(
+        if (ApecMain.Instance.settingsManager.getSettingState(SettingID.SHOW_SPEED)) {
+            ApecUtils.drawStylizedStringWithIcon(
                     speedText,
-                    (int) (GuiPos.x + 20 + (subComponentDeltas.get(5).getX() + (UseIcons ? 11 : 0)) * oneOverScale + 400),
+                    (int) (GuiPos.x + 20 + (subComponentDeltas.get(5).getX()) * oneOverScale + 400),
                     (int) ((GuiPos.y + subComponentDeltas.get(5).getY()) * oneOverScale),
-                    0xffffff
+                    0xffffff,
+                    speedIcon,
+                    UseIcons
             );
         }
-        if (ApecMain.Instance.settingsManager.getSettingState(SettingID.SHOW_STRENGTH) || editingMode) {
-            ApecUtils.drawStylizedString(
+        if (ApecMain.Instance.settingsManager.getSettingState(SettingID.SHOW_STRENGTH)) {
+            ApecUtils.drawStylizedStringWithIcon(
                     strengthText,
-                    (int) (GuiPos.x + 20 + (subComponentDeltas.get(6).getX() + (UseIcons ? 11 : 0)) * oneOverScale + 440),
+                    (int) (GuiPos.x + 20 + (subComponentDeltas.get(6).getX()) * oneOverScale + 440),
                     (int) ((GuiPos.y + subComponentDeltas.get(6).getY()) * oneOverScale),
-                    0xFF5555
+                    0xFF5555,
+                    strengthIcon,
+                    UseIcons
             );
         }
 
-        if (ApecMain.Instance.settingsManager.getSettingState(SettingID.SHOW_CRIT_CHANCE) || editingMode) {
-            ApecUtils.drawStylizedString(
+        if (ApecMain.Instance.settingsManager.getSettingState(SettingID.SHOW_CRIT_CHANCE)) {
+            ApecUtils.drawStylizedStringWithIcon(
                     critChanceText,
-                    (int) (GuiPos.x + 20 + (subComponentDeltas.get(7).getX() + (UseIcons ? 11 : 0)) * oneOverScale + 480),
+                    (int) (GuiPos.x + 20 + (subComponentDeltas.get(7).getX()) * oneOverScale + 480),
                     (int) ((GuiPos.y + subComponentDeltas.get(7).getY()) * oneOverScale),
-                    0x5555FF
+                    0x5555FF,
+                    critChanceIcon,
+                    UseIcons
             );
         }
 
-        if (ApecMain.Instance.settingsManager.getSettingState(SettingID.SHOW_CRIT_DAMAGE) || editingMode) {
-            ApecUtils.drawStylizedString(
+        if (ApecMain.Instance.settingsManager.getSettingState(SettingID.SHOW_CRIT_DAMAGE)) {
+            ApecUtils.drawStylizedStringWithIcon(
                     critDamageText,
-                    (int) (GuiPos.x + 20 + (subComponentDeltas.get(8).getX() + (UseIcons ? 11 : 0)) * oneOverScale + 520),
+                    (int) (GuiPos.x + 20 + (subComponentDeltas.get(8).getX()) * oneOverScale + 520),
                     (int) ((GuiPos.y + subComponentDeltas.get(8).getY()) * oneOverScale),
-                    0x5555FF
+                    0x5555FF,
+                    critDamageIcon,
+                    UseIcons
             );
         }
 
-        if (ApecMain.Instance.settingsManager.getSettingState(SettingID.SHOW_ATTACK_SPEED) || editingMode) {
-            ApecUtils.drawStylizedString(
+        if (ApecMain.Instance.settingsManager.getSettingState(SettingID.SHOW_ATTACK_SPEED)) {
+            ApecUtils.drawStylizedStringWithIcon(
                     attackSpeedText,
-                    (int) (GuiPos.x + 20 + (subComponentDeltas.get(9).getX() + (UseIcons ? 11 : 0)) * oneOverScale + 560),
+                    (int) (GuiPos.x + 20 + (subComponentDeltas.get(9).getX()) * oneOverScale + 560),
                     (int) ((GuiPos.y + subComponentDeltas.get(9).getY()) * oneOverScale),
-                    0xFFFF55
+                    0xFFFF55,
+                    attackSpeedIcon,
+                    UseIcons
             );
         }
 
         if(!ApecMain.Instance.settingsManager.getSettingState(SettingID.SEPARATE_POWDER_DISPLAY)){
-            if (ApecMain.Instance.settingsManager.getSettingState(SettingID.SHOW_MITHRIL_POWDER) || editingMode) {
-                ApecUtils.drawStylizedString(
+            if (ApecMain.Instance.settingsManager.getSettingState(SettingID.SHOW_MITHRIL_POWDER)) {
+                ApecUtils.drawStylizedStringWithIcon(
                         mithrilPowderText,
-                        (int) (GuiPos.x + 20 + (subComponentDeltas.get(10).getX() + (UseIcons ? 11 : 0)) * oneOverScale + 600),
+                        (int) (GuiPos.x + 20 + (subComponentDeltas.get(10).getX()) * oneOverScale + 600),
                         (int) ((GuiPos.y + subComponentDeltas.get(10).getY()) * oneOverScale),
-                        0x00AA00
+                        0x00AA00,
+                        mithrilPowderIcon,
+                        UseIcons
                 );
             }
     
-            if (ApecMain.Instance.settingsManager.getSettingState(SettingID.SHOW_GEMSTONE_POWDER) || editingMode) {
-                ApecUtils.drawStylizedString(
+            if (ApecMain.Instance.settingsManager.getSettingState(SettingID.SHOW_GEMSTONE_POWDER)) {
+                ApecUtils.drawStylizedStringWithIcon(
                         gemstonePowderText,
-                        (int) (GuiPos.x + 20 + (subComponentDeltas.get(11).getX() + (UseIcons ? 11 : 0)) * oneOverScale + 660),
+                        (int) (GuiPos.x + 20 + (subComponentDeltas.get(11).getX()) * oneOverScale + 660),
                         (int) ((GuiPos.y + subComponentDeltas.get(11).getY()) * oneOverScale),
-                        0xFF55FF
+                        0xFF55FF,
+                        gemstonePowderIcon,
+                        UseIcons
                 );
             }
         }
-        if(!ApecMain.Instance.settingsManager.getSettingState(SettingID.SEPARATE_SOULFLOW_DISPLAY) || editingMode){
-            if (ApecMain.Instance.settingsManager.getSettingState(SettingID.SHOW_SOULFLOW) || editingMode) {
-                ApecUtils.drawStylizedString(
+        if(!ApecMain.Instance.settingsManager.getSettingState(SettingID.SEPARATE_SOULFLOW_DISPLAY)){
+            if (ApecMain.Instance.settingsManager.getSettingState(SettingID.SHOW_SOULFLOW)) {
+                ApecUtils.drawStylizedStringWithIcon(
                         soulflowText,
                         (int) (GuiPos.x + 20 + (subComponentDeltas.get(12).getX()) * oneOverScale + 700),
                         (int) ((GuiPos.y + subComponentDeltas.get(12).getY()) * oneOverScale),
-                        0x00AAAA
+                        0x00AAAA,
+                        soulflowIcon,
+                        UseIcons,
+                        true
                 );
             }
         }
