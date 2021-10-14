@@ -27,6 +27,8 @@ import java.util.Scanner;
 
 import static net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType.*;
 
+// TODO: disabling when off certain elements
+// TODO: save system
 
 public class GUIModifier extends Component {
 
@@ -170,13 +172,13 @@ public class GUIModifier extends Component {
             GlStateManager.color(1,1,1,1);
             // Draws the screen components
             for (GUIComponent component : GUIComponents) {
-                if (shouldBlockF3(component)) continue;
+                if (shouldBlockF3(component) || !component.enabled) continue;
                 GlStateManager.pushMatrix();
                 component.drawTex(ps, sd, od, ts, sr,mc.currentScreen instanceof CustomizationGui);
                 GlStateManager.popMatrix();
             }
             for (GUIComponent component : GUIComponents) {
-                if (shouldBlockF3(component)) continue;
+                if (shouldBlockF3(component) || !component.enabled) continue;
                 GlStateManager.pushMatrix();
                 component.draw(ps, sd, od, ts, sr,mc.currentScreen instanceof CustomizationGui);
                 GlStateManager.popMatrix();
@@ -264,12 +266,9 @@ public class GUIModifier extends Component {
             while (scanner.hasNextLine()) {
                 String s = scanner.nextLine();
                 String[] tempSplit = s.split("#");
-                int subComponent = -1;
                 int idx = 0;
                 if (tempSplit[0].contains("!")) {
-                    String[] tempSplit_ = tempSplit[0].split("!");
-                    idx = Integer.parseInt(tempSplit_[0]);
-                    subComponent = Integer.parseInt(tempSplit_[1]);
+                    continue; // Legacy support for save files still containing the old subelement system
                 } else {
                     idx = Integer.parseInt(tempSplit[0]);
                 }
@@ -278,12 +277,8 @@ public class GUIModifier extends Component {
                 if (tempSplit[1].split("@").length == 3) {
                     scale = Float.parseFloat(tempSplit[1].split("@")[2]);
                 }
-                if (subComponent == -1) {
-                    getGuiComponent(GUIComponentID.values()[idx]).setDeltaPosition(delta);
-                    getGuiComponent(GUIComponentID.values()[idx]).setScale(scale);
-                } else {
-                    getGuiComponent(GUIComponentID.values()[idx]).setSubElementDeltaPosition(delta,subComponent);
-                }
+                getGuiComponent(GUIComponentID.values()[idx]).setDeltaPosition(delta);
+                getGuiComponent(GUIComponentID.values()[idx]).setScale(scale);
             }
             scanner.close();
         } catch (IOException e) {

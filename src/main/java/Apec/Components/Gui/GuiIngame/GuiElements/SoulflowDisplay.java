@@ -28,10 +28,6 @@ public class SoulflowDisplay extends TextComponent {
 
             String soulflowString = ps.Soulflow + "\u2e0e";
 
-            if(editingMode){
-                soulflowString = "123456\u2e0e";
-            }
-
             soulflowStringWidth = mc.fontRendererObj.getStringWidth(soulflowString);
             if(ps.Soulflow > -1 || editingMode){
                 ApecUtils.drawStylizedString(soulflowString, (int) (StatBar.x - soulflowStringWidth), (int) (StatBar.y - 10), 0x00AAAA);
