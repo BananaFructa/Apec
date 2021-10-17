@@ -4,12 +4,14 @@ import Apec.ApecMain;
 import Apec.Components.Gui.GuiIngame.GUIComponent;
 import Apec.Components.Gui.GuiIngame.GUIComponentID;
 import Apec.DataInterpretation.DataExtractor;
+import Apec.Events.ApecSettingChangedState;
 import Apec.Settings.SettingID;
 import Apec.Utils.ApecUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiIngame;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.lwjgl.util.vector.Vector2f;
 
 public class IBCritChance extends GUIComponent {
@@ -21,6 +23,12 @@ public class IBCritChance extends GUIComponent {
     }
 
     @Override
+    public void init() {
+        super.init();
+        this.editable = ApecMain.Instance.settingsManager.getSettingState(SettingID.SHOW_CRIT_CHANCE);
+    }
+
+    @Override
     public void drawTex(DataExtractor.PlayerStats ps, DataExtractor.ScoreBoardData sd, DataExtractor.OtherData od, DataExtractor.TabStats ts, ScaledResolution sr, boolean editingMode) {
         super.drawTex(ps, sd, od, ts, sr, editingMode);
         mc.renderEngine.bindTexture(new ResourceLocation(ApecMain.modId, "gui/statBars.png"));
@@ -28,9 +36,7 @@ public class IBCritChance extends GUIComponent {
         if (!UseIcons) return;
         Vector2f pos = getCurrentAnchorPoint();
         GuiIngame gi = Minecraft.getMinecraft().ingameGUI;
-        if (ApecMain.Instance.settingsManager.getSettingState(SettingID.SHOW_CRIT_CHANCE) || editingMode) {
-            gi.drawTexturedModalRect((int) (pos.x * oneOverScale),  pos.y * oneOverScale - 1, 60, 216, 9, 9);
-        }
+        gi.drawTexturedModalRect((int) (pos.x * oneOverScale),  pos.y * oneOverScale - 1, 60, 216, 9, 9);
     }
 
     @Override
@@ -41,20 +47,24 @@ public class IBCritChance extends GUIComponent {
         String critChanceText = (UseIcons ? ts.CritChance : "\u2623" + ts.CritChance);
         Vector2f pos = getCurrentAnchorPoint();
         CritChanceStringWidth = mc.fontRendererObj.getStringWidth(critChanceText);
-        if (ApecMain.Instance.settingsManager.getSettingState(SettingID.SHOW_CRIT_CHANCE) || editingMode) {
-            ApecUtils.drawStylizedString(
-                    critChanceText,
-                    (int) ((pos.x+ (UseIcons ? 11 : 0)) * oneOverScale),
-                    (int) (pos.y * oneOverScale),
-                    0x5555FF
-            );
-        }
+        ApecUtils.drawStylizedString(
+                critChanceText,
+                (int) ((pos.x + (UseIcons ? 11 : 0)) * oneOverScale),
+                (int) (pos.y * oneOverScale),
+                0x5555FF
+        );
+    }
 
+    @SubscribeEvent
+    public void onSettingChanged(ApecSettingChangedState event) {
+        if (event.settingID == SettingID.SHOW_CRIT_CHANCE) {
+            this.enabled = event.state;
+        }
     }
 
     @Override
     public Vector2f getAnchorPointPosition() {
-        return new Vector2f(480*scale + 20 * scale, 6*scale);
+        return new Vector2f(420*scale + 20 * scale, 6*scale);
     }
 
     @Override

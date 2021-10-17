@@ -1,6 +1,7 @@
 package Apec.Components.Gui.GuiIngame.GuiElements;
 
 import Apec.ApecMain;
+import Apec.Events.ApecSettingChangedState;
 import Apec.Utils.ApecUtils;
 import Apec.ComponentId;
 import Apec.Components.Gui.GuiIngame.GUIComponent;
@@ -10,6 +11,7 @@ import Apec.DataInterpretation.DataExtractor;
 import Apec.Settings.SettingID;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.lwjgl.util.vector.Vector2f;
 
 public class AbilityText extends GUIComponent {
@@ -26,6 +28,7 @@ public class AbilityText extends GUIComponent {
     public void init() {
         super.init();
         mpText = (MpText) GUIModifier.Instance.getGuiComponent(GUIComponentID.MP_TEXT);
+        this.enabled = ApecMain.Instance.settingsManager.getSettingState(SettingID.SHOW_ABILITY_TEXT);
     }
 
     @Override
@@ -39,7 +42,7 @@ public class AbilityText extends GUIComponent {
         } else {
             AnchorPosition.x = mpText.getAnchorPointPosition().x;
         }
-        if ((ApecMain.Instance.settingsManager.getSettingState(SettingID.SHOW_ABILITY_TEXT) && ps.IsAbilityShown) || editingMode) {
+        if (ps.IsAbilityShown || editingMode) {
             stringWidth = mc.fontRendererObj.getStringWidth(ps.AbilityText);
             Vector2f rap = ApecUtils.scalarMultiply(getCurrentAnchorPoint(),oneOverScale);
             ApecUtils.drawStylizedString(
@@ -50,6 +53,13 @@ public class AbilityText extends GUIComponent {
             );
         }
         GlStateManager.popMatrix();
+    }
+
+    @SubscribeEvent
+    public void onSettingChanged(ApecSettingChangedState event) {
+        if (event.settingID == SettingID.SHOW_ABILITY_TEXT) {
+            this.enabled = event.state;
+        }
     }
 
     @Override

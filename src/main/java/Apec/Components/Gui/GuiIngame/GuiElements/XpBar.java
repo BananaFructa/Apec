@@ -1,6 +1,7 @@
 package Apec.Components.Gui.GuiIngame.GuiElements;
 
 import Apec.ApecMain;
+import Apec.Events.ApecSettingChangedState;
 import Apec.Utils.ApecUtils;
 import Apec.Components.Gui.GuiIngame.GUIComponent;
 import Apec.Components.Gui.GuiIngame.GUIComponentID;
@@ -11,6 +12,7 @@ import net.minecraft.client.gui.GuiIngame;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.lwjgl.util.vector.Vector2f;
 
 public class XpBar extends GUIComponent {
@@ -20,21 +22,32 @@ public class XpBar extends GUIComponent {
     }
 
     @Override
+    public void init() {
+        super.init();
+        this.enabled = ApecMain.Instance.settingsManager.getSettingState(SettingID.XP_BAR);
+    }
+
+    @Override
     public void drawTex(DataExtractor.PlayerStats ps, DataExtractor.ScoreBoardData sd, DataExtractor.OtherData od, DataExtractor.TabStats ts, ScaledResolution sr,boolean editingMode) {
-        super.drawTex(ps,sd,od,ts,sr,editingMode);
+        super.drawTex(ps, sd, od, ts, sr, editingMode);
         GlStateManager.pushMatrix();
-        GlStateManager.scale(scale,scale,scale);
-        if (ApecMain.Instance.settingsManager.getSettingState(SettingID.XP_BAR)) {
-            GuiIngame gi = Minecraft.getMinecraft().ingameGUI;
+        GlStateManager.scale(scale, scale, scale);
+        GuiIngame gi = Minecraft.getMinecraft().ingameGUI;
 
-            Vector2f StatBar = ApecUtils.scalarMultiply(getCurrentAnchorPoint(),oneOverScale);
+        Vector2f StatBar = ApecUtils.scalarMultiply(getCurrentAnchorPoint(), oneOverScale);
 
-            mc.renderEngine.bindTexture(new ResourceLocation(ApecMain.modId, "gui/statBars.png"));
+        mc.renderEngine.bindTexture(new ResourceLocation(ApecMain.modId, "gui/statBars.png"));
 
-            gi.drawTexturedModalRect((int) StatBar.x, (int) StatBar.y, 0, 30, 182, 5);
-            gi.drawTexturedModalRect((int) StatBar.x, (int) StatBar.y, 0, 35, (int) (this.mc.thePlayer.experience * 182f), 5);
-        }
+        gi.drawTexturedModalRect((int) StatBar.x, (int) StatBar.y, 0, 30, 182, 5);
+        gi.drawTexturedModalRect((int) StatBar.x, (int) StatBar.y, 0, 35, (int) (this.mc.thePlayer.experience * 182f), 5);
         GlStateManager.popMatrix();
+    }
+
+    @SubscribeEvent
+    public void onSettingChanged(ApecSettingChangedState event) {
+        if (event.settingID == SettingID.XP_BAR) {
+            this.enabled = event.state;
+        }
     }
 
     @Override

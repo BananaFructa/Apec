@@ -1,6 +1,7 @@
 package Apec.Components.Gui.GuiIngame.GuiElements;
 
 import Apec.ApecMain;
+import Apec.Events.ApecSettingChangedState;
 import Apec.Utils.ApecUtils;
 import Apec.ComponentId;
 import Apec.Components.Gui.GuiIngame.GUIComponentID;
@@ -13,6 +14,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.lwjgl.util.vector.Vector2f;
 
 public class SkillText extends TextComponent {
@@ -21,56 +23,68 @@ public class SkillText extends TextComponent {
         super(GUIComponentID.SKILL_TEXT);
     }
 
+    @Override
+    public void init() {
+        super.init();
+        this.enabled = ApecMain.Instance.settingsManager.getSettingState(SettingID.SKILL_TEXT);
+    }
+
     int stringWidth = 0;
 
     @Override
     public void draw(DataExtractor.PlayerStats ps, DataExtractor.ScoreBoardData sd, DataExtractor.OtherData od, DataExtractor.TabStats ts, ScaledResolution sr, boolean editingMode) {
-        super.draw(ps,sd,od,ts,sr,editingMode);
+        super.draw(ps, sd, od, ts, sr, editingMode);
         GlStateManager.pushMatrix();
-        if (ApecMain.Instance.settingsManager.getSettingState(SettingID.SKILL_TEXT)) {
-            GlStateManager.scale(scale, scale, scale);
-            Vector2f p = ApecUtils.scalarMultiply(getCurrentAnchorPoint(),oneOverScale);
-            if (ps.SkillIsShown) {
-                stringWidth = Minecraft.getMinecraft().fontRendererObj.getStringWidth(ps.SkillInfo);
-                if (ps.SkillInfo.contains("Rune")) {
-                    ApecUtils.drawStylizedString(ps.SkillInfo, (int) (p.x), (int) (p.y - 10), 0x6B3694);
-                } else {
-                    SkillType skillType =  SkillType.GetSkillType(ps.SkillInfo);
-                    int color = 0x4ca7a8;
-                    if (ApecMain.Instance.settingsManager.getSettingState(SettingID.COLORED_SKILL_XP) && skillType != SkillType.NONE) {
-                        mc.renderEngine.bindTexture(new ResourceLocation(ApecMain.modId, "gui/coloredSkillBars.png"));
-                        switch (skillType) {
-                            case FARMING:
-                                color = 0xD0CE30;
-                                break;
-                            case COMBAT:
-                                color = 0xDC3615;
-                                break;
-                            case MINING:
-                                color = 0x797979;
-                                break;
-                            case FORAGING:
-                                color = 0x237926;
-                                break;
-                            case ENCHANTING:
-                                color = 0x711C99;
-                                break;
-                            case FISHING:
-                                color = 0x184A87;
-                                break;
-                            case ALCHEMY:
-                                color = 0x981B4C;
-                                break;
-                        }
+        GlStateManager.scale(scale, scale, scale);
+        Vector2f p = ApecUtils.scalarMultiply(getCurrentAnchorPoint(), oneOverScale);
+        if (ps.SkillIsShown) {
+            stringWidth = Minecraft.getMinecraft().fontRendererObj.getStringWidth(ps.SkillInfo);
+            if (ps.SkillInfo.contains("Rune")) {
+                ApecUtils.drawStylizedString(ps.SkillInfo, (int) (p.x), (int) (p.y - 10), 0x6B3694);
+            } else {
+                SkillType skillType = SkillType.GetSkillType(ps.SkillInfo);
+                int color = 0x4ca7a8;
+                if (ApecMain.Instance.settingsManager.getSettingState(SettingID.COLORED_SKILL_XP) && skillType != SkillType.NONE) {
+                    mc.renderEngine.bindTexture(new ResourceLocation(ApecMain.modId, "gui/coloredSkillBars.png"));
+                    switch (skillType) {
+                        case FARMING:
+                            color = 0xD0CE30;
+                            break;
+                        case COMBAT:
+                            color = 0xDC3615;
+                            break;
+                        case MINING:
+                            color = 0x797979;
+                            break;
+                        case FORAGING:
+                            color = 0x237926;
+                            break;
+                        case ENCHANTING:
+                            color = 0x711C99;
+                            break;
+                        case FISHING:
+                            color = 0x184A87;
+                            break;
+                        case ALCHEMY:
+                            color = 0x981B4C;
+                            break;
                     }
-                    ApecUtils.drawStylizedString(ps.SkillInfo, (int) (p.x), (int) (p.y - 10), color);
                 }
-            } else if (editingMode) {
-                stringWidth = Minecraft.getMinecraft().fontRendererObj.getStringWidth("+0.0 Farming (0/0)");
-                ApecUtils.drawStylizedString("+0.0 Farming (0/0)", (int) (p.x), (int) (p.y - 10), 0x4ca7a8);
+                ApecUtils.drawStylizedString(ps.SkillInfo, (int) (p.x), (int) (p.y - 10), color);
             }
+        } else if (editingMode) {
+            stringWidth = Minecraft.getMinecraft().fontRendererObj.getStringWidth("+0.0 Farming (0/0)");
+            ApecUtils.drawStylizedString("+0.0 Farming (0/0)", (int) (p.x), (int) (p.y - 10), 0x4ca7a8);
         }
+
         GlStateManager.popMatrix();
+    }
+
+    @SubscribeEvent
+    public void onSettingChanged(ApecSettingChangedState event) {
+        if (event.settingID == SettingID.SKILL_TEXT) {
+            this.enabled = event.state;
+        }
     }
 
     @Override

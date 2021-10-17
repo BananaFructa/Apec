@@ -42,7 +42,7 @@ public class PIGemstone extends GUIComponent {
 
     @Override
     public Vector2f getBoundingPoint() {
-        return new Vector2f(-gemstoneStringWidth*scale,-11*scale);
+        return new Vector2f(-gemstoneStringWidth*scale,11*scale);
     }
 
 }

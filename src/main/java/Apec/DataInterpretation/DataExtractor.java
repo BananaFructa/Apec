@@ -4,6 +4,7 @@
 package Apec.DataInterpretation;
 
 import Apec.ApecMain;
+import Apec.Components.Gui.GuiIngame.GuiElements.ExtraInfo;
 import Apec.Utils.ApecUtils;
 import Apec.ComponentId;
 import Apec.Components.Gui.GuiIngame.GUIModifier;
@@ -520,7 +521,13 @@ public class DataExtractor {
             else if (!line.contains("www")) {
                 if (line.replaceAll("[^a-zA-Z0-9]", "").length() != 0) {
                     if (ShouldHaveSpaceBefore(line)) sd.ExtraInfo.add(" ");
-                    sd.ExtraInfo.add(ApecUtils.removeFirstSpaces(line));
+                    boolean shouldRemoveSpace = true;
+                    if (!sd.ExtraInfo.isEmpty()) {
+                        if (ApecUtils.containedByCharSequence(sd.ExtraInfo.get(sd.ExtraInfo.size() - 1),"Wind Compass")) {
+                            shouldRemoveSpace = false;
+                        }
+                    }
+                    sd.ExtraInfo.add((shouldRemoveSpace ? ApecUtils.removeFirstSpaces(line) : line));
                     if (ShouldHaveSpaceAfter(line)) sd.ExtraInfo.add(" ");
                 }
             }

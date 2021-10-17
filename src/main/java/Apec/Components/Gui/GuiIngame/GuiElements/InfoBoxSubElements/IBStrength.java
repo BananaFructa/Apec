@@ -4,12 +4,14 @@ import Apec.ApecMain;
 import Apec.Components.Gui.GuiIngame.GUIComponent;
 import Apec.Components.Gui.GuiIngame.GUIComponentID;
 import Apec.DataInterpretation.DataExtractor;
+import Apec.Events.ApecSettingChangedState;
 import Apec.Settings.SettingID;
 import Apec.Utils.ApecUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiIngame;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.lwjgl.util.vector.Vector2f;
 
 public class IBStrength extends GUIComponent {
@@ -21,6 +23,12 @@ public class IBStrength extends GUIComponent {
     }
 
     @Override
+    public void init() {
+        super.init();
+        this.enabled = ApecMain.Instance.settingsManager.getSettingState(SettingID.SHOW_STRENGTH);
+    }
+
+    @Override
     public void drawTex(DataExtractor.PlayerStats ps, DataExtractor.ScoreBoardData sd, DataExtractor.OtherData od, DataExtractor.TabStats ts, ScaledResolution sr, boolean editingMode) {
         super.drawTex(ps, sd, od, ts, sr, editingMode);
         boolean UseIcons = ApecMain.Instance.settingsManager.getSettingState(SettingID.INFO_BOX_ICONS);
@@ -28,9 +36,7 @@ public class IBStrength extends GUIComponent {
         Vector2f pos = getCurrentAnchorPoint();
         GuiIngame gi = Minecraft.getMinecraft().ingameGUI;
         mc.renderEngine.bindTexture(new ResourceLocation(ApecMain.modId, "gui/statBars.png"));
-        if (ApecMain.Instance.settingsManager.getSettingState(SettingID.SHOW_STRENGTH) || editingMode) {
-            gi.drawTexturedModalRect((int) (pos.x * oneOverScale),  pos.y * oneOverScale - 1, 50, 216, 9, 9);
-        }
+        gi.drawTexturedModalRect((int) (pos.x * oneOverScale), pos.y * oneOverScale - 1, 50, 216, 9, 9);
     }
 
     @Override
@@ -46,20 +52,25 @@ public class IBStrength extends GUIComponent {
 
         StrengthStringWidth = mc.fontRendererObj.getStringWidth(speedText);
 
-        if (ApecMain.Instance.settingsManager.getSettingState(SettingID.SHOW_STRENGTH) || editingMode) {
-            ApecUtils.drawStylizedString(
-                    strengthText,
-                    (int) ((pos.x + (UseIcons ? 11 : 0)) * oneOverScale),
-                    (int) (pos.y * oneOverScale),
-                    0xFF5555
-            );
-        }
+        ApecUtils.drawStylizedString(
+                strengthText,
+                (int) ((pos.x + (UseIcons ? 11 : 0)) * oneOverScale),
+                (int) (pos.y * oneOverScale),
+                0xFF5555
+        );
 
+    }
+
+    @SubscribeEvent
+    public void onSettingChanged(ApecSettingChangedState event) {
+        if (event.settingID == SettingID.SHOW_STRENGTH) {
+            this.enabled = event.state;
+        }
     }
 
     @Override
     public Vector2f getAnchorPointPosition() {
-        return new Vector2f(440*scale + 20 * scale, 6*scale);
+        return new Vector2f(420*scale + 20 * scale, 6*scale);
     }
 
     @Override

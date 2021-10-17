@@ -44,8 +44,8 @@ public class ApecMain
     public static Logger logger = FMLLog.getLogger();
 
     public static final String modId = "apec"; 
-    public static final String name = "Apec-dev0-branch";
-    public static final String version = "1.0";
+    public static final String name = "Apec";
+    public static final String version = "dev0-branch";
 
     public static ApecMain Instance;
 

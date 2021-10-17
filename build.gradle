@@ -19,8 +19,8 @@ plugins {
     id "net.minecraftforge.gradle.forge" version "2.0.2"
 }
 */
-version = "1.0"
-group= "Apec-dev0-branch" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
+version = "dev0-branch"
+group= "Apec" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "apec"
 
 minecraft {

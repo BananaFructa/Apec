@@ -4,12 +4,14 @@ import Apec.ApecMain;
 import Apec.Components.Gui.GuiIngame.GUIComponent;
 import Apec.Components.Gui.GuiIngame.GUIComponentID;
 import Apec.DataInterpretation.DataExtractor;
+import Apec.Events.ApecSettingChangedState;
 import Apec.Settings.SettingID;
 import Apec.Utils.ApecUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiIngame;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.lwjgl.util.vector.Vector2f;
 
 public class IBMithrilPowder extends GUIComponent {
@@ -21,6 +23,12 @@ public class IBMithrilPowder extends GUIComponent {
     }
 
     @Override
+    public void init() {
+        super.init();
+        this.enabled = !ApecMain.Instance.settingsManager.getSettingState(SettingID.SEPARATE_POWDER_DISPLAY) && ApecMain.Instance.settingsManager.getSettingState(SettingID.SHOW_MITHRIL_POWDER);
+    }
+
+    @Override
     public void drawTex(DataExtractor.PlayerStats ps, DataExtractor.ScoreBoardData sd, DataExtractor.OtherData od, DataExtractor.TabStats ts, ScaledResolution sr, boolean editingMode) {
         super.drawTex(ps, sd, od, ts, sr, editingMode);
         mc.renderEngine.bindTexture(new ResourceLocation(ApecMain.modId, "gui/statBars.png"));
@@ -28,11 +36,7 @@ public class IBMithrilPowder extends GUIComponent {
         if (!UseIcons) return;
         Vector2f pos = getCurrentAnchorPoint();
         GuiIngame gi = Minecraft.getMinecraft().ingameGUI;
-        if(!ApecMain.Instance.settingsManager.getSettingState(SettingID.SEPARATE_POWDER_DISPLAY)) {
-            if (ApecMain.Instance.settingsManager.getSettingState(SettingID.SHOW_MITHRIL_POWDER) || editingMode) {
-                gi.drawTexturedModalRect((int) (pos.x * oneOverScale), pos.y * oneOverScale - 1, 90, 216, 9, 9);
-            }
-        }
+        gi.drawTexturedModalRect((int) (pos.x * oneOverScale), pos.y * oneOverScale - 1, 90, 216, 9, 9);
     }
 
     @Override
@@ -41,22 +45,24 @@ public class IBMithrilPowder extends GUIComponent {
         boolean UseIcons = ApecMain.Instance.settingsManager.getSettingState(SettingID.INFO_BOX_ICONS);
         String mithrilPowderText = (UseIcons ? ts.MithrilPowder : "\u1805" + ts.MithrilPowder);
         Vector2f pos = getCurrentAnchorPoint();
-        if(!ApecMain.Instance.settingsManager.getSettingState(SettingID.SEPARATE_POWDER_DISPLAY)) {
-            if (ApecMain.Instance.settingsManager.getSettingState(SettingID.SHOW_MITHRIL_POWDER) || editingMode) {
-                ApecUtils.drawStylizedString(
-                        mithrilPowderText,
-                        (int) ((pos.x + (UseIcons ? 11 : 0)) * oneOverScale),
-                        (int) (pos.y  * oneOverScale),
-                        0x00AA00
-                );
-            }
-        }
+        ApecUtils.drawStylizedString(
+                mithrilPowderText,
+                (int) ((pos.x + (UseIcons ? 11 : 0)) * oneOverScale),
+                (int) (pos.y * oneOverScale),
+                0x00AA00
+        );
+
         MithrilPowderStringWidth = mc.fontRendererObj.getStringWidth(mithrilPowderText);
+    }
+
+    @SubscribeEvent
+    public void onSettingChanged(ApecSettingChangedState event) {
+            this.enabled = !ApecMain.Instance.settingsManager.getSettingState(SettingID.SEPARATE_POWDER_DISPLAY) && ApecMain.Instance.settingsManager.getSettingState(SettingID.SHOW_MITHRIL_POWDER);
     }
 
     @Override
     public Vector2f getAnchorPointPosition() {
-        return new Vector2f(600*scale + 20 * scale, 6*scale);
+        return new Vector2f(420*scale + 20 * scale, 6*scale);
     }
 
     @Override

@@ -29,7 +29,7 @@ public class PIMithril extends GUIComponent {
             if (ApecMain.Instance.settingsManager.getSettingState(SettingID.SHOW_MITHRIL_POWDER) && !ts.MithrilPowder.isEmpty() || editingMode) {
                 String mithrilPowderText = "\u1805" + ts.MithrilPowder;
                 mithrilStringWidth = mc.fontRendererObj.getStringWidth(mithrilPowderText);
-                ApecUtils.drawStylizedString(mithrilPowderText, (int) (pos.x * oneOverScale - mithrilStringWidth), (int) (pos.y * oneOverScale - 10), 0x00AA00);
+                ApecUtils.drawStylizedString(mithrilPowderText, (int) (pos.x * oneOverScale - mithrilStringWidth), (int) (pos.y * oneOverScale), 0x00AA00);
             }
         }
         GlStateManager.popMatrix();
@@ -42,6 +42,6 @@ public class PIMithril extends GUIComponent {
 
     @Override
     public Vector2f getBoundingPoint() {
-        return new Vector2f(-mithrilStringWidth*scale,-11*scale);
+        return new Vector2f(-mithrilStringWidth*scale,11*scale);
     }
 }

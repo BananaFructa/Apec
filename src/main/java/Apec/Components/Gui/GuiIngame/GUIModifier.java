@@ -14,6 +14,7 @@ import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.IChatComponent;
 import net.minecraftforge.client.GuiIngameForge;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
@@ -88,6 +89,7 @@ public class GUIModifier extends Component {
     @Override
     public void init() {
         for (GUIComponent component : GUIComponents) {
+            MinecraftForge.EVENT_BUS.register(component);
             component.init();
         }
     }
@@ -141,6 +143,11 @@ public class GUIModifier extends Component {
     public <T extends GUIComponent> T getGuiComponent(GUIComponentID guiComponentID) {
         for (GUIComponent component : GUIComponents) {
             if (component.gUiComponentID == guiComponentID) return (T)component;
+            if (component.hasSubComponents()) {
+                for (GUIComponent subComp : component.getSubComponentList()) {
+                    if (subComp.gUiComponentID == guiComponentID) return (T)subComp;
+                }
+            }
         }
         return null;
     }
@@ -171,13 +178,13 @@ public class GUIModifier extends Component {
             GlStateManager.color(1,1,1,1);
             // Draws the screen components
             for (GUIComponent component : GUIComponents) {
-                if (shouldBlockF3(component) || !component.enabled) continue;
+                if (shouldBlockF3(component) || !component.enabled || component.isChild()) continue;
                 GlStateManager.pushMatrix();
                 component.drawTex(ps, sd, od, ts, sr,mc.currentScreen instanceof CustomizationGui);
                 GlStateManager.popMatrix();
             }
             for (GUIComponent component : GUIComponents) {
-                if (shouldBlockF3(component) || !component.enabled) continue;
+                if (shouldBlockF3(component) || !component.enabled || component.isChild()) continue;
                 GlStateManager.pushMatrix();
                 component.draw(ps, sd, od, ts, sr,mc.currentScreen instanceof CustomizationGui);
                 GlStateManager.popMatrix();

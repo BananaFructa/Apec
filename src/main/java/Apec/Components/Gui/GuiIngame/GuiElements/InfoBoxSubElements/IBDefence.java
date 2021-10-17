@@ -4,12 +4,14 @@ import Apec.ApecMain;
 import Apec.Components.Gui.GuiIngame.GUIComponent;
 import Apec.Components.Gui.GuiIngame.GUIComponentID;
 import Apec.DataInterpretation.DataExtractor;
+import Apec.Events.ApecSettingChangedState;
 import Apec.Settings.SettingID;
 import Apec.Utils.ApecUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiIngame;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.lwjgl.util.vector.Vector2f;
 
 public class IBDefence extends GUIComponent {
@@ -21,6 +23,12 @@ public class IBDefence extends GUIComponent {
     }
 
     @Override
+    public void init() {
+        super.init();
+        this.enabled = !ApecMain.Instance.settingsManager.getSettingState(SettingID.USE_DEFENCE_OUT_OF_BB);
+    }
+
+    @Override
     public void drawTex(DataExtractor.PlayerStats ps, DataExtractor.ScoreBoardData sd, DataExtractor.OtherData od, DataExtractor.TabStats ts, ScaledResolution sr, boolean editingMode) {
         super.drawTex(ps, sd, od, ts, sr, editingMode);
         boolean UseIcons = ApecMain.Instance.settingsManager.getSettingState(SettingID.INFO_BOX_ICONS);
@@ -28,10 +36,7 @@ public class IBDefence extends GUIComponent {
         Vector2f pos = getCurrentAnchorPoint();
         GuiIngame gi = Minecraft.getMinecraft().ingameGUI;
         mc.renderEngine.bindTexture(new ResourceLocation(ApecMain.modId, "gui/statBars.png"));
-        if (!ApecMain.Instance.settingsManager.getSettingState(SettingID.USE_DEFENCE_OUT_OF_BB) || editingMode) {
-            gi.drawTexturedModalRect((int) (pos.x * oneOverScale), pos.y * oneOverScale - 1, 32, 215, 7, 10);
-        }
-
+        gi.drawTexturedModalRect((int) (pos.x * oneOverScale), pos.y * oneOverScale - 1, 32, 215, 7, 10);
     }
 
     @Override
@@ -41,13 +46,18 @@ public class IBDefence extends GUIComponent {
         String defenceText = (UseIcons ? "\u00a7a" + ps.Defence : "\u00a7a" + ps.Defence + " Defence");
         Vector2f pos = getCurrentAnchorPoint();
         DefenceStringWidth = mc.fontRendererObj.getStringWidth(defenceText);
-        if (!ApecMain.Instance.settingsManager.getSettingState(SettingID.USE_DEFENCE_OUT_OF_BB) || editingMode) {
-            ApecUtils.drawStylizedString(
-                    defenceText,
-                    (int) (pos.x + (UseIcons ? 10 : 0) * oneOverScale),
-                    (int) (pos.y * oneOverScale),
-                    0xffffff
-            );
+        ApecUtils.drawStylizedString(
+                defenceText,
+                (int) (pos.x + (UseIcons ? 10 : 0) * oneOverScale),
+                (int) (pos.y * oneOverScale),
+                0xffffff
+        );
+    }
+
+    @SubscribeEvent
+    public void onSettingChanged(ApecSettingChangedState event) {
+        if (event.settingID == SettingID.USE_DEFENCE_OUT_OF_BB) {
+            this.enabled = !event.state;
         }
     }
 

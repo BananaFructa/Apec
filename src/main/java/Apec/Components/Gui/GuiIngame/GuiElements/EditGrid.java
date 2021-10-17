@@ -19,10 +19,16 @@ public class EditGrid extends GUIComponent {
     }
 
     @Override
+    public void init() {
+        super.init();
+        this.enabled = ApecMain.Instance.settingsManager.getSettingState(SettingID.HEAL_TEXT);
+    }
+
+    @Override
     public void drawTex(DataExtractor.PlayerStats ps, DataExtractor.ScoreBoardData sd,DataExtractor.OtherData od, DataExtractor.TabStats ts, ScaledResolution sr,boolean editingMode) {
         super.drawTex(ps,sd,od,ts,sr,editingMode);
         GlStateManager.pushMatrix();
-        if (ApecMain.Instance.settingsManager.getSettingState(SettingID.EDIT_GRID) & editingMode) {
+        if (ApecMain.Instance.settingsManager.getSettingState(SettingID.EDIT_GRID) && editingMode) {
             GuiIngame gi = Minecraft.getMinecraft().ingameGUI;
             int width = mc.displayWidth;
             int height = mc.displayHeight;

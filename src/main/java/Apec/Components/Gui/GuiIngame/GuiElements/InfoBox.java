@@ -84,10 +84,6 @@ public class InfoBox extends GUIComponent {
         }
         if (yDecremetor < 0) yDecremetor = 0;
         if (yDecremetor > 40) yDecremetor = 40;
-        GuiIngame gi = Minecraft.getMinecraft().ingameGUI;
-        Vector2f GuiPos = getCurrentAnchorPoint();
-
-        GuiPos.y += yDecremetor + 6*scale;
 
         GlStateManager.scale(1, 1, 1);
         GlStateManager.popMatrix();
@@ -102,7 +98,7 @@ public class InfoBox extends GUIComponent {
     public Vector2f getAnchorPointPosition() {
         float y = 0;
         if (!ApecMain.Instance.settingsManager.getSettingState(SettingID.BB_ON_TOP)) {
-            y = g_sr.getScaledHeight() - 20*scale;
+            y = g_sr.getScaledHeight() - 20*scale + yDecremetor;
         }
         return new Vector2f(0, y);
     }

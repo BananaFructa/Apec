@@ -39,6 +39,7 @@ public class CustomizationGui extends GuiScreen {
         }
         refreshSnapPoints();
         for (GUIComponent component : components) {
+            if (!component.enabled) continue;
             if (!(component instanceof InfoBox)) {
                 Vector2f v = component.getAnchorPointPosition();
                 this.buttonList.add(new CustomizationGuiButton(component, xSnapPoints, ySnapPoints));
@@ -174,12 +175,14 @@ public class CustomizationGui extends GuiScreen {
             String s = "";
             for (int i = 0;i < components.size();i++) {
                 s += components.get(i).gUiComponentID.ordinal() + "#" + components.get(i).getDeltaPosition().x + "@" + components.get(i).getDeltaPosition().y + "@" + components.get(i).getScale();
-                /*if (components.get(i).hasSubComponents()) {
-                    for (int j = 0;j < components.get(i).subComponentCount();j++) {
-                        Vector2f delta = components.get(i).getSubElementsDeltaPositions().get(j);
-                        s += "\n" + components.get(i).gUiComponentID.ordinal() + "!" + j + "#" + delta.x + "@" + delta.y + "@" + "1.0";
+                if (components.get(i).hasSubComponents()) {
+                    s += "\n";
+                    List<GUIComponent> subComp = components.get(i).getSubComponentList();
+                    for (int j = 0;j < subComp.size();j++) {
+                        s += subComp.get(j).gUiComponentID.ordinal() + "#" + subComp.get(j).getDeltaPosition().x + "@" + subComp.get(j).getDeltaPosition().y + "@" + subComp.get(j).getScale();
+                        if (j != subComp.size() - 1) s+= "\n";
                     }
-                }*/
+                }
                 if (i != components.size() - 1) s += "\n";
             }
             fw.write(s);

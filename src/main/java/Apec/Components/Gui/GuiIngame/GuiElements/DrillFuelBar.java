@@ -6,6 +6,7 @@ import Apec.Components.Gui.GuiIngame.GUIComponent;
 import Apec.Components.Gui.GuiIngame.GUIComponentID;
 import Apec.Components.Gui.GuiIngame.GUIModifier;
 import Apec.DataInterpretation.DataExtractor;
+import Apec.Events.ApecSettingChangedState;
 import Apec.Settings.SettingID;
 import Apec.Utils.ApecUtils;
 import net.minecraft.client.gui.GuiIngame;
@@ -26,6 +27,12 @@ public class DrillFuelBar extends GUIComponent {
         super(GUIComponentID.DRILL_FUEL);
     }
 
+    @Override
+    public void init() {
+        super.init();
+        this.enabled = ApecMain.Instance.settingsManager.getSettingState(SettingID.DRILL_FUEL_BAR);
+    }
+
     private float fuelAmount = -1f;
 
     /**
@@ -35,7 +42,7 @@ public class DrillFuelBar extends GUIComponent {
 
     @SubscribeEvent
     public void onTick(TickEvent.ClientTickEvent event) {
-        if(mc.thePlayer != null && ApecMain.Instance.settingsManager.getSettingState(SettingID.DRILL_FUEL_BAR)){
+        if(mc.thePlayer != null){
             try{
                 ItemStack item = mc.thePlayer.getHeldItem();
                 if(item != null){
@@ -80,6 +87,13 @@ public class DrillFuelBar extends GUIComponent {
 
                 gui.drawTexturedModalRect(pos.x, pos.y + (71 - height), 246, 142 - height, 5, height);
             }
+        }
+    }
+
+    @SubscribeEvent
+    public void onSettingChanged(ApecSettingChangedState event) {
+        if (event.settingID == SettingID.DRILL_FUEL_BAR) {
+            this.enabled = event.state;
         }
     }
 

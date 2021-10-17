@@ -1,6 +1,7 @@
 package Apec.Components.Gui.GuiIngame.GuiElements;
 
 import Apec.ApecMain;
+import Apec.Events.ApecSettingChangedState;
 import Apec.Utils.ApecUtils;
 import Apec.ComponentId;
 import Apec.Components.Gui.GuiIngame.GUIComponent;
@@ -9,6 +10,7 @@ import Apec.Components.Gui.GuiIngame.GUIModifier;
 import Apec.DataInterpretation.DataExtractor;
 import Apec.Settings.SettingID;
 import net.minecraft.client.gui.ScaledResolution;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.lwjgl.util.vector.Vector2f;
 
 public class HotBar extends GUIComponent {
@@ -18,13 +20,21 @@ public class HotBar extends GUIComponent {
     }
 
     @Override
-    public void editInit() {
+    public void init() {
+        super.init();
         this.scalable = !ApecMain.Instance.settingsManager.getSettingState(SettingID.COMPATIBILITY_SAFETY);
     }
 
     @Override
     public void drawTex(DataExtractor.PlayerStats ps, DataExtractor.ScoreBoardData sd, DataExtractor.OtherData od, DataExtractor.TabStats ts, ScaledResolution sr, boolean editingMode) {
         super.drawTex(ps, sd, od, ts, sr, editingMode);
+    }
+
+    @SubscribeEvent
+    public void onSettingChanged(ApecSettingChangedState event) {
+        if (event.settingID == SettingID.COMPATIBILITY_SAFETY) {
+            this.scalable = !event.state;
+        }
     }
 
     @Override

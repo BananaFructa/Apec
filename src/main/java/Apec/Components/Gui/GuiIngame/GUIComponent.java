@@ -68,7 +68,9 @@ public class GUIComponent {
     public void drawTex(DataExtractor.PlayerStats ps, DataExtractor.ScoreBoardData sd, DataExtractor.OtherData od, DataExtractor.TabStats ts, ScaledResolution sr, boolean editingMode) {
         g_sr = sr;
 
-        for (GUIComponent subComp : subComponents) subComp.drawTex(ps, sd, od, ts, sr, editingMode);
+        for (GUIComponent subComp : subComponents) {
+            if (subComp.enabled) subComp.drawTex(ps, sd, od, ts, sr, editingMode);
+        }
     }
 
     /**
@@ -77,7 +79,9 @@ public class GUIComponent {
     public void draw(DataExtractor.PlayerStats ps, DataExtractor.ScoreBoardData sd, DataExtractor.OtherData od, DataExtractor.TabStats ts, ScaledResolution sr, boolean editingMode) {
         g_sr = sr;
 
-        for (GUIComponent subComp : subComponents) subComp.draw(ps, sd, od, ts, sr, editingMode);
+        for (GUIComponent subComp : subComponents) {
+            if (subComp.enabled) subComp.draw(ps, sd, od, ts, sr, editingMode);
+        }
     }
 
     /**
@@ -95,6 +99,7 @@ public class GUIComponent {
     public void init() {
         guiModifier = ApecMain.Instance.getComponent(ComponentId.GUI_MODIFIER);
         for (GUIComponent subComp : subComponents) {
+            MinecraftForge.EVENT_BUS.register(subComp);
             subComp.init();
         }
     }
@@ -183,6 +188,10 @@ public class GUIComponent {
 
     public int subComponentCount() {
         return this.subComponents.size();
+    }
+
+    public boolean isChild() {
+        return this.parent != null;
     }
 
     public Vector2f getTotalParentOffset() {

@@ -1,6 +1,7 @@
 package Apec.Components.Gui.GuiIngame.GuiElements;
 
 import Apec.ApecMain;
+import Apec.Events.ApecSettingChangedState;
 import Apec.Settings.SettingsManager;
 import Apec.Utils.ApecUtils;
 import Apec.Components.Gui.GuiIngame.GUIComponent;
@@ -12,6 +13,7 @@ import net.minecraft.client.gui.GuiIngame;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.lwjgl.util.vector.Vector2f;
 
 public class MpBar extends GUIComponent {
@@ -21,35 +23,47 @@ public class MpBar extends GUIComponent {
     }
 
     @Override
+    public void init() {
+        super.init();
+        this.enabled = ApecMain.Instance.settingsManager.getSettingState(SettingID.MP_BAR);
+    }
+
+    @Override
     public void drawTex(DataExtractor.PlayerStats ps, DataExtractor.ScoreBoardData sd, DataExtractor.OtherData od, DataExtractor.TabStats ts, ScaledResolution sr,boolean editingMode) {
-        super.drawTex(ps,sd,od,ts,sr,editingMode);
+        super.drawTex(ps, sd, od, ts, sr, editingMode);
         GlStateManager.pushMatrix();
-        GlStateManager.scale(scale,scale,scale);
-        if (ApecMain.Instance.settingsManager.getSettingState(SettingID.MP_BAR)) {
-            GuiIngame gi = Minecraft.getMinecraft().ingameGUI;
+        GlStateManager.scale(scale, scale, scale);
+        GuiIngame gi = Minecraft.getMinecraft().ingameGUI;
 
-            Vector2f StatBar = ApecUtils.scalarMultiply(getCurrentAnchorPoint(),oneOverScale);
+        Vector2f StatBar = ApecUtils.scalarMultiply(getCurrentAnchorPoint(), oneOverScale);
 
-            float mpFactor = ps.Mp > ps.BaseMp ? 1 :(float) ps.Mp / (float) ps.BaseMp;
+        float mpFactor = ps.Mp > ps.BaseMp ? 1 : (float) ps.Mp / (float) ps.BaseMp;
 
-            boolean showOp = ApecMain.Instance.settingsManager.getSettingState(SettingID.SHOW_OP_BAR);
+        boolean showOp = ApecMain.Instance.settingsManager.getSettingState(SettingID.SHOW_OP_BAR);
 
-            mc.renderEngine.bindTexture(new ResourceLocation(ApecMain.modId, "gui/statBars.png"));
+        mc.renderEngine.bindTexture(new ResourceLocation(ApecMain.modId, "gui/statBars.png"));
 
-            if (ps.Op != 0 && showOp) {
+        if (ps.Op != 0 && showOp) {
 
-                float opFactor = ps.Op > ps.BaseOp ? 1 : (float)ps.Op / (float)ps.BaseOp; // for safety's sake
+            float opFactor = ps.Op > ps.BaseOp ? 1 : (float) ps.Op / (float) ps.BaseOp; // for safety's sake
 
-                gi.drawTexturedModalRect((int) StatBar.x, (int) StatBar.y, 0, 70, 182, 5);
-                gi.drawTexturedModalRect((int) StatBar.x , (int) StatBar.y , 0, 75, (int)(opFactor * 49), 5);
-                gi.drawTexturedModalRect((int) StatBar.x  + 51, (int) StatBar.y , 51, 75, (int) (mpFactor * 131f), 5);
+            gi.drawTexturedModalRect((int) StatBar.x, (int) StatBar.y, 0, 70, 182, 5);
+            gi.drawTexturedModalRect((int) StatBar.x, (int) StatBar.y, 0, 75, (int) (opFactor * 49), 5);
+            gi.drawTexturedModalRect((int) StatBar.x + 51, (int) StatBar.y, 51, 75, (int) (mpFactor * 131f), 5);
 
-            } else {
-                gi.drawTexturedModalRect((int) StatBar.x, (int) StatBar.y, 0, 10, 182, 5);
-                gi.drawTexturedModalRect((int) StatBar.x, (int) StatBar.y, 0, 15, (int) (mpFactor * 182f), 5);
-            }
+        } else {
+            gi.drawTexturedModalRect((int) StatBar.x, (int) StatBar.y, 0, 10, 182, 5);
+            gi.drawTexturedModalRect((int) StatBar.x, (int) StatBar.y, 0, 15, (int) (mpFactor * 182f), 5);
         }
+
         GlStateManager.popMatrix();
+    }
+
+    @SubscribeEvent
+    public void onSettingChanged(ApecSettingChangedState event) {
+        if (event.settingID == SettingID.MP_BAR) {
+            this.enabled = event.state;
+        }
     }
 
     @Override
