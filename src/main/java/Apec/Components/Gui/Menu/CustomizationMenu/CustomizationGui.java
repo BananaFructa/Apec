@@ -78,6 +78,12 @@ public class CustomizationGui extends GuiScreen {
         refreshSnapPoints();
         SaveDeltas();
         super.mouseReleased(mouseX, mouseY, state);
+
+        for (GuiButton guiButton : this.buttonList) {
+            if (guiButton instanceof CustomizationGuiButton) {
+                ((CustomizationGuiButton)guiButton).isUserDragging = false; // just for safety
+            }
+        }
     }
 
     @Override

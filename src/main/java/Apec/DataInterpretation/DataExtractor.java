@@ -1074,13 +1074,13 @@ public class DataExtractor {
 
     public class TabStats {
         public String Bank;
-        public String MithrilPowder;
-        public String GemstonePowder;
-        public String Speed;
-        public String Strength;
-        public String CritChance;
-        public String CritDamage;
-        public String AttackSpeed;
+        public String MithrilPowder = "\u00a720";
+        public String GemstonePowder = "\u00a7d0";
+        public String Speed = "\u00a7f0";
+        public String Strength = "\u00a7c0";
+        public String CritChance = "\u00a790";
+        public String CritDamage = "\u00a790";
+        public String AttackSpeed = "\u00a7e0";
     }
 
     public class OtherData {
