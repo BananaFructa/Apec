@@ -47,7 +47,7 @@ public class AbilityText extends GUIComponent {
             Vector2f rap = ApecUtils.scalarMultiply(getCurrentAnchorPoint(),oneOverScale);
             ApecUtils.drawStylizedString(
                     ps.AbilityText,
-                    (int)(rap.x - mc.fontRendererObj.getStringWidth(ps.AbilityText)),
+                    (int)(rap.x - stringWidth),
                     (int)(rap.y - 10),
                     0xffffffff
             );

@@ -79,6 +79,7 @@ public class GUIModifier extends Component {
         add(new PowderInfo());
         add(new DrillFuelBar());
         add(new SoulflowDisplay());
+        add(new WitherShield());
     }};
 
     public GUIModifier() {

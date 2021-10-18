@@ -27,6 +27,7 @@ public enum GUIComponentID {
     POWDER_DISPLAY,
     DRILL_FUEL,
     SOULFLOW_TEXT,
+    WITHER_SHIELD,
     IB_PURSE,
     IB_BITS,
     IB_ZONE,

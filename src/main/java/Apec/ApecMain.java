@@ -103,8 +103,12 @@ public class ApecMain
         }
 
         newestVersion = VersionChecker.getVersion();
+        try{
+            this.settingsManager.LoadLegacySettings();
+        } catch (Exception e){
+            this.settingsManager.LoadSettings();
+        }
 
-        this.settingsManager.LoadSettings();
 
         containerGuiManager.init();
 
