@@ -4,6 +4,7 @@ import Apec.ApecMain;
 import Apec.Components.Gui.GuiIngame.GUIComponent;
 import Apec.Components.Gui.GuiIngame.GUIComponentID;
 import Apec.DataInterpretation.DataExtractor;
+import Apec.Events.ApecSettingChangedState;
 import Apec.Settings.SettingID;
 import Apec.Utils.ApecUtils;
 import net.minecraft.client.gui.ScaledResolution;
@@ -34,9 +35,15 @@ public class WitherShield extends GUIComponent {
         super(GUIComponentID.WITHER_SHIELD);
     }
 
+    @Override
+    public void init() {
+        super.init();
+        this.enabled = ApecMain.Instance.settingsManager.getSettingState(SettingID.WITHER_SHIELD);
+    }
+
     @SubscribeEvent
     public void onRightClickItem(PlayerInteractEvent event) {
-        if(ApecMain.Instance.settingsManager.getSettingState(SettingID.WITHER_SHIELD) && nextShield <= 5){
+        if(nextShield <= 5){
             if(event.action == PlayerInteractEvent.Action.RIGHT_CLICK_AIR || event.action == PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK){
                 if(event.entityPlayer != null){
                     ItemStack heldItem = event.entityPlayer.getHeldItem();
@@ -54,6 +61,13 @@ public class WitherShield extends GUIComponent {
                     }
                 }
             }
+        }
+    }
+
+    @SubscribeEvent
+    public void onSettingChanged(ApecSettingChangedState event) {
+        if (event.settingID == SettingID.WITHER_SHIELD) {
+            this.enabled = event.state;
         }
     }
 

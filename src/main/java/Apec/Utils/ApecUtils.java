@@ -170,6 +170,8 @@ public class ApecUtils {
      */
 
     public static void showMessage(String string) {
+        if (ApecMain.Instance != null)
+        if (ApecMain.Instance.settingsManager != null && Minecraft.getMinecraft().thePlayer != null)
         if (ApecMain.Instance.settingsManager.getSettingState(SettingID.SHOW_DEBUG_MESSAGES))
         Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(string));
     }

@@ -6,7 +6,6 @@ import Apec.Utils.ApecUtils;
 import net.minecraft.util.Tuple;
 import net.minecraftforge.common.MinecraftForge;
 import org.json.*;
-import scala.util.parsing.json.JSON;
 
 import java.io.File;
 import java.io.FileReader;
