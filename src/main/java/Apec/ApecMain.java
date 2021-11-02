@@ -29,6 +29,7 @@ import net.minecraftforge.fml.common.gameevent.InputEvent;
 import org.apache.logging.log4j.Logger;
 import org.lwjgl.input.Keyboard;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -103,11 +104,9 @@ public class ApecMain
         }
 
         newestVersion = VersionChecker.getVersion();
-        try{
-            this.settingsManager.LoadLegacySettings();
-        } catch (Exception e){
-            this.settingsManager.LoadSettings();
-        }
+
+        if ((new File("config/Apec/Settings.txt")).exists()) this.settingsManager.LoadLegacySettings();
+        else this.settingsManager.LoadSettings();
 
 
         containerGuiManager.init();

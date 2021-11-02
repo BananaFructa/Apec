@@ -36,6 +36,7 @@ public class InfoBox extends GUIComponent {
         addSubComponent(new IBAttackSpeed());
         addSubComponent(new IBGemstonePowder());
         addSubComponent(new IBSoulFlow());
+        addSubComponent(new IBTimeDate());
     }
 
     @Override

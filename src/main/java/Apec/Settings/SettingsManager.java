@@ -6,6 +6,7 @@ import Apec.Utils.ApecUtils;
 import net.minecraft.util.Tuple;
 import net.minecraftforge.common.MinecraftForge;
 import org.json.*;
+import org.lwjgl.Sys;
 
 import java.io.File;
 import java.io.FileReader;
@@ -203,26 +204,6 @@ public class SettingsManager {
         return settingData.get(settingID);
     }
 
-    /**
-     * @brief Saves the setting data to disk
-     */
-    public void SaveLegacySettings() {
-        try {
-            new File("config/Apec").mkdirs();
-            new File("config/Apec/Settings.txt").createNewFile();
-            FileWriter fw = new FileWriter("config/Apec/Settings.txt");
-            String s = "";
-            for (int i = 0;i < settings.size();i++) {
-                s += settings.get(i).settingID.name() + "-" + (settings.get(i).enabled ? "t" : "f");
-                if (i != settings.size() - 1) s += "\n";
-            }
-            fw.write(s);
-            fw.close();
-        } catch (IOException e) {
-            ApecUtils.showMessage("[\u00A72Apec\u00A7f] There was an error saving legacy settings!");
-        }
-    }
-
     public void SaveSettings() {
         try {
             new File("config/Apec").mkdirs();
@@ -260,15 +241,17 @@ public class SettingsManager {
 
             JSONObject settings = loaded.getJSONObject("settings");
             for (Setting setting : this.settings){
+                if (settings.has(setting.settingKey))
                 this.setSettingStateWithNoSaving(setting.settingID,settings.getBoolean(setting.settingKey));
             }
         } catch (Exception e) {
+            e.printStackTrace();
             System.out.println("[\u00A72Apec\u00A7f] There was an error reading settings!");
         }
     }
 
     /**
-     * @brief Loads and sets the setting data from disk
+     * @brief Loads and sets the setting data from disk (legacy support)
      */
     public void LoadLegacySettings() {
         try {
@@ -299,6 +282,26 @@ public class SettingsManager {
             }
         } catch (IOException e) {
             ApecUtils.showMessage("[\u00A72Apec\u00A7f] There was an error reading legacy settings!");
+        }
+    }
+
+    /**
+     * @brief Saves the setting data to disk (legacy support)
+     */
+    public void SaveLegacySettings() {
+        try {
+            new File("config/Apec").mkdirs();
+            new File("config/Apec/Settings.txt").createNewFile();
+            FileWriter fw = new FileWriter("config/Apec/Settings.txt");
+            String s = "";
+            for (int i = 0;i < settings.size();i++) {
+                s += settings.get(i).settingID.name() + "-" + (settings.get(i).enabled ? "t" : "f");
+                if (i != settings.size() - 1) s += "\n";
+            }
+            fw.write(s);
+            fw.close();
+        } catch (IOException e) {
+            ApecUtils.showMessage("[\u00A72Apec\u00A7f] There was an error saving legacy settings!");
         }
     }
 

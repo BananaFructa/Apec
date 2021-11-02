@@ -41,5 +41,6 @@ public enum GUIComponentID {
     IB_GEMSTONE_POWEDER,
     IB_SOULFLOW,
     PI_MITHRIL,
-    PI_GEMSTONE
+    PI_GEMSTONE,
+    IB_TIME_DATE
 }
