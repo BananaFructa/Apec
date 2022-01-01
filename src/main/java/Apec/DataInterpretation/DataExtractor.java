@@ -138,7 +138,7 @@ public class DataExtractor {
             } catch (IOException exception) {
                 exception.printStackTrace();
             }*/
-        } else if (!event.message.getUnformattedText().contains("<") && !event.message.getUnformattedText().contains(":")){
+        } else if (!event.message.getUnformattedText().contains("<") && !isFromChat(event.message.getFormattedText())){
 
             String msg = ApecUtils.removeAllCodes(event.message.getUnformattedText());
             if (msg.contains(sendTradeRequestMsg)) hasSentATradeRequest = true;
@@ -720,7 +720,7 @@ public class DataExtractor {
 
     private OtherData ProcessOtherData (ScoreBoardData sd) {
         OtherData otherData = new OtherData();
-        if (actionBarData == null) return otherData;
+        if (actionBarData == null ? true : isFromChat(actionBarData)) return otherData;
         String endRace = ApecUtils.segmentString(actionBarData,endRaceSymbol,'\u00a7',' ',2,2);
         String woodRacing = ApecUtils.segmentString(actionBarData,woodRacingSymbol,'\u00a7',' ',2,2);
         String dps = ApecUtils.segmentString(actionBarData,dpsSymbol,'\u00a7',' ',1,1);
@@ -875,6 +875,11 @@ public class DataExtractor {
     public Tuple<Integer,Integer> formatStringFractI(String s) {
         String[] tempSplit = s.split("/");
         return new Tuple<Integer, Integer>(Integer.parseInt(tempSplit[0]),Integer.parseInt(tempSplit[1]));
+    }
+
+    // Use with caution
+    public boolean isFromChat(String s) {
+        return s.contains(":");
     }
 
     /**
