@@ -42,6 +42,7 @@ public class SettingsManager {
         add(new Setting("showInventoryTraffic", INVENTORY_TRAFFIC, CategoryID.GUI,true));
         add(new Setting("showPotionEffects", SHOW_POTIONS_EFFECTS, CategoryID.GUI,true));
         add(new Setting("compactPotionEffects", COMPACT_POTION, CategoryID.GUI,false));
+        add(new Setting("showObjective",SHOW_OBJECTIVE,CategoryID.GUI,true));
         //add(new Setting(HIDE_NIGHT_VISION,false));
         add(new Setting("customTooltips", CUSTOM_TOOL_TIP, CategoryID.GUI,true));
         add(new Setting("showEffectsAsTab", SHOW_EFFECTS_AS_IN_TAB, CategoryID.GUI,true));
@@ -139,6 +140,7 @@ public class SettingsManager {
         put(CENTER_ABILITY_TEXT, new Tuple<String,String> ("Center Abilities","Centers the Ability Text."));
         put(WITHER_SHIELD, new Tuple<String,String> ("Show Wither Shield","Shows if Wither Shield is ready."));
         put(CENTER_WITHER_SHIELD, new Tuple<String,String> ("Center Wither Shield","Centers the Wither Shield CD."));
+        put(SHOW_OBJECTIVE, new Tuple<String, String>("Show objective","Show objective in the display panel"));
     }};
 
     /** Cache for setting states */
@@ -246,7 +248,7 @@ public class SettingsManager {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            System.out.println("[\u00A72Apec\u00A7f] There was an error reading settings!");
+            ApecUtils.showMessage("[\u00A72Apec\u00A7f] There was an error reading settings!");
         }
     }
 

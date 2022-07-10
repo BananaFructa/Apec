@@ -5,6 +5,7 @@ package Apec.DataInterpretation;
 
 import Apec.ApecMain;
 import Apec.Components.Gui.GuiIngame.GuiElements.ExtraInfo;
+import Apec.Settings.SettingsManager;
 import Apec.Utils.ApecUtils;
 import Apec.ComponentId;
 import Apec.Components.Gui.GuiIngame.GUIModifier;
@@ -173,6 +174,9 @@ public class DataExtractor {
         ) {
             IsDeadInTheCatacombs = event.message.getUnformattedText().contains(reviveSymbol);
             actionBarData = event.message.getUnformattedText();
+
+            // ============================================================
+
             /** used for sampling data when developing
             try {
                 File f = new File("config/Apec/debug");
@@ -189,6 +193,9 @@ public class DataExtractor {
             } catch (IOException exception) {
                 exception.printStackTrace();
             }*/
+
+            //============================================================
+
         } else if (!event.message.getUnformattedText().contains("<") && !event.message.getUnformattedText().contains(":")){
 
             String msg = ApecUtils.removeAllCodes(event.message.getUnformattedText());
@@ -494,6 +501,8 @@ public class DataExtractor {
 
     private void ScoreboardParser(ScoreBoardData sd,List<String> l) {
 
+        boolean waitForEmptyLine = false;
+
         boolean BitsHaveBeenSet = false;
         List<String> rl = Lists.reverse(l);
         for (String line : rl) {
@@ -520,15 +529,23 @@ public class DataExtractor {
             }
             else if (!line.contains("www")) {
                 if (line.replaceAll("[^a-zA-Z0-9]", "").length() != 0) {
-                    if (ShouldHaveSpaceBefore(line)) sd.ExtraInfo.add(" ");
-                    boolean shouldRemoveSpace = true;
-                    if (!sd.ExtraInfo.isEmpty()) {
-                        if (ApecUtils.containedByCharSequence(sd.ExtraInfo.get(sd.ExtraInfo.size() - 1),"Wind Compass")) {
-                            shouldRemoveSpace = false;
+                    if (!waitForEmptyLine) {
+                        if (ShouldHaveSpaceBefore(line)) sd.ExtraInfo.add(" ");
+                        boolean shouldRemoveSpace = true;
+                        if (!sd.ExtraInfo.isEmpty()) {
+                            if (ApecUtils.containedByCharSequence(sd.ExtraInfo.get(sd.ExtraInfo.size() - 1), "Wind Compass")) {
+                                shouldRemoveSpace = false;
+                            }
                         }
+                        if (!ApecMain.Instance.settingsManager.getSettingState(SettingID.SHOW_OBJECTIVE) && ApecUtils.removeColorCodes(line).contains("Objective")) {
+                            waitForEmptyLine = true;
+                            continue;
+                        }
+                        sd.ExtraInfo.add((shouldRemoveSpace ? ApecUtils.removeFirstSpaces(line) : line));
+                        if (ShouldHaveSpaceAfter(line)) sd.ExtraInfo.add(" ");
                     }
-                    sd.ExtraInfo.add((shouldRemoveSpace ? ApecUtils.removeFirstSpaces(line) : line));
-                    if (ShouldHaveSpaceAfter(line)) sd.ExtraInfo.add(" ");
+                } else {
+                    waitForEmptyLine = false;
                 }
             }
         }
