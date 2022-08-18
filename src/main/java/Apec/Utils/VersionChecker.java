@@ -12,7 +12,7 @@ public class VersionChecker {
 
     public static String getRegistryTag() {
         try {
-            URL url = new URL("https://dl.dropboxusercontent.com/s/keifgf5xf8sfmau/current-database-tag.txt");
+            URL url = new URL("https://dl.dropboxusercontent.com/s/wmi9il1peclvuub/current-database-tag.txt?dl=0");
             URLConnection connection = url.openConnection();
             connection.setUseCaches(false);
             Scanner s = new Scanner(connection.getInputStream());

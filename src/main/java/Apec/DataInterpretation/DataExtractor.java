@@ -561,7 +561,7 @@ public class DataExtractor {
             {
                 String segmentedString = ApecUtils.segmentString(actionBarData,String.valueOf(OverflowSymbol),'\u00a7',OverflowSymbol,1,1);
                 if (segmentedString != null) {
-                    int value = Integer.parseInt(ApecUtils.removeAllCodes(segmentedString));
+                    int value = Integer.parseInt(ApecUtils.removeAllCodes(segmentedString.replace(",","")));
                     playerStats.Op = value;
                     if (baseOp < value) {
                         baseOp = value;
@@ -656,7 +656,7 @@ public class DataExtractor {
             {
                 String segmentedString = ApecUtils.segmentString(actionBarData, String.valueOf(DfSymbol), '\u00a7', DfSymbol, 2, 1);
                 if (segmentedString != null) {
-                    playerStats.Defence = Integer.parseInt(ApecUtils.removeAllCodes(segmentedString));
+                    playerStats.Defence = Integer.parseInt(ApecUtils.removeAllCodes(segmentedString.replace(",","")));
                     lastDefence = playerStats.Defence;
                 } else if (!actionBarData.contains(endRaceSymbol) &&
                         !actionBarData.contains(woodRacingSymbol) &&
@@ -873,7 +873,7 @@ public class DataExtractor {
      */
 
     public Tuple<Integer,Integer> formatStringFractI(String s) {
-        String[] tempSplit = s.split("/");
+        String[] tempSplit = s.replace(",","").split("/");
         return new Tuple<Integer, Integer>(Integer.parseInt(tempSplit[0]),Integer.parseInt(tempSplit[1]));
     }
 

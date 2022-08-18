@@ -27,6 +27,7 @@ import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent;
 import org.apache.logging.log4j.Logger;
+import org.lwjgl.Sys;
 import org.lwjgl.input.Keyboard;
 
 import java.util.ArrayList;
@@ -45,7 +46,7 @@ public class ApecMain
 
     public static final String modId = "apec"; 
     public static final String name = "Apec";
-    public static final String version = "1.10.1";
+    public static final String version = "1.10.2";
 
     public static ApecMain Instance;
 
@@ -112,6 +113,7 @@ public class ApecMain
 
         // Sets the saved data for each component
         for (Component component : components){
+            // FIXME:
             if (!DataOfComponents.get(component.componentId.ordinal()).isEmpty()) component.loadSavedData(DataOfComponents.get(component.componentId.ordinal()));
             component.init();
         }
