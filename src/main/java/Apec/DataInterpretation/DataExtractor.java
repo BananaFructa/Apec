@@ -879,7 +879,7 @@ public class DataExtractor {
 
     // Use with caution
     public boolean isFromChat(String s) {
-        return s.contains(":");
+        return (s.contains("[") && s.contains("]")) || (s.startsWith("\u00a77") && s.contains(": "));
     }
 
     /**
