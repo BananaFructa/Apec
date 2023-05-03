@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "id": "ApecCE",
+  "version": "${version}",
+
+  "name": "ApecCE",
+  "description": "A comunity made version of Apec for lastest versions of Minecraft",
+  "authors": [],
+  "contact": {},
+
+  "license": "GNU LGPL 3.0",
+  "icon": "icon.png",
+
+  "environment": "*",
+  "entrypoints": {},
+  "mixins": [
+    "ApecCE.mixins.json",
+    "ApecCE-common.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.14.19",
+    "minecraft": ">=1.19.4"
+  }
+}
