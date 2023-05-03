@@ -15,6 +15,11 @@ configurations {
     developmentFabric.extendsFrom common
 }
 
+repositories {
+    maven { url 'https://jitpack.io' }
+    maven { url = "https://pkgs.dev.azure.com/djtheredstoner/DevAuth/_packaging/public/maven/v1" }
+}
+
 dependencies {
     modImplementation "net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}"
     modApi "net.fabricmc.fabric-api:fabric-api:${rootProject.fabric_api_version}"
@@ -23,6 +28,12 @@ dependencies {
 
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
     shadowCommon(project(path: ":common", configuration: "transformProductionFabric")) { transitive false }
+
+    modRuntimeOnly(include("net.jodah:typetools:0.6.3"))
+    modRuntimeOnly(include("org.javassist:javassist:3.28.0-GA"))
+    modRuntimeOnly(include("com.github.ZeroMemes:Alpine:cb4a363a8b")) // Events
+    modRuntimeOnly(include("org.reflections:reflections:0.10.2")) // Reflections
+    modRuntimeOnly("me.djtheredstoner:DevAuth-fabric:1.1.2") // Authentication
 }
 
 processResources {

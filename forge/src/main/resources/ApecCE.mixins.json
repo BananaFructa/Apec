@@ -1,11 +1,13 @@
 {
   "required": true,
   "minVersion": "0.8",
-  "package": "org.apecce.apecce.mixin.forge",
+  "package": "org.apecce.apecce.forge.mixins.forge",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
+
   ],
   "client": [
+    "MixinForgeGui"
   ],
   "injectors": {
     "defaultRequire": 1

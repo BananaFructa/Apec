@@ -1,4 +1,4 @@
-package org.apecce.apecce.forge.mixins;
+package org.apecce.apecce.forge.mixins.forge;
 
 import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -6,7 +6,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraftforge.client.gui.overlay.ForgeGui;
 import org.apecce.apecce.ApecCE;
 import org.apecce.apecce.events.Render2D;
-import org.apecce.apecce.utils.ModLoaderUtil;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -20,10 +19,10 @@ public abstract class MixinForgeGui {
     public abstract Minecraft getMinecraft();
 
     @Inject(method = "render", at = @At("HEAD"))
-    private void render(PoseStack poseStack, float f, CallbackInfo ci) {
+    public void render(PoseStack poseStack, float f, CallbackInfo ci) {
         Window window = this.getMinecraft().getWindow();
         Render2D event = new Render2D(window.getGuiScaledWidth(), window.getGuiScaledHeight(), poseStack, f);
-        ModLoaderUtil.post(event.getClass());
+        ApecCE.getInstance().getEventBus().post(event);
     }
 
 }

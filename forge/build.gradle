@@ -1,6 +1,13 @@
 plugins {
     id "com.github.johnrengelman.shadow" version "7.1.2"
 }
+
+loom {
+    forge {
+        mixinConfig("ApecCE-common.mixins.json", "ApecCE.mixins.json")
+    }
+}
+
 architectury {
     platformSetupLoomIde()
     forge()
@@ -14,6 +21,11 @@ configurations {
     developmentForge.extendsFrom common
 }
 
+repositories {
+    maven { url 'https://jitpack.io' }
+    maven { url = "https://pkgs.dev.azure.com/djtheredstoner/DevAuth/_packaging/public/maven/v1" }
+}
+
 dependencies {
     forge "net.minecraftforge:forge:${rootProject.forge_version}"
     // Remove the next line if you don't want to depend on the API
@@ -21,6 +33,13 @@ dependencies {
 
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
     shadowCommon(project(path: ":common", configuration: "transformProductionForge")) { transitive = false }
+
+    runtimeOnly("me.djtheredstoner:DevAuth-forge-latest:1.1.2")
+    forgeRuntimeLibrary(include("net.jodah:typetools:0.6.3"))
+    forgeRuntimeLibrary(include("org.javassist:javassist:3.28.0-GA"))
+    implementation("com.github.ZeroMemes:Alpine:cb4a363a8b")
+    forgeRuntimeLibrary(include("com.github.ZeroMemes:Alpine:cb4a363a8b")) // Events
+    forgeRuntimeLibrary(include("org.reflections:reflections:0.10.2")) // Reflections
 }
 
 processResources {
