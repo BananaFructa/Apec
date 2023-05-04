@@ -10,4 +10,6 @@ public class ApecCEFabric implements ClientModInitializer {
         ApecCE.getInstance().init(ApecCE.ModLoader.FABRIC);
         ApecCE.getInstance().getLogger().info("ApecCE initialized");
     }
+
+
 }

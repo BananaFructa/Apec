@@ -17,6 +17,10 @@ public class ModuleManager {
         modules.forEach(module -> ApecCE.getInstance().getLogger().info("Module registered: " + module.getName()));
     }
 
+    public void postInitialize() {
+        modules.forEach(Module::postInit);
+    }
+
     private void registerMods() {
         if (ApecCE.getInstance().getModLoader() == ApecCE.ModLoader.FORGE) {
             // Fuck forge not dynamically finding them
@@ -30,6 +34,9 @@ public class ModuleManager {
             try {
                 Module module = (Module) clazz.getDeclaredConstructor().newInstance();
                 modules.add(module);
+                if (clazz.isAnnotationPresent(Module.ModuleEnabled.class)) {
+                    module.toggle();
+                }
             } catch (ReflectiveOperationException e) {
                 e.printStackTrace();
             }

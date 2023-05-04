@@ -5,8 +5,10 @@ import me.zero.alpine.listener.EventSubscriber;
 import org.apecce.apecce.ApecCE;
 import org.apecce.apecce.MC;
 
+import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 @Data
 public class Module implements MC, EventSubscriber {
@@ -18,17 +20,20 @@ public class Module implements MC, EventSubscriber {
 
     public void setState(boolean state) {
         onToggle();
-        if (mc.level != null) { // Don't enable if not in a world
-            this.state = state;
-            if (state) {
-                onEnable();
-                ApecCE.getInstance().eventBus.subscribe(this);
-            } else {
-                onDisable();
-                ApecCE.getInstance().eventBus.unsubscribe(this);
-            }
+        this.state = state;
+        if (state) {
+            onEnable();
+            ApecCE.getInstance().eventBus.subscribe(this);
+        } else {
+            onDisable();
+            ApecCE.getInstance().eventBus.unsubscribe(this);
         }
 
+    }
+
+    // Used to toggle if using @ModuleEnabled
+    public void toggle() {
+        setState(!state);
     }
 
     protected void onDisable() {
@@ -41,11 +46,20 @@ public class Module implements MC, EventSubscriber {
 
     }
 
+    public void postInit() {
+    }
+
     @Retention(RetentionPolicy.RUNTIME)
     public @interface ModuleInfo {
         String name();
 
         String description();
+    }
+
+    @Target(ElementType.TYPE)
+    @Retention(RetentionPolicy.RUNTIME)
+    public @interface ModuleEnabled {
+
     }
 
 }

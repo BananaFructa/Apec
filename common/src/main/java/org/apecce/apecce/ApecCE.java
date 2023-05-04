@@ -39,6 +39,10 @@ public class ApecCE {
         LogHelper.section("Initialized ApecCE (" + stopWatch.getTime() + "ms)");
     }
 
+    public void postInit() {
+        moduleManager.postInitialize();
+    }
+
 
     public enum ModLoader {
         FABRIC,
