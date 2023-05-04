@@ -10,6 +10,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apecce.apecce.events.Render2D;
 import org.apecce.apecce.managers.ModuleManager;
+import org.apecce.apecce.skyblock.SkyBlockInfo;
 import org.apecce.apecce.utils.LogHelper;
 
 @Data
@@ -33,7 +34,7 @@ public class ApecCE {
         LogHelper.section("Initializing ApecCE (" + modLoader.name() + ")");
         StopWatch stopWatch = StopWatch.createStarted();
         moduleManager.initialize();
-
+        eventBus.subscribe(SkyBlockInfo.getInstance());
         eventBus.subscribe(new Listener<Render2D>(render2D -> MC.mc.gui.getFont().drawShadow(render2D.poseStack(), "ApecCE", 2, 2, -1)));
 
         LogHelper.section("Initialized ApecCE (" + stopWatch.getTime() + "ms)");
