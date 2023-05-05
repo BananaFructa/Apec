@@ -23,9 +23,11 @@ public class HPText extends Element {
         int base_hp = SkyBlockInfo.getInstance().getPlayerStats().base_hp();
         int ap = SkyBlockInfo.getInstance().getPlayerStats().absorption();
         int base_ap = SkyBlockInfo.getInstance().getPlayerStats().base_absorption();
+        int heal_duration = SkyBlockInfo.getInstance().getPlayerStats().heal_duration();
+        char heal_duration_tick = SkyBlockInfo.getInstance().getPlayerStats().heal_duration_tick();
 
         int addedHp = hp + ap;
-        String hpText = (!showAPBar && ap != 0 ? ChatFormatting.YELLOW + String.valueOf(addedHp) + ChatFormatting.RESET : hp) + "/" + base_hp + " HP";
+        String hpText = (!showAPBar && ap != 0 ? ChatFormatting.YELLOW + String.valueOf(addedHp) + ChatFormatting.RESET : hp) + "/" + base_hp + " HP" + (heal_duration != 0 ? " +" + heal_duration + "/s " + heal_duration_tick : "");
 
         int width = (int) (scaledResolution.x - mc.font.width(hpText) - 5);
         ApecUtils.drawOutlineText(mc, poseStack, hpText, width, 5, 0xd10808);

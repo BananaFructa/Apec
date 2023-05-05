@@ -135,6 +135,8 @@ public class SkyBlockInfo implements SBAPI, EventSubscriber, MC {
         int play_base_hp = 0;
         int play_absorption = 0;
         int play_base_absorption = 0;
+        int play_heal_duration = 0;
+        char play_heal_duration_ticker = 0;
 
         // HP
         {
@@ -169,12 +171,30 @@ public class SkyBlockInfo implements SBAPI, EventSubscriber, MC {
             }
         }
 
+        // Heal Duration
+        {
+            char[] healDurationSymbols = new char[]{'▆', '▅', '▄', '▃', '▂', '▁'};
+            String segmentedSrtring = null;
+            char ticker = '\0';
+            for (char _c : healDurationSymbols) {
+                ticker = _c;
+                segmentedSrtring = ApecUtils.segmentString(actionBar, String.valueOf(_c), '+', _c, 1, 1);
+                if (segmentedSrtring != null) break;
+            }
+            if (segmentedSrtring != null) {
+                play_heal_duration = Integer.parseInt(ApecUtils.removeAllColourCodes(segmentedSrtring).replace("+", ""));
+                play_heal_duration_ticker = ticker;
+            } else {
+                play_heal_duration = 0;
+            }
+        }
+
 
         this.playerStats = new PlayerStats(
                 play_hp,
                 play_base_hp,
-                0,
-                0,
+                play_heal_duration,
+                play_heal_duration_ticker,
                 play_absorption,
                 play_base_absorption,
                 0,

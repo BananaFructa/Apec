@@ -28,7 +28,7 @@ public interface SBAPI {
             int hp,
             int base_hp,
             int heal_duration,
-            int heal_duration_tick,
+            char heal_duration_tick,
             int absorption,
             int base_absorption,
             int overflow,
@@ -40,7 +40,7 @@ public interface SBAPI {
             boolean skill_shown,
             boolean ability_shown
     ) {
-        public static final PlayerStats EMPTY = new PlayerStats(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", 0, false, false);
+        public static final PlayerStats EMPTY = new PlayerStats(0, 0, 0, '0', 0, 0, 0, 0, 0, 0, "", 0, false, false);
     }
 
     PlayerStats getPlayerStats();
