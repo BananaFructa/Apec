@@ -127,10 +127,11 @@ public class ApecUtils {
     }
 
     public static void drawOutlineText(Minecraft mc, PoseStack poseStack, String text, int x, int y, int colour) {
-        mc.font.draw(poseStack, text, x + 1, y, (colour >> 24) << 24);
-        mc.font.draw(poseStack, text, x - 1, y, (colour >> 24) << 24);
-        mc.font.draw(poseStack, text, x, y + 1, (colour >> 24) << 24);
-        mc.font.draw(poseStack, text, x, y - 1, (colour >> 24) << 24);
+        String noColorText = removeAllColourCodes(text);
+        mc.font.draw(poseStack, noColorText, x + 1, y, (colour >> 24) << 24);
+        mc.font.draw(poseStack, noColorText, x - 1, y, (colour >> 24) << 24);
+        mc.font.draw(poseStack, noColorText, x, y + 1, (colour >> 24) << 24);
+        mc.font.draw(poseStack, noColorText, x, y - 1, (colour >> 24) << 24);
         mc.font.draw(poseStack, text, x, y, colour);
     }
 

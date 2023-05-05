@@ -32,6 +32,15 @@ public class SkyBlockInfo implements SBAPI, EventSubscriber, MC {
     private PlayerStats playerStats = PlayerStats.EMPTY;
     private Component clientOverlay = Component.empty();
 
+    // Private fields for the overlay parsing
+    private int lastHp = 1, lastBaseHp = 1;
+    private final int lastMn = 1;
+    private final int lastBaseMn = 1;
+    private final int lastDefence = 0;
+    private int baseAp = 0;
+    private int lastAp = 1, lastBaseAp = 1;
+    private final int baseOp = 1;
+
     @Subscribe
     Listener<ClientTick> clientTickListener = new Listener<>(event -> {
         Component clientScoreboardTitle = getClientScoreboardTitle();
@@ -116,34 +125,58 @@ public class SkyBlockInfo implements SBAPI, EventSubscriber, MC {
 
     }
 
+
     private void parsePlayerStats() {
 
         // 2,964/2,664❤     683❈ Defense     327/327✎ Mana
         String actionBar = this.clientOverlay.getString();
 
-        int hp = 0;
-        int base_hp = 0;
-        int absorption = 0;
-        int base_absorption = 0;
+        int play_hp = 0;
+        int play_base_hp = 0;
+        int play_absorption = 0;
+        int play_base_absorption = 0;
 
         // HP
         {
             String segment = ApecUtils.segmentString(actionBar, "❤", '§', '❤', 1, 1);
             if (segment != null) {
                 Tuple<Integer, Integer> hpTuple = formatStringFractI(ApecUtils.removeAllColourCodes(segment));
-                hp = hpTuple.getA();
-                base_hp = hpTuple.getB();
+                play_hp = hpTuple.getA();
+                play_base_hp = hpTuple.getB();
+
+                if (play_hp > play_base_hp) {
+                    play_absorption = play_hp - play_base_hp;
+                    play_hp = play_base_hp;
+                } else {
+                    play_absorption = 0;
+                    play_base_absorption = 0;
+                }
+                if (play_absorption > baseAp) {
+                    baseAp = play_absorption;
+                }
+                play_base_absorption = baseAp;
+
+                lastAp = play_absorption;
+                lastBaseAp = play_base_absorption;
+
+                lastHp = play_hp;
+                lastBaseHp = play_base_hp;
+            } else {
+                play_hp = lastHp;
+                play_base_hp = lastBaseHp;
+                play_absorption = lastAp;
+                play_base_absorption = lastBaseAp;
             }
         }
 
 
         this.playerStats = new PlayerStats(
-                hp,
-                base_hp,
+                play_hp,
+                play_base_hp,
                 0,
                 0,
-                0,
-                0,
+                play_absorption,
+                play_base_absorption,
                 0,
                 0,
                 0,
