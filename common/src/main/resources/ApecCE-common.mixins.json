@@ -5,7 +5,8 @@
   "compatibilityLevel": "JAVA_17",
   "client": [
     "MixinInGameHud",
-    "MixinMinecraft"
+    "MixinMinecraft",
+    "MixinChatListener"
   ],
   "injectors": {
     "defaultRequire": 1

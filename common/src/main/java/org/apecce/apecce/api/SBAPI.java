@@ -24,5 +24,25 @@ public interface SBAPI {
 
     boolean usesPiggyBank();
 
+    record PlayerStats(
+            int hp,
+            int base_hp,
+            int heal_duration,
+            int heal_duration_tick,
+            int absorption,
+            int base_absorption,
+            int overflow,
+            int mana,
+            int base_mana,
+            int defense,
+            String skill_info,
+            float skill_xp_percentage,
+            boolean skill_shown,
+            boolean ability_shown
+    ) {
+        public static final PlayerStats EMPTY = new PlayerStats(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", 0, false, false);
+    }
+
+    PlayerStats getPlayerStats();
 
 }

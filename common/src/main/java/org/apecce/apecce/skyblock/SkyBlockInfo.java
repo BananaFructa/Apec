@@ -5,17 +5,14 @@ import me.zero.alpine.listener.EventSubscriber;
 import me.zero.alpine.listener.Listener;
 import me.zero.alpine.listener.Subscribe;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.util.StringUtil;
+import net.minecraft.util.Tuple;
 import net.minecraft.world.scores.Objective;
 import net.minecraft.world.scores.PlayerTeam;
 import net.minecraft.world.scores.Score;
 import net.minecraft.world.scores.Scoreboard;
-import org.apache.commons.codec.binary.StringUtils;
-import org.apache.logging.log4j.core.pattern.PlainTextRenderer;
-import org.apecce.apecce.ApecCE;
 import org.apecce.apecce.MC;
 import org.apecce.apecce.api.SBAPI;
+import org.apecce.apecce.events.ChatMessage;
 import org.apecce.apecce.events.ClientTick;
 import org.apecce.apecce.utils.ApecUtils;
 
@@ -27,34 +24,39 @@ public class SkyBlockInfo implements SBAPI, EventSubscriber, MC {
 
     private static final SkyBlockInfo INSTANCE = new SkyBlockInfo();
 
-    private SBScoreBoard scoreboard;
+    private SBScoreBoard scoreboard = SBScoreBoard.EMPTY;
     private boolean onSkyblock;
     private List<String> scoreboardLines = new ArrayList<>();
     private boolean usesPiggyBank;
+
+    private PlayerStats playerStats = PlayerStats.EMPTY;
+    private Component clientOverlay = Component.empty();
 
     @Subscribe
     Listener<ClientTick> clientTickListener = new Listener<>(event -> {
         Component clientScoreboardTitle = getClientScoreboardTitle();
         if (!clientScoreboardTitle.getString().isEmpty()) {
-            if (clientScoreboardTitle.getString().contains("SKYBLOCK")) {
-                this.onSkyblock = true;
-            } else {
-                this.onSkyblock = false;
-            }
+            this.onSkyblock = clientScoreboardTitle.getString().contains("SKYBLOCK");
 
             this.scoreboardLines = getScoreboardLines();
 
-            ParseScoreboardData();
+            parseScoreboardData();
+
+            parsePlayerStats();
+        }
+    }, EventPriority.LOWEST);
+
+    @Subscribe
+    Listener<ChatMessage> chatMessageListener = new Listener<>(event -> {
+        if (event.isOverlay()) {
+            if (event.component().getString().contains("❤")) {
+                this.clientOverlay = event.component();
+            }
         }
     }, EventPriority.LOWEST);
 
 
-    private void ParseScoreboardData() {
-
-        if(!this.onSkyblock) {
-            this.scoreboard = SBScoreBoard.EMPTY;
-            return;
-        }
+    private void parseScoreboardData() {
 
         String irl_date = "";
         String serverShard = "";
@@ -96,7 +98,7 @@ public class SkyBlockInfo implements SBAPI, EventSubscriber, MC {
                 this.usesPiggyBank = true;
             }
 
-            if(ApecUtils.containedByCharSequence(e, "Bits: ")){
+            if (ApecUtils.containedByCharSequence(e, "Bits: ")) {
                 bits = ApecUtils.removeFirstSpaces(e); // "Bits: 0.0"
             }
         }
@@ -112,6 +114,50 @@ public class SkyBlockInfo implements SBAPI, EventSubscriber, MC {
                 irl_date,
                 getClientScoreboardTitle().getString());
 
+    }
+
+    private void parsePlayerStats() {
+
+        // 2,964/2,664❤     683❈ Defense     327/327✎ Mana
+        String actionBar = this.clientOverlay.getString();
+
+        int hp = 0;
+        int base_hp = 0;
+        int absorption = 0;
+        int base_absorption = 0;
+
+        // HP
+        {
+            String segment = ApecUtils.segmentString(actionBar, "❤", '§', '❤', 1, 1);
+            if (segment != null) {
+                Tuple<Integer, Integer> hpTuple = formatStringFractI(ApecUtils.removeAllColourCodes(segment));
+                hp = hpTuple.getA();
+                base_hp = hpTuple.getB();
+            }
+        }
+
+
+        this.playerStats = new PlayerStats(
+                hp,
+                base_hp,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                "",
+                0,
+                false,
+                false);
+    }
+
+
+    public Tuple<Integer, Integer> formatStringFractI(String s) {
+        String[] tempSplit = s.replace(",", "").split("/");
+        return new Tuple<>(Integer.parseInt(tempSplit[0]), Integer.parseInt(tempSplit[1]));
     }
 
     private boolean isDate(String s) {
@@ -176,6 +222,11 @@ public class SkyBlockInfo implements SBAPI, EventSubscriber, MC {
     @Override
     public boolean usesPiggyBank() {
         return usesPiggyBank;
+    }
+
+    @Override
+    public PlayerStats getPlayerStats() {
+        return playerStats;
     }
 
     public static SkyBlockInfo getInstance() {

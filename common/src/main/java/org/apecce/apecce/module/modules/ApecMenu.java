@@ -1,14 +1,13 @@
 package org.apecce.apecce.module.modules;
 
-import com.mojang.blaze3d.platform.GlStateManager;
-import com.mojang.blaze3d.systems.RenderSystem;
 import me.zero.alpine.listener.Listener;
 import me.zero.alpine.listener.Subscribe;
-import org.apecce.apecce.ApecCE;
 import org.apecce.apecce.events.ClientTick;
 import org.apecce.apecce.events.Render2D;
 import org.apecce.apecce.gui.Element;
+import org.apecce.apecce.gui.elements.DebugText;
 import org.apecce.apecce.gui.elements.HPBar;
+import org.apecce.apecce.gui.elements.HPText;
 import org.apecce.apecce.module.Module;
 import org.joml.Vector2f;
 
@@ -22,6 +21,8 @@ public class ApecMenu extends Module {
     public List<Element> guiElements = new ArrayList<Element>() {
         {
             add(new HPBar());
+            add(new HPText());
+            add(new DebugText());
         }
     };
 

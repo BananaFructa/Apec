@@ -1,6 +1,5 @@
 package org.apecce.apecce.mixins;
 
-import dev.architectury.platform.Mod;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.main.GameConfig;
