@@ -14,6 +14,7 @@ import org.apecce.apecce.MC;
 import org.apecce.apecce.api.SBAPI;
 import org.apecce.apecce.events.ChatMessage;
 import org.apecce.apecce.events.ClientTick;
+import org.apecce.apecce.mixins.accessors.PlayerTabOverlayAccessor;
 import org.apecce.apecce.utils.ApecUtils;
 
 import java.util.ArrayList;
@@ -31,6 +32,7 @@ public class SkyBlockInfo implements SBAPI, EventSubscriber, MC {
 
     private PlayerStats playerStats = PlayerStats.EMPTY;
     private Component clientOverlay = Component.empty();
+    private Component clientTabFooter = Component.empty();
 
     // Private fields for the overlay parsing
     private int lastHp = 1, lastBaseHp = 1;
@@ -52,6 +54,8 @@ public class SkyBlockInfo implements SBAPI, EventSubscriber, MC {
             parseScoreboardData();
 
             parsePlayerStats();
+
+            this.clientTabFooter = ((PlayerTabOverlayAccessor) mc.gui.getTabList()).getFooter();
         }
     }, EventPriority.LOWEST);
 
@@ -74,6 +78,7 @@ public class SkyBlockInfo implements SBAPI, EventSubscriber, MC {
         String zone = "";
         String purse = "";
         String bits = "";
+        String gameType = "";
 
         for (String e : this.scoreboardLines) {
             // IRL Date and Server Shard
@@ -110,6 +115,11 @@ public class SkyBlockInfo implements SBAPI, EventSubscriber, MC {
             if (ApecUtils.containedByCharSequence(e, "Bits: ")) {
                 bits = ApecUtils.removeFirstSpaces(e); // "Bits: 0.0"
             }
+
+            // Game Type (Ironman, Stranded, Bingo)
+            if (ApecUtils.containedByCharSequence(e, "♲") || ApecUtils.containedByCharSequence(e, "☀ Stranded") || ApecUtils.containedByCharSequence(e, "Ⓑ")) {
+                gameType = ApecUtils.removeFirstSpaces(e); // "♲ Ironman"
+            }
         }
 
         this.scoreboard = new SBScoreBoard(
@@ -121,7 +131,8 @@ public class SkyBlockInfo implements SBAPI, EventSubscriber, MC {
                 date,
                 hour,
                 irl_date,
-                getClientScoreboardTitle().getString());
+                getClientScoreboardTitle().getString(),
+                gameType);
 
     }
 
@@ -280,6 +291,11 @@ public class SkyBlockInfo implements SBAPI, EventSubscriber, MC {
     @Override
     public PlayerStats getPlayerStats() {
         return playerStats;
+    }
+
+    @Override
+    public Component getTabListFooter() {
+        return clientTabFooter;
     }
 
     public static SkyBlockInfo getInstance() {

@@ -1,5 +1,7 @@
 package org.apecce.apecce.api;
 
+import net.minecraft.network.chat.Component;
+
 import java.util.List;
 
 public interface SBAPI {
@@ -14,10 +16,11 @@ public interface SBAPI {
                         String date,
                         String Hour,
                         String IRL_Date,
-                        String scoreboardTitle
+                        String scoreboardTitle,
+                        String gameType
     ) {
 
-        public static final SBScoreBoard EMPTY = new SBScoreBoard("", "", "", List.of(), "", "", "", "", "");
+        public static final SBScoreBoard EMPTY = new SBScoreBoard("", "", "", List.of(), "", "", "", "", "", "");
     }
 
     SBScoreBoard getScoreboard();
@@ -44,5 +47,7 @@ public interface SBAPI {
     }
 
     PlayerStats getPlayerStats();
+
+    Component getTabListFooter();
 
 }

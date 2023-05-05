@@ -4,9 +4,10 @@
   "package": "org.apecce.apecce.mixins",
   "compatibilityLevel": "JAVA_17",
   "client": [
+    "MixinChatListener",
     "MixinInGameHud",
     "MixinMinecraft",
-    "MixinChatListener"
+    "accessors.PlayerTabOverlayAccessor"
   ],
   "injectors": {
     "defaultRequire": 1
