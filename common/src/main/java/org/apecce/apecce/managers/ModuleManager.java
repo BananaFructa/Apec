@@ -25,6 +25,7 @@ public class ModuleManager {
         if (ApecCE.getInstance().getModLoader() == ApecCE.ModLoader.FORGE) {
             // Fuck forge not dynamically finding them
             modules.add(new ApecMenu());
+            modules.get(0).toggle();
             return;
         }
 
