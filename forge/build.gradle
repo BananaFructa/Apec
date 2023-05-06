@@ -4,7 +4,7 @@ plugins {
 
 loom {
     forge {
-        mixinConfig("ApecCE-common.mixins.json", "ApecCE.mixins.json")
+        mixinConfig("Apec-common.mixins.json", "Apec.mixins.json")
     }
 }
 

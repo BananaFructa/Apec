@@ -2,28 +2,28 @@
   "schemaVersion": 1,
   "id": "apecce",
   "version": "${version}",
-  "name": "ApecCE",
-  "description": "A community made version of Apec for latest versions of Minecraft",
+  "name": "Apec",
+  "description": "A Gui improvment mod for Hypixel Skyblock",
   "authors": [
     "Hexeption",
     "BananaFructa (Original Creator)"
   ],
   "contact": {
-    "homepage": "https://modrinth.com/mod/apecce",
-    "sources": "https://github.com/Hexeption/ApecCE",
-    "issues": "https://github.com/Hexeption/ApecCE/issues"
+    "homepage": "https://modrinth.com/mod/apec",
+    "sources": "https://github.com/BananaFructa/Apec",
+    "issues": "https://github.com/BananaFructa/Apec/issues"
   },
   "license": "GNU LGPL 3.0",
   "icon": "icon.png",
   "environment": "client",
   "entrypoints": {
     "client": [
-      "org.apecce.apecce.fabric.ApecCEFabric"
+      "org.apec.apec.fabric.ApecFabric"
     ]
   },
   "mixins": [
-    "ApecCE.mixins.json",
-    "ApecCE-common.mixins.json"
+    "Apec.mixins.json",
+    "Apec-common.mixins.json"
   ],
   "depends": {
     "fabricloader": ">=0.14.19",
@@ -32,7 +32,7 @@
   "custom": {
     "modmenu": {
       "links": {
-        "modmenu.discord": "https://discord.hexeption.co.uk"
+        "modmenu.discord": "https://discord.gg/nrWyySX98v"
       }
     }
   }
