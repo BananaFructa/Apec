@@ -35,6 +35,7 @@ public interface SBAPI {
             int absorption,
             int base_absorption,
             int overflow,
+            int base_overflow,
             int mana,
             int base_mana,
             int defense,
@@ -43,7 +44,7 @@ public interface SBAPI {
             boolean skill_shown,
             boolean ability_shown
     ) {
-        public static final PlayerStats EMPTY = new PlayerStats(0, 0, 0, '0', 0, 0, 0, 0, 0, 0, "", 0, false, false);
+        public static final PlayerStats EMPTY = new PlayerStats(0, 0, 0, '0', 0, 0, 0, 0, 0, 0, 0, "", 0, false, false);
     }
 
     PlayerStats getPlayerStats();

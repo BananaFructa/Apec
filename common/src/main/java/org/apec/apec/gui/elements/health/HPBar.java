@@ -1,4 +1,4 @@
-package org.apec.apec.gui.elements;
+package org.apec.apec.gui.elements.health;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;

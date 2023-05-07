@@ -6,8 +6,10 @@ import org.apec.apec.events.ClientTick;
 import org.apec.apec.events.Render2D;
 import org.apec.apec.gui.Element;
 import org.apec.apec.gui.elements.DebugText;
-import org.apec.apec.gui.elements.HPBar;
-import org.apec.apec.gui.elements.HPText;
+import org.apec.apec.gui.elements.health.HPBar;
+import org.apec.apec.gui.elements.health.HPText;
+import org.apec.apec.gui.elements.mana.MPBar;
+import org.apec.apec.gui.elements.mana.MPText;
 import org.apec.apec.module.Module;
 import org.joml.Vector2f;
 
@@ -20,9 +22,13 @@ public class ApecMenu extends Module {
 
     public List<Element> guiElements = new ArrayList<Element>() {
         {
-            add(new HPBar());
-            add(new HPText());
-            add(new DebugText());
+            addAll(List.of(
+                    new HPBar(),
+                    new HPText(),
+                    new MPBar(),
+                    new MPText(),
+                    new DebugText()
+            ));
         }
     };
 

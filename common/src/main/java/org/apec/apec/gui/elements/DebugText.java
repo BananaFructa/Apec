@@ -18,6 +18,7 @@ public class DebugText extends Element {
     public void drawText(PoseStack poseStack, Vector2f scaledResolution) {
         if (SkyBlockInfo.getInstance().getScoreboard() != null) {
             ApecUtils.drawOutlineWrappedText(mc, poseStack, SkyBlockInfo.getInstance().getScoreboard().toString(), 2, 30, 300, new Color(170, 84, 255, 255).getRGB());
+            ApecUtils.drawOutlineWrappedText(mc, poseStack, SkyBlockInfo.getInstance().getPlayerStats().toString(), 2, 80, 300, new Color(84, 255, 170, 255).getRGB());
         }
     }
 }

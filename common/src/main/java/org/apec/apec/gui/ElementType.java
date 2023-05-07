@@ -5,5 +5,7 @@ public enum ElementType {
     HP_BAR,
     HP_TEXT,
     DEBUG_TEXT,
+    MP_BAR,
+    MP_TEXT,
 
 }

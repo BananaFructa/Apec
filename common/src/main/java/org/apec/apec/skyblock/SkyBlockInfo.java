@@ -36,12 +36,12 @@ public class SkyBlockInfo implements SBAPI, EventSubscriber, MC {
 
     // Private fields for the overlay parsing
     private int lastHp = 1, lastBaseHp = 1;
-    private final int lastMn = 1;
-    private final int lastBaseMn = 1;
+    private int lastMn = 1;
+    private int lastBaseMn = 1;
     private final int lastDefence = 0;
     private int baseAp = 0;
     private int lastAp = 1, lastBaseAp = 1;
-    private final int baseOp = 1;
+    private int baseOp = 1;
 
     @Subscribe
     Listener<ClientTick> clientTickListener = new Listener<>(event -> {
@@ -148,6 +148,10 @@ public class SkyBlockInfo implements SBAPI, EventSubscriber, MC {
         int play_base_absorption = 0;
         int play_heal_duration = 0;
         char play_heal_duration_ticker = 0;
+        int play_mp = 0;
+        int play_base_mp = 0;
+        int play_overflow = 0;
+        int play_base_overflow = 0;
 
         // HP
         {
@@ -200,6 +204,38 @@ public class SkyBlockInfo implements SBAPI, EventSubscriber, MC {
             }
         }
 
+        // Mana
+        {
+            String segmentedString = ApecUtils.segmentString(actionBar, String.valueOf('✎'), '§', '✎', 1, 1);
+            if (segmentedString != null) {
+                Tuple<Integer, Integer> t = formatStringFractI(ApecUtils.removeAllColourCodes(segmentedString));
+                play_mp = t.getA();
+                play_base_mp = t.getB();
+                lastMn = play_mp;
+                lastBaseMn = play_base_mp;
+            } else {
+                play_mp = lastMn;
+                play_base_mp = lastBaseMn;
+            }
+        }
+
+        // Overflow mana
+        {
+            String segmentedString = ApecUtils.segmentString(actionBar, String.valueOf('ʬ'), '\u00a7', 'ʬ', 1, 1);
+            if (segmentedString != null) {
+                int value = Integer.parseInt(ApecUtils.removeAllColourCodes(segmentedString.replace(",", "")));
+                play_overflow = value;
+                if (baseOp < value) {
+                    baseOp = value;
+                }
+                play_base_overflow = baseOp;
+            } else {
+                play_overflow = 0;
+                play_base_overflow = 0;
+                baseOp = 0;
+            }
+        }
+
 
         this.playerStats = new PlayerStats(
                 play_hp,
@@ -208,9 +244,10 @@ public class SkyBlockInfo implements SBAPI, EventSubscriber, MC {
                 play_heal_duration_ticker,
                 play_absorption,
                 play_base_absorption,
-                0,
-                0,
-                0,
+                play_overflow,
+                play_base_overflow,
+                play_mp,
+                play_base_mp,
                 0,
                 "",
                 0,
