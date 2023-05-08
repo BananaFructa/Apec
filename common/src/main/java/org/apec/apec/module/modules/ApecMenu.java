@@ -11,6 +11,7 @@ import org.apec.apec.gui.elements.health.HPText;
 import org.apec.apec.gui.elements.mana.MPBar;
 import org.apec.apec.gui.elements.mana.MPText;
 import org.apec.apec.module.Module;
+import org.apec.apec.skyblock.SkyBlockInfo;
 import org.joml.Vector2f;
 
 import java.util.ArrayList;
@@ -38,10 +39,18 @@ public class ApecMenu extends Module {
     }
 
     @Subscribe
-    Listener<ClientTick> clientTickListener = new Listener<>(event -> guiElements.forEach(Element::tick));
+    Listener<ClientTick> clientTickListener = new Listener<>(event -> {
+        if (!SkyBlockInfo.getInstance().isOnSkyblock()) {
+            return;
+        }
+        guiElements.forEach(Element::tick);
+    });
 
     @Subscribe
     Listener<Render2D> render2DListener = new Listener<>(event -> {
+        if (!SkyBlockInfo.getInstance().isOnSkyblock()) {
+            return;
+        }
         Vector2f scaledResolution = new Vector2f(event.width(), event.height());
         guiElements.forEach(element -> {
             event.poseStack().pushPose();
