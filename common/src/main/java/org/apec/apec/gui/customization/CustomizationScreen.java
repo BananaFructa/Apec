@@ -67,6 +67,13 @@ public class CustomizationScreen extends Screen implements MC {
             });
         }
 
+        if(i == 1) {
+            this.children().forEach(guiEventListener -> {
+                if (guiEventListener.mouseClicked(d, e, i) && guiEventListener instanceof CustomizationWidget)
+                    ((CustomizationWidget) guiEventListener).reset();
+            });
+        }
+
         return super.mouseClicked(d, e, i);
     }
 

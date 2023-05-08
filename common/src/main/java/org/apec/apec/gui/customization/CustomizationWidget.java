@@ -142,4 +142,8 @@ public class CustomizationWidget extends Button implements MC {
         this.isUserDragging = false;
         return super.mouseReleased(d, e, i);
     }
+
+    public void reset() {
+        this.element.setDeltaPosition(new Vector2f(0, 0));
+    }
 }
