@@ -6,10 +6,14 @@ import org.apec.apec.events.ClientTick;
 import org.apec.apec.events.Render2D;
 import org.apec.apec.gui.Element;
 import org.apec.apec.gui.elements.DebugText;
+import org.apec.apec.gui.elements.air.AirBar;
+import org.apec.apec.gui.elements.air.AirText;
 import org.apec.apec.gui.elements.health.HPBar;
 import org.apec.apec.gui.elements.health.HPText;
 import org.apec.apec.gui.elements.mana.MPBar;
 import org.apec.apec.gui.elements.mana.MPText;
+import org.apec.apec.gui.elements.xp.XPBar;
+import org.apec.apec.gui.elements.xp.XPText;
 import org.apec.apec.module.Module;
 import org.apec.apec.skyblock.SkyBlockInfo;
 import org.joml.Vector2f;
@@ -28,6 +32,10 @@ public class ApecMenu extends Module {
                     new HPText(),
                     new MPBar(),
                     new MPText(),
+                    new XPBar(),
+                    new XPText(),
+                    new AirBar(),
+                    new AirText(),
                     new DebugText()
             ));
         }

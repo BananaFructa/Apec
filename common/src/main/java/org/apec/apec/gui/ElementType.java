@@ -7,5 +7,9 @@ public enum ElementType {
     DEBUG_TEXT,
     MP_BAR,
     MP_TEXT,
+    XP_BAR,
+    XP_TEXT,
+    AIR_BAR,
+    AIR_TEXT,
 
 }
