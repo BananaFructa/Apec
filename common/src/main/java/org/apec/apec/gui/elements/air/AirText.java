@@ -21,7 +21,7 @@ public class AirText extends Element {
                 air = 0;
             }
             String airText = (int) air + "% Air";
-            ApecUtils.drawOutlineText(mc, poseStack, airText, (int) (scaledResolution.x - mc.font.width(airText) - 5), 62, 0x80ff20);
+            ApecUtils.drawOutlineText(mc, poseStack, airText, (int) (scaledResolution.x - mc.font.width(airText) - 5), 62, 0x8ba6b2);
         }
 
 
