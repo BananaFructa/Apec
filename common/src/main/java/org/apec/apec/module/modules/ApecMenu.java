@@ -16,6 +16,7 @@ import org.apec.apec.gui.elements.xp.XPBar;
 import org.apec.apec.gui.elements.xp.XPText;
 import org.apec.apec.module.Module;
 import org.apec.apec.skyblock.SkyBlockInfo;
+import org.apec.apec.utils.ApecUtils;
 import org.joml.Vector2f;
 
 import java.util.ArrayList;
@@ -40,6 +41,8 @@ public class ApecMenu extends Module {
             ));
         }
     };
+
+    public boolean isCustomizationScreenOpen = false;
 
     @Override
     public void postInit() {
@@ -71,6 +74,13 @@ public class ApecMenu extends Module {
             event.poseStack().popPose();
         });
     });
+
+    public Vector2f applyGlobalChanges(Element element, Vector2f anchorPoint) {
+        boolean isbbUp = false; //todo: Add Settings for bbup
+        if (isbbUp && element.getDeltaPosition().length() == 0)
+            anchorPoint = ApecUtils.addVec(anchorPoint, new Vector2f(0, 20));
+        return anchorPoint;
+    }
 
 
 }

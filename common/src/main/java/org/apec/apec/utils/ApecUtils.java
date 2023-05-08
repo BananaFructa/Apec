@@ -3,6 +3,7 @@ package org.apec.apec.utils;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.FormattedText;
+import org.joml.Vector2f;
 
 public class ApecUtils {
 
@@ -50,6 +51,14 @@ public class ApecUtils {
         }
 
         return s.substring(i);
+    }
+
+    public static Vector2f addVec(Vector2f a, Vector2f b) {
+        return new Vector2f(a.x + b.x, a.y + b.y);
+    }
+
+    public static Vector2f scalarMultiply(Vector2f v, float s) {
+        return new Vector2f(v.x * s, v.y * s);
     }
 
     public enum SegmentationOptions {

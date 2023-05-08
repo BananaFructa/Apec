@@ -10,12 +10,15 @@ import org.joml.Vector2f;
 
 public class HPText extends Element {
 
+    private int textWidth;
+
     public HPText() {
         super(ElementType.HP_BAR);
     }
 
     @Override
     public void drawText(PoseStack poseStack, Vector2f scaledResolution) {
+        this.scaledResolution = scaledResolution;
 
         boolean showAPBar = false;
 
@@ -29,12 +32,24 @@ public class HPText extends Element {
         int addedHp = hp + ap;
         String hpText = (!showAPBar && ap != 0 ? ChatFormatting.YELLOW + String.valueOf(addedHp) + ChatFormatting.RESET : hp) + "/" + base_hp + " HP" + (heal_duration != 0 ? " +" + heal_duration + "/s " + heal_duration_tick : "");
 
-        int width = (int) (scaledResolution.x - mc.font.width(hpText) - 5);
-        ApecUtils.drawOutlineText(mc, poseStack, hpText, width, 5, 0xd10808);
+        Vector2f statBar = ApecUtils.scalarMultiply(getCurrentAnchorPoint(), 1f / scale);
+
+        ApecUtils.drawOutlineText(mc, poseStack, hpText, (int) (statBar.x - mc.font.width(hpText)), (int) (statBar.y - 10), 0xd10808);
+        textWidth = mc.font.width(hpText);
 
         if (ap != 0 && showAPBar) {
             String apText = ap + "/" + base_ap + " AP";
-            ApecUtils.drawOutlineText(mc, poseStack, apText, (int) (scaledResolution.x - 10 - mc.font.width(apText) - mc.font.width(hpText)), 5, 0x1966AD);
+            ApecUtils.drawOutlineText(mc, poseStack, apText, (int) (statBar.x - 5 - mc.font.width(apText) - mc.font.width(hpText)), (int) (statBar.y - 10), 0x1966AD);
         }
+    }
+
+    @Override
+    public Vector2f getAnchorPointPosition() {
+        return manager.applyGlobalChanges(this, new Vector2f(scaledResolution.x - 190 + 112 + 70, 15));
+    }
+
+    @Override
+    public Vector2f getBoundingPoint() {
+        return new Vector2f(-textWidth, -11);
     }
 }

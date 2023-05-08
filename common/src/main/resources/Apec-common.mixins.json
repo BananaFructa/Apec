@@ -6,6 +6,7 @@
   "client": [
     "MixinChatListener",
     "MixinInGameHud",
+    "MixinKeyboardHandler",
     "MixinMinecraft",
     "accessors.PlayerTabOverlayAccessor"
   ],

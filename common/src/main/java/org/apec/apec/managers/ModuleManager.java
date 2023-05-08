@@ -44,4 +44,8 @@ public class ModuleManager {
         }
     }
 
+    public <T extends Module> Module getModuleByClass(final Class<T> clazz) {
+        return modules.stream().filter(module -> module.getClass().equals(clazz)).findFirst().map(clazz::cast).orElse(null);
+    }
+
 }

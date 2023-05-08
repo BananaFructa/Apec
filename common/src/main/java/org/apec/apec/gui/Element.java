@@ -6,6 +6,7 @@ import me.zero.alpine.listener.EventSubscriber;
 import org.apec.apec.Apec;
 import org.apec.apec.MC;
 import org.apec.apec.module.modules.ApecMenu;
+import org.apec.apec.utils.ApecUtils;
 import org.joml.Vector2f;
 
 import java.util.ArrayList;
@@ -18,6 +19,8 @@ public class Element implements MC, EventSubscriber {
     protected ApecMenu manager;
 
     protected Vector2f position;
+
+    protected Vector2f deltaPosition = new Vector2f(0, 0);
 
     protected List<Vector2f> subComponents = new ArrayList<>();
 
@@ -53,5 +56,21 @@ public class Element implements MC, EventSubscriber {
 
     public void tick() {
 
+    }
+
+    public Vector2f getAnchorPointPosition() {
+        return new Vector2f(0, 0);
+    }
+
+    public Vector2f getCurrentAnchorPoint() {
+        return ApecUtils.addVec(getAnchorPointPosition(), getDeltaPosition());
+    }
+
+    public Vector2f getCurrentBoundingPoint() {
+        return ApecUtils.addVec(getCurrentAnchorPoint(), getBoundingPoint());
+    }
+
+    public Vector2f getBoundingPoint() {
+        return new Vector2f(0, 0);
     }
 }
