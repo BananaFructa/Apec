@@ -311,7 +311,7 @@ public class DataExtractor {
      */
 
     public boolean RepresentsZone(String s) {
-        return ApecUtils.containedByCharSequence(s,"\u23E3");
+        return ApecUtils.containedByCharSequence(s,"\u23E3") || ApecUtils.containedByCharSequence(s, "\u0444");
     }
 
     /**
@@ -320,7 +320,7 @@ public class DataExtractor {
      */
 
     public boolean RepresentsPurse(String s) {
-        return ApecUtils.containedByCharSequence(s,"Purse: ");
+        return ApecUtils.containedByCharSequence(s,"Purse: ") || ApecUtils.containedByCharSequence(s, "Motes: ");
     }
 
     /**

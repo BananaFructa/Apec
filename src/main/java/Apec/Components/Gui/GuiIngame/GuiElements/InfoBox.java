@@ -48,8 +48,17 @@ public class InfoBox extends GUIComponent {
         if (UseIcons) {
 
             GuiPos.y += yDecremetor + 6*scale;
+
+            if (ApecMain.Instance.dataExtractor.isInTheRift) {
+                GlStateManager.pushMatrix();
+                mc.renderEngine.bindTexture(new ResourceLocation(ApecMain.modId, "gui/rifticons.png"));
+                gi.drawTexturedModalRect((int)(GuiPos.x + 20 + (subComponentDeltas.get(0).getX())*oneOverScale), (GuiPos.y+ subComponentDeltas.get(0).getY())*oneOverScale -1,1,1,6,9);
+                GlStateManager.popMatrix();
+            }else {
+                mc.renderEngine.bindTexture(new ResourceLocation(ApecMain.modId, "gui/statBars.png"));
+                gi.drawTexturedModalRect((int)(GuiPos.x + 20 + (subComponentDeltas.get(0).getX())*oneOverScale), (GuiPos.y+ subComponentDeltas.get(0).getY())*oneOverScale -1,1,216,6,9);
+            }
             mc.renderEngine.bindTexture(new ResourceLocation(ApecMain.modId, "gui/statBars.png"));
-            gi.drawTexturedModalRect((int)(GuiPos.x + 20 + (subComponentDeltas.get(0).getX())*oneOverScale), (GuiPos.y+ subComponentDeltas.get(0).getY())*oneOverScale -1,1,216,6,9);
             gi.drawTexturedModalRect((int)(GuiPos.x + 20 + (subComponentDeltas.get(1).getX())*oneOverScale + 120), (GuiPos.y+ subComponentDeltas.get(1).getY())*oneOverScale -1,8,216,5,9);
             if (ApecMain.Instance.dataExtractor.isInTheCatacombs) {
                 gi.drawTexturedModalRect((int) (GuiPos.x + 20 + (subComponentDeltas.get(2).getX())*oneOverScale + 220 - 1), (GuiPos.y + subComponentDeltas.get(2).getY())*oneOverScale -1, 24, 216, 7, 8);
@@ -100,7 +109,7 @@ public class InfoBox extends GUIComponent {
         boolean UseIcons = ApecMain.Instance.settingsManager.getSettingState(SettingID.INFO_BOX_ICONS);
 
         String purseText = (UseIcons ? RemovePurseText(sd.Purse) : sd.Purse);
-        String zoneText = (UseIcons ? ApecUtils.RemoveCharSequence("\u23E3", sd.Zone) : sd.Zone);
+        String zoneText = (UseIcons ? RemoveZoneText(sd.Zone) : sd.Zone);
         String defenceText = (UseIcons ? "\u00a7a" + ps.Defence : "\u00a7a" + ps.Defence + " Defence");
         String bitText = (UseIcons ? ApecUtils.RemoveCharSequence("Bits: ",sd.Bits) : sd.Bits);
         boolean inTheCatacombs = ApecMain.Instance.dataExtractor.isInTheCatacombs;
@@ -195,7 +204,19 @@ public class InfoBox extends GUIComponent {
             return ApecUtils.RemoveCharSequence("Purse: ",s);
         } else if (ApecUtils.containedByCharSequence(s,"Piggy: ")) {
             return ApecUtils.RemoveCharSequence("Piggy: ",s);
+        } else if (ApecUtils.containedByCharSequence(s, "Motes: ")) {
+            return ApecUtils.RemoveCharSequence("Motes: ", s);
         }
         return "";
+    }
+
+    public String RemoveZoneText(String s) {
+        if (ApecUtils.containedByCharSequence(s, "\u23E3")) {
+            return ApecUtils.RemoveCharSequence("\u23E3", s);
+        } else if (ApecUtils.containedByCharSequence(s, "\u0444")) {
+            return ApecUtils.RemoveCharSequence("\u0444", s);
+        }
+
+        return s;
     }
 }
