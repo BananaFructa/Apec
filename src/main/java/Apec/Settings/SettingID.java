@@ -42,6 +42,7 @@ public enum SettingID {
     COMPATIBILITY_SAFETY,
     BB_ON_TOP,
     CUSTOM_TOOL_TIP,
-    SHOW_OP_BAR
+    SHOW_OP_BAR,
+    SHOW_RIFT_TIMER
 
 }

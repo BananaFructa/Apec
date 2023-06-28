@@ -25,19 +25,24 @@ public class HpText extends TextComponent {
         if (ApecMain.Instance.settingsManager.getSettingState(SettingID.HP_TEXT)) {
             GlStateManager.scale(scale, scale, scale);
 
-            boolean showAP = ApecMain.Instance.settingsManager.getSettingState(SettingID.SHOW_ABSORPTION_BAR);
-
             Vector2f StatBar = ApecUtils.scalarMultiply(getCurrentAnchorPoint(),oneOverScale);
 
-            int addedHp = ps.Hp + ps.Ap;
-            String HPString = (!showAP && ps.Ap != 0 ? "\u00a7e" + addedHp + "\u00a7r" : ps.Hp) + "/" + ps.BaseHp + " HP" + (ps.HealDuration != 0 ? " +" + ps.HealDuration +"/s " + ps.HealDurationTicker : "");
-            ApecUtils.drawThiccBorderString(HPString, (int) (StatBar.x - mc.fontRendererObj.getStringWidth(HPString)), (int) (StatBar.y - 10), 0xd10808);
-            stringWidth = mc.fontRendererObj.getStringWidth(HPString);
+            if (ApecMain.Instance.dataExtractor.isInTheRift) {
+                String HPString = ps.RiftHealth + " HP";
+                ApecUtils.drawThiccBorderString(HPString, (int) (StatBar.x - mc.fontRendererObj.getStringWidth(HPString)), (int) (StatBar.y - 10), 0xd10808);
+            }else {
+                boolean showAP = ApecMain.Instance.settingsManager.getSettingState(SettingID.SHOW_ABSORPTION_BAR);
+
+                int addedHp = ps.Hp + ps.Ap;
+                String HPString = (!showAP && ps.Ap != 0 ? "\u00a7e" + addedHp + "\u00a7r" : ps.Hp) + "/" + ps.BaseHp + " HP" + (ps.HealDuration != 0 ? " +" + ps.HealDuration +"/s " + ps.HealDurationTicker : "");
+                ApecUtils.drawThiccBorderString(HPString, (int) (StatBar.x - mc.fontRendererObj.getStringWidth(HPString)), (int) (StatBar.y - 10), 0xd10808);
+                stringWidth = mc.fontRendererObj.getStringWidth(HPString);
 
 
-            if (ps.Ap != 0 && showAP) {
-                String APString = ps.Ap + "/" + ps.BaseAp + " AP";
-                ApecUtils.drawThiccBorderString(APString, (int) (StatBar.x - 5 - mc.fontRendererObj.getStringWidth(APString) - mc.fontRendererObj.getStringWidth(HPString)), (int) (StatBar.y - 10), 0x1966AD);
+                if (ps.Ap != 0 && showAP) {
+                    String APString = ps.Ap + "/" + ps.BaseAp + " AP";
+                    ApecUtils.drawThiccBorderString(APString, (int) (StatBar.x - 5 - mc.fontRendererObj.getStringWidth(APString) - mc.fontRendererObj.getStringWidth(HPString)), (int) (StatBar.y - 10), 0x1966AD);
+                }
             }
         }
         GlStateManager.popMatrix();

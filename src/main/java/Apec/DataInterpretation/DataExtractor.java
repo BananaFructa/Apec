@@ -21,6 +21,7 @@ import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.util.IChatComponent;
 import net.minecraft.util.Tuple;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
@@ -43,6 +44,7 @@ public class DataExtractor {
     private final char DfSymbol = '\u2748';
     private final char MnSymbol = '\u270e';
     private final char OverflowSymbol = '\u02ac';
+    private final char RifTimeSymbol = '\u0444'; // ф
     private final char[] healDurationSymbols = new char[] { '\u2586', '\u2585', '\u2584', '\u2583', '\u2582', '\u2581' };
 
     private final String endRaceSymbol = "THE END RACE";
@@ -108,6 +110,7 @@ public class DataExtractor {
     private OtherData otherData;
 
     public boolean isInSkyblock = false; // This flag is true if the player is in skyblock
+    public boolean isInTheRift = false; // This flag is true if the player is in the rift
 
     // The priority is set on highest so the data is getting parsed before it's modified by sba
     /** Gets the action bar data and looks in the chat for trades */
@@ -151,6 +154,15 @@ public class DataExtractor {
                 if (hasSentATradeRequest) hasSentATradeRequest = false;
                 if (hasRecievedATradeRequest) hasRecievedATradeRequest = false;
             }
+        }
+
+        isInTheRift = event.message.getUnformattedText().contains(String.valueOf(RifTimeSymbol));
+    }
+
+    @SubscribeEvent
+    public void onTickPlayerTick(TickEvent.ClientTickEvent event) {
+        if(isInTheRift) {
+            playerStats.RiftHealth = (int) mc.thePlayer.getHealth();
         }
     }
 
@@ -682,6 +694,21 @@ public class DataExtractor {
             playerStats.Defence = lastDefence;
         }
 
+        try {
+            // Rift Timer
+            {
+                String segmentedString = ApecUtils.segmentString(actionBarData, String.valueOf(RifTimeSymbol), '\u00a7', RifTimeSymbol, 1, 1);
+                if (segmentedString != null) {
+                    playerStats.RiftTimer = ApecUtils.removeAllCodes(segmentedString);
+                } else {
+                    playerStats.RiftTimer = "";
+                }
+
+            }
+        } catch (Exception err) {
+            err.printStackTrace();
+        }
+
         return playerStats;
     }
 
@@ -915,6 +942,32 @@ public class DataExtractor {
         public boolean SkillIsShown;
         public boolean IsAbilityShown;
         public String AbilityText = "\u00a7b-00 Mana (\u00a76Some Ability\u00a7b)";
+        public String RiftTimer;
+        public int RiftHealth;
+
+        @Override
+        public String toString() {
+            return "PlayerStats{" +
+                    "Hp=" + Hp +
+                    ", BaseHp=" + BaseHp +
+                    ", HealDuration=" + HealDuration +
+                    ", HealDurationTicker=" + HealDurationTicker +
+                    ", Ap=" + Ap +
+                    ", BaseAp=" + BaseAp +
+                    ", Op=" + Op +
+                    ", BaseOp=" + BaseOp +
+                    ", Mp=" + Mp +
+                    ", BaseMp=" + BaseMp +
+                    ", Defence=" + Defence +
+                    ", SkillInfo='" + SkillInfo + '\'' +
+                    ", SkillExpPercentage=" + SkillExpPercentage +
+                    ", SkillIsShown=" + SkillIsShown +
+                    ", IsAbilityShown=" + IsAbilityShown +
+                    ", AbilityText='" + AbilityText + '\'' +
+                    ", RiftTimer='" + RiftTimer + '\'' +
+                    ", RiftHealth=" + RiftHealth +
+                    '}';
+        }
     }
 
     public class OtherData {

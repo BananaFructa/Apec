@@ -309,6 +309,19 @@ public class ApecUtils {
         }
     }
 
+    public static void drawOutlineWrappedText(String text, int x, int y, int wordWrap, int colour) {
+        String noColorCodeS = ApecUtils.removeColorCodes(text);
+        if (ApecMain.Instance.settingsManager.getSettingState(SettingID.BORDER_TYPE)) {
+            Minecraft.getMinecraft().fontRendererObj.drawSplitString(noColorCodeS, x + 1, y, wordWrap, (colour >> 24) << 24);
+            Minecraft.getMinecraft().fontRendererObj.drawSplitString(noColorCodeS, x - 1, y, wordWrap,(colour >> 24) << 24);
+            Minecraft.getMinecraft().fontRendererObj.drawSplitString(noColorCodeS, x, y + 1, wordWrap,(colour >> 24) << 24);
+            Minecraft.getMinecraft().fontRendererObj.drawSplitString(noColorCodeS, x, y - 1,wordWrap ,(colour >> 24) << 24);
+            Minecraft.getMinecraft().fontRendererObj.drawSplitString(text, x, y, wordWrap, colour);
+        } else {
+            Minecraft.getMinecraft().fontRendererObj.drawSplitString(text, x, y, wordWrap, colour);
+        }
+    }
+
     /**
      * @param event = Gui open input event
      * @return Returns a tuple containing the lower and upper inventory of the gui linked with the event

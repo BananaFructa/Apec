@@ -59,6 +59,7 @@ public class SettingsManager {
         add(new Setting(BORDER_TYPE,true));
         //add(new Setting(OVERWRITE_GUI,false));
         add(new Setting(SHOW_DEBUG_MESSAGES,false));
+        add(new Setting(SHOW_RIFT_TIMER,true));
     }};
 
     /** Hashmap that holds the titles and descriptions of each setting */
@@ -103,6 +104,7 @@ public class SettingsManager {
         put(COMPATIBILITY_SAFETY,new Tuple<String, String>("Compatibility Safety","Ensures that certain features that might break some mods are disabled"));
         put(BB_ON_TOP,new Tuple<String,String>("Info bar on top","Puts the info bar on top instead of on the bottom"));
         put(CUSTOM_TOOL_TIP,new Tuple<String,String>("Custom tool tip","Shows extra icons above the item tool tip."));
+        put(SHOW_RIFT_TIMER,new Tuple<String,String>("Show rift timer","Shows the rift timer"));
     }};
 
     /** Cache for setting states */

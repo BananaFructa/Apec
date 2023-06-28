@@ -29,8 +29,12 @@ public class HpBar extends GUIComponent {
 
             Vector2f StatBar = ApecUtils.scalarMultiply(getCurrentAnchorPoint(),oneOverScale);
 
-            float hpFactor = (ps.Hp > ps.BaseHp) ? 1 : (float) ps.Hp / (float) ps.BaseHp;
-
+            float hpFactor;
+            if (ApecMain.Instance.dataExtractor.isInTheRift) {
+                hpFactor = ps.RiftHealth / mc.thePlayer.getMaxHealth();
+            } else {
+                hpFactor = (ps.Hp > ps.BaseHp) ? 1 : (float) ps.Hp / (float) ps.BaseHp;
+            }
             mc.renderEngine.bindTexture(new ResourceLocation(ApecMain.modId, "gui/statBars.png"));
 
             boolean showAP = ApecMain.Instance.settingsManager.getSettingState(SettingID.SHOW_ABSORPTION_BAR);

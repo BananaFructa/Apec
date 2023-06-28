@@ -30,7 +30,7 @@ import static net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType
 
 public class GUIModifier extends Component {
 
-    private  Minecraft mc = Minecraft.getMinecraft();
+    private Minecraft mc = Minecraft.getMinecraft();
 
     public static GUIModifier Instance;
 
@@ -48,7 +48,9 @@ public class GUIModifier extends Component {
         add(EXPERIENCE);
     }};
 
-    /** All components that have to be redered */
+    /**
+     * All components that have to be redered
+     */
     public List<GUIComponent> GUIComponents = new ArrayList<GUIComponent>() {{
         add(new InfoBox()); // The block box with the things that used to be in the scoreboard
         add(new HpBar());
@@ -71,6 +73,8 @@ public class GUIModifier extends Component {
         add(new EventLister());
         add(new AbilityText());
         add(new BossBar());
+        //add(new DebugText());// Dont ship this
+        add(new RiftTimer());
     }};
 
     public GUIModifier() {
@@ -133,7 +137,7 @@ public class GUIModifier extends Component {
      */
     public <T extends GUIComponent> T getGuiComponent(GUIComponentID guiComponentID) {
         for (GUIComponent component : GUIComponents) {
-            if (component.gUiComponentID == guiComponentID) return (T)component;
+            if (component.gUiComponentID == guiComponentID) return (T) component;
         }
         return null;
     }
@@ -144,7 +148,7 @@ public class GUIModifier extends Component {
      */
     private boolean shouldBlockF3(GUIComponent component) {
         return ApecMain.Instance.settingsManager.getSettingState(SettingID.HIDE_IN_F3) &&
-               mc.gameSettings.showDebugInfo && component.getCurrentAnchorPoint().y < 150;
+                mc.gameSettings.showDebugInfo && component.getCurrentAnchorPoint().y < 150;
     }
 
     /**
@@ -159,18 +163,18 @@ public class GUIModifier extends Component {
         od = ApecMain.Instance.dataExtractor.getOtherData();
         try {
             GlStateManager.enableBlend();
-            GlStateManager.color(1,1,1,1);
+            GlStateManager.color(1, 1, 1, 1);
             // Draws the screen components
             for (GUIComponent component : GUIComponents) {
                 if (shouldBlockF3(component)) continue;
                 GlStateManager.pushMatrix();
-                component.drawTex(ps, sd, od, sr,mc.currentScreen instanceof CustomizationGui);
+                component.drawTex(ps, sd, od, sr, mc.currentScreen instanceof CustomizationGui);
                 GlStateManager.popMatrix();
             }
             for (GUIComponent component : GUIComponents) {
                 if (shouldBlockF3(component)) continue;
                 GlStateManager.pushMatrix();
-                component.draw(ps, sd, od, sr,mc.currentScreen instanceof CustomizationGui);
+                component.draw(ps, sd, od, sr, mc.currentScreen instanceof CustomizationGui);
                 GlStateManager.popMatrix();
             }
         } catch (Exception e) {
@@ -179,11 +183,11 @@ public class GUIModifier extends Component {
     }
 
     /**
-     * @brief Switches important data from a guiingame object to another
      * @param from = Old gui
-     * @param to = New gui
+     * @param to   = New gui
+     * @brief Switches important data from a guiingame object to another
      */
-    private void SwitchDataBetweenGuis(GuiIngame from,GuiIngame to) {
+    private void SwitchDataBetweenGuis(GuiIngame from, GuiIngame to) {
         try {
             IChatComponent header, footer;
             GuiNewChat guiNewChat;
@@ -191,19 +195,19 @@ public class GUIModifier extends Component {
             Integer updateCounter;
             RenderGameOverlayEvent event;
 
-            guiNewChat = ApecUtils.readDeclaredField(GuiIngame.class, from,"persistantChatGUI");
-            guiStreamIndicator = ApecUtils.readDeclaredField(GuiIngame.class, from,"streamIndicator");
-            updateCounter = ApecUtils.readDeclaredField(GuiIngame.class, from,"updateCounter");
-            event = ApecUtils.readDeclaredField(GuiIngameForge.class,from,"eventParent");
+            guiNewChat = ApecUtils.readDeclaredField(GuiIngame.class, from, "persistantChatGUI");
+            guiStreamIndicator = ApecUtils.readDeclaredField(GuiIngame.class, from, "streamIndicator");
+            updateCounter = ApecUtils.readDeclaredField(GuiIngame.class, from, "updateCounter");
+            event = ApecUtils.readDeclaredField(GuiIngameForge.class, from, "eventParent");
 
-            ApecUtils.writeDeclaredField(GuiIngame.class, to,"persistantChatGUI", guiNewChat);
-            ApecUtils.writeDeclaredField(GuiIngame.class, to,"streamIndicator", guiStreamIndicator);
-            ApecUtils.writeDeclaredField(GuiIngame.class, to,"updateCounter", updateCounter);
-            ApecUtils.writeDeclaredField(GuiIngameForge.class,to,"eventParent",event);
+            ApecUtils.writeDeclaredField(GuiIngame.class, to, "persistantChatGUI", guiNewChat);
+            ApecUtils.writeDeclaredField(GuiIngame.class, to, "streamIndicator", guiStreamIndicator);
+            ApecUtils.writeDeclaredField(GuiIngame.class, to, "updateCounter", updateCounter);
+            ApecUtils.writeDeclaredField(GuiIngameForge.class, to, "eventParent", event);
 
-            GuiPlayerTabOverlay tab = (GuiPlayerTabOverlay) ApecUtils.readDeclaredField(GuiIngame.class,from,"overlayPlayerList");
-            ApecUtils.writeDeclaredField(GuiPlayerTabOverlay.class,tab,"guiIngame",to);
-            ApecUtils.writeDeclaredField(GuiIngame.class,to,"overlayPlayerList",tab);
+            GuiPlayerTabOverlay tab = (GuiPlayerTabOverlay) ApecUtils.readDeclaredField(GuiIngame.class, from, "overlayPlayerList");
+            ApecUtils.writeDeclaredField(GuiPlayerTabOverlay.class, tab, "guiIngame", to);
+            ApecUtils.writeDeclaredField(GuiIngame.class, to, "overlayPlayerList", tab);
 
         } catch (Exception err) {
             err.printStackTrace();
@@ -215,14 +219,14 @@ public class GUIModifier extends Component {
     protected void onEnable() {
 
         AGIInstance = new ApecGuiIngameForge(mc);
-        SwitchDataBetweenGuis(mc.ingameGUI,AGIInstance);
+        SwitchDataBetweenGuis(mc.ingameGUI, AGIInstance);
         mc.ingameGUI = AGIInstance;
 
         this.ApplyDeltas();
 
         if (!ApecMain.version.equals(ApecMain.Instance.newestVersion)) {
             ChatComponentText msg = new ChatComponentText("[\u00A72Apec\u00A7f] There is a new version of Apec available! Click on this message to go to the CurseForge page.");
-            msg.getChatStyle().setChatClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL,"https://www.curseforge.com/minecraft/mc-mods/apec"));
+            msg.getChatStyle().setChatClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://www.curseforge.com/minecraft/mc-mods/apec"));
             Minecraft.getMinecraft().thePlayer.addChatMessage(msg);
         }
 
@@ -233,7 +237,7 @@ public class GUIModifier extends Component {
     protected void onDisable() {
 
         GuiIngame normalInterface = new GuiIngameForge(mc);
-        SwitchDataBetweenGuis(mc.ingameGUI,normalInterface);
+        SwitchDataBetweenGuis(mc.ingameGUI, normalInterface);
         mc.ingameGUI = normalInterface;
 
         GuiIngameForge.renderObjective = true;
@@ -241,9 +245,10 @@ public class GUIModifier extends Component {
         shouldTheGuiAppear = false;
     }
 
-    public Vector2f applyGlobalChanges(GUIComponent component,Vector2f anchorPoint) {
+    public Vector2f applyGlobalChanges(GUIComponent component, Vector2f anchorPoint) {
         boolean isbbUp = ApecMain.Instance.settingsManager.getSettingState(SettingID.BB_ON_TOP);
-        if (isbbUp && component.getDeltaPosition().length() == 0) anchorPoint = ApecUtils.addVec(anchorPoint,new Vector2f(0,20));
+        if (isbbUp && component.getDeltaPosition().length() == 0)
+            anchorPoint = ApecUtils.addVec(anchorPoint, new Vector2f(0, 20));
         return anchorPoint;
     }
 
@@ -265,7 +270,7 @@ public class GUIModifier extends Component {
                 } else {
                     idx = Integer.parseInt(tempSplit[0]);
                 }
-                Vector2f delta = new Vector2f(Float.parseFloat(tempSplit[1].split("@")[0]),Float.parseFloat(tempSplit[1].split("@")[1]));
+                Vector2f delta = new Vector2f(Float.parseFloat(tempSplit[1].split("@")[0]), Float.parseFloat(tempSplit[1].split("@")[1]));
                 float scale = 1f;
                 if (tempSplit[1].split("@").length == 3) {
                     scale = Float.parseFloat(tempSplit[1].split("@")[2]);
@@ -274,7 +279,7 @@ public class GUIModifier extends Component {
                     getGuiComponent(GUIComponentID.values()[idx]).setDeltaPosition(delta);
                     getGuiComponent(GUIComponentID.values()[idx]).setScale(scale);
                 } else {
-                    getGuiComponent(GUIComponentID.values()[idx]).setSubElementDeltaPosition(delta,subComponent);
+                    getGuiComponent(GUIComponentID.values()[idx]).setSubElementDeltaPosition(delta, subComponent);
                 }
             }
             scanner.close();
