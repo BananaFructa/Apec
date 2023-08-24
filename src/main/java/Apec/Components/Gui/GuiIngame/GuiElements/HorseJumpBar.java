@@ -47,7 +47,7 @@ public class HorseJumpBar extends GUIComponent {
 
             GlStateManager.scale(scale,scale,1);
             gui.drawTexturedModalRect(pos.x,pos.y,246,0,5,71);
-            int height = (int)(71 * ((float)od.ArmadilloEnergy / od.ArmadilloBaseEnergy));
+            int height = (int)(71 * (od.ArmadilloEnergy / od.ArmadilloBaseEnergy));
             gui.drawTexturedModalRect(pos.x,pos.y + (71 - height),251,142 - height,5,height);
         }
     }
