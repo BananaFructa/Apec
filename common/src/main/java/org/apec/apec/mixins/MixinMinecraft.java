@@ -18,21 +18,13 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(Minecraft.class)
 public abstract class MixinMinecraft {
 
-    @Mutable
-    @Shadow
-    @Final
-    public Gui gui;
-
-    @Shadow
-    public abstract ItemRenderer getItemRenderer();
-
     @Inject(method = "<init>", at = @At(value = "TAIL"))
     private void init(GameConfig gameConfig, CallbackInfo ci) {
         if (Apec.getInstance().getModLoader() == Apec.ModLoader.FORGE) {
             // Forge uses another class for the gui
             return;
         }
-        this.gui = new GuiApec((Minecraft) (Object) this, this.getItemRenderer());
+//        this.gui = new GuiApec((Minecraft) (Object) this, this.getItemRenderer());
         Apec.getInstance().postInit(); // Post init after the window is created and rendering api is initialized
     }
 
