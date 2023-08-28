@@ -781,8 +781,8 @@ public class DataExtractor {
             String segmentEnergy = ApecUtils.segmentString(actionBarData,"/",'\u00a7','\0' /*placeholder*/,2,1, ApecUtils.SegmentationOptions.TOTALLY_INCLUSIVE);
             if (segmentEnergy != null) {
                 String[] values = ApecUtils.removeAllCodes(segmentEnergy).split("/");
-                otherData.ArmadilloEnergy = Integer.parseInt(values[0]);
-                otherData.ArmadilloBaseEnergy = Integer.parseInt(values[1]);
+                otherData.ArmadilloEnergy = Float.parseFloat(values[0]);
+                otherData.ArmadilloBaseEnergy = Float.parseFloat(values[1]);
             }
         }
 
@@ -974,8 +974,8 @@ public class DataExtractor {
 
         public ArrayList<String> ExtraInfo  = new ArrayList<String>();
         public ArrayList<EventIDs> currentEvents = new ArrayList<EventIDs>();
-        public int ArmadilloEnergy;
-        public int ArmadilloBaseEnergy;
+        public float ArmadilloEnergy;
+        public float ArmadilloBaseEnergy;
 
     }
 
