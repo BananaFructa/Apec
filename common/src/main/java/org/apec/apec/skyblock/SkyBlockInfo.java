@@ -38,7 +38,7 @@ public class SkyBlockInfo implements SBAPI, EventSubscriber, MC {
     private int lastHp = 1, lastBaseHp = 1;
     private int lastMn = 1;
     private int lastBaseMn = 1;
-    private final int lastDefence = 0;
+    private int lastDefence = 0;
     private int baseAp = 0;
     private int lastAp = 1, lastBaseAp = 1;
     private int baseOp = 1;
@@ -152,6 +152,7 @@ public class SkyBlockInfo implements SBAPI, EventSubscriber, MC {
         int play_base_mp = 0;
         int play_overflow = 0;
         int play_base_overflow = 0;
+        int play_defence = 0;
 
         // HP
         {
@@ -236,6 +237,17 @@ public class SkyBlockInfo implements SBAPI, EventSubscriber, MC {
             }
         }
 
+        {
+            String segmentedString = ApecUtils.segmentString(actionBar, String.valueOf('❈'), '§', '❈', 2, 1);
+            if (segmentedString != null) {
+                play_defence = Integer.parseInt(ApecUtils.removeAllColourCodes(segmentedString));
+                lastDefence = play_defence;
+            } else {
+                play_defence = lastDefence;
+            }
+
+        }
+
 
         this.playerStats = new PlayerStats(
                 play_hp,
@@ -248,7 +260,7 @@ public class SkyBlockInfo implements SBAPI, EventSubscriber, MC {
                 play_base_overflow,
                 play_mp,
                 play_base_mp,
-                0,
+                play_defence,
                 "",
                 0,
                 false,

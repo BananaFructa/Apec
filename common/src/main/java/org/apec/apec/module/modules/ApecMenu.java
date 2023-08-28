@@ -5,6 +5,7 @@ import me.zero.alpine.listener.Subscribe;
 import org.apec.apec.events.ClientTick;
 import org.apec.apec.events.Render2D;
 import org.apec.apec.gui.Element;
+import org.apec.apec.gui.elements.BottomBar;
 import org.apec.apec.gui.elements.DebugText;
 import org.apec.apec.gui.elements.air.AirBar;
 import org.apec.apec.gui.elements.air.AirText;
@@ -37,6 +38,7 @@ public class ApecMenu extends Module {
                     new XPText(),
                     new AirBar(),
                     new AirText(),
+                    new BottomBar(),
                     new DebugText()
             ));
         }

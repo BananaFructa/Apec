@@ -5,7 +5,8 @@ import net.minecraft.resources.ResourceLocation;
 public enum ApecTextures {
 
     STATUS_BAR("status_bar", 256, 256),
-    ICONS("icons", 256, 256);
+    ICONS("icons", 256, 256),
+    BOTTOM_BAR("bottom_bar", 256, 256);
 
     private final ResourceLocation resourceLocation;
     private final int width;

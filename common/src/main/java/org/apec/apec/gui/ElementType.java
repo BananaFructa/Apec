@@ -11,5 +11,6 @@ public enum ElementType {
     XP_TEXT,
     AIR_BAR,
     AIR_TEXT,
+    BOTTOM_BAR,
 
 }
