@@ -46,7 +46,7 @@ public class ApecMain
 
     public static final String modId = "apec"; 
     public static final String name = "Apec";
-    public static final String version = "1.10.3";
+    public static final String version = "1.11.2";
 
     public static ApecMain Instance;
 
