@@ -10,6 +10,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.*;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.event.ClickEvent;
+import net.minecraft.event.HoverEvent;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.IChatComponent;
 import net.minecraftforge.client.GuiIngameForge;
@@ -225,8 +226,9 @@ public class GUIModifier extends Component {
         this.ApplyDeltas();
 
         if (!ApecMain.version.equals(ApecMain.Instance.newestVersion)) {
-            ChatComponentText msg = new ChatComponentText("[\u00A72Apec\u00A7f] There is a new version of Apec available! Click on this message to go to the CurseForge page.");
+            ChatComponentText msg = new ChatComponentText("[\u00A72Apec\u00A7f] There is a new version of Apec available (" + ApecMain.Instance.newestVersion + ")! Click on this message to go to the CurseForge page.");
             msg.getChatStyle().setChatClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://www.curseforge.com/minecraft/mc-mods/apec"));
+            msg.getChatStyle().setChatHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ChatComponentText("Click to go to the CurseForge page")));
             Minecraft.getMinecraft().thePlayer.addChatMessage(msg);
         }
 

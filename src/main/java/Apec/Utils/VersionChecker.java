@@ -12,12 +12,16 @@ public class VersionChecker {
 
     public static String getRegistryTag() {
         try {
-            URL url = new URL("https://dl.dropboxusercontent.com/s/wmi9il1peclvuub/current-database-tag.txt?dl=0");
+            URL url = new URL("https://api.github.com/repos/BananaFructa/Apec-DATA/releases/latest");
             URLConnection connection = url.openConnection();
             connection.setUseCaches(false);
             Scanner s = new Scanner(connection.getInputStream());
             connection.connect();
-            return s.nextLine();
+
+            String line = s.nextLine();
+            String[] split = line.split("\"tag_name\":");
+            String tag = split[1].split(",")[0];
+            return tag.substring(1,tag.length()-1);
         } catch (Exception e) {
             return "NULL";
         }
