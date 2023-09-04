@@ -302,7 +302,8 @@ public class DataExtractor {
                 ApecUtils.containedByCharSequence(s,"pm")) &&
                 ApecUtils.containedByCharSequence(s,":") &&
                 (ApecUtils.containedByCharSequence(s,"\u263d") || // The moon
-                ApecUtils.containedByCharSequence(s,"\u2600")); // The sun
+                ApecUtils.containedByCharSequence(s,"\u2600")) || // The sun
+                (ApecUtils.containedByCharSequence(s, "\u2614") || ApecUtils.containedByCharSequence(s, "\u26A1")); // The rain and the thunder
     }
 
     /**
