@@ -37,7 +37,7 @@ public class ApecMenu extends Component {
             case OPEN_GUI_EDITING:
                 return "Customize Gui";
             case SEARCH:
-                return "Open Seach Bar";
+                return "Open Search Bar";
             default:
                 return "N/A";
         }
