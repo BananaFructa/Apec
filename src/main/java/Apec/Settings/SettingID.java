@@ -43,6 +43,7 @@ public enum SettingID {
     BB_ON_TOP,
     CUSTOM_TOOL_TIP,
     SHOW_OP_BAR,
-    SHOW_RIFT_TIMER
+    SHOW_RIFT_TIMER,
+    USE_GAME_MODE_OUT_OF_BB,
 
 }

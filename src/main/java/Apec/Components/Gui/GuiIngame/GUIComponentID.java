@@ -24,4 +24,5 @@ public enum GUIComponentID {
     JUMP_BAR,
     DEBUG_TEXT,
     RIFT_TIMER,
+    GAME_MODE_TEXT,
 }

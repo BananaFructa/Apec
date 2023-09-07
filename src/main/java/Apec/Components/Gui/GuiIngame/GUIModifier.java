@@ -76,6 +76,7 @@ public class GUIModifier extends Component {
         add(new BossBar());
         //add(new DebugText());// Dont ship this
         add(new RiftTimer());
+        add(new GameModeText());
     }};
 
     public GUIModifier() {

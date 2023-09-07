@@ -341,6 +341,10 @@ public class DataExtractor {
         return ApecUtils.containedByCharSequence(s,"Bits: ");
     }
 
+    public boolean RepresentsMode(String s) {
+        return ApecUtils.containedByCharSequence(s, "\u2672") || ApecUtils.containedByCharSequence(s, "\u24B7") || ApecUtils.containedByCharSequence(s, "Stranded");
+    }
+
     /**
      * ScoreBoardData - Contains the things that used to be displayed in the scoreboard
      * -server
@@ -462,6 +466,9 @@ public class DataExtractor {
                 if (line.contains("\u00a78") && ApecMain.Instance.settingsManager.getSettingState(SettingID.SHOW_CURRENT_SERVER)) {
                     sd.ExtraInfo.add("Currently in: " + ApecUtils.segmentString(scoreBoardLines.get(scoreBoardLines.size() - 1), "\u00a78", '\u00a7', '~', 1, 1, ApecUtils.SegmentationOptions.TOTALLY_INCLUSIVE));
                 }
+            }
+            else if (RepresentsMode(line)) {
+                sd.GameMode = ApecUtils.removeFirstSpaces(line);
             }
             else if (RepresentsDate(line)) sd.Date = ApecUtils.removeFirstSpaces(line);
             else if (RepresentsTime(line)) sd.Hour = ApecUtils.removeFirstSpaces(line);
@@ -924,6 +931,7 @@ public class DataExtractor {
         public String Hour = "";
         public String IRL_Date = "";
         public String scoreBoardTitle = "";
+        public String GameMode = "";
     }
 
     public class PlayerStats {

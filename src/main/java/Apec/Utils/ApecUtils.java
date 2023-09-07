@@ -21,7 +21,7 @@ import java.util.List;
 public class ApecUtils {
 
     /** If you are in a fml workspace set this variable to true */
-    public static boolean inFMLFramework = false;
+    public static boolean inFMLFramework = true;
 
     private static String[] colorCodes = { "\u00a70","\u00a71","\u00a72","\u00a73","\u00a74","\u00a75","\u00a76","\u00a77","\u00a78","\u00a79","\u00a7a","\u00a7b","\u00a7c","\u00a7d","\u00a7e","\u00a7f" };
 

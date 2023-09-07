@@ -62,7 +62,7 @@ dependencies {
     // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
     // http://www.gradle.org/docs/current/userguide/dependency_management.html
 
-    implementation ("me.djtheredstoner:DevAuth-forge-legacy:1.1.2")
+    runtime ("me.djtheredstoner:DevAuth-forge-legacy:1.1.2")
 
 }
 
