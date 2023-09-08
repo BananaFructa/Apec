@@ -32,13 +32,13 @@ public class ContainerGuiManager {
 
     @SubscribeEvent
     public void onGui (GuiOpenEvent event) {
-//        if ((ApecMain.Instance.getComponent(ComponentId.GUI_MODIFIER).getEnableState() || ApecMain.Instance.settingsManager.getSettingState(SettingID.GUIS_WHEN_DISABLED)) && event.gui instanceof GuiChest) {
-//            Tuple<IInventory,IInventory> UpperLower = ApecUtils.GetUpperLowerFromGuiEvent(event);
-//            if (UpperLower == null) return;
-//            for (ChestGuiComponent guiMenuComponent : guiMenuComponents) {
-//                guiMenuComponent.OpenGui(UpperLower.getFirst(), UpperLower.getSecond(), event);
-//            }
-//        }
+        if ((ApecMain.Instance.getComponent(ComponentId.GUI_MODIFIER).getEnableState() || ApecMain.Instance.settingsManager.getSettingState(SettingID.GUIS_WHEN_DISABLED)) && event.gui instanceof GuiChest) {
+            Tuple<IInventory,IInventory> UpperLower = ApecUtils.GetUpperLowerFromGuiEvent(event);
+            if (UpperLower == null) return;
+            for (ChestGuiComponent guiMenuComponent : guiMenuComponents) {
+                guiMenuComponent.OpenGui(UpperLower.getFirst(), UpperLower.getSecond(), event);
+            }
+        }
     }
 
 }
