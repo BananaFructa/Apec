@@ -15,7 +15,9 @@ public class SkillViewComponent extends ChestGuiComponent {
         PAGE_CHANGE,
         BACK,
         CLOSE,
-        OPEN_INFO
+        OPEN_INFO,
+        BESTIARY,
+        SLAYER
     }
 
     public boolean guiIsOpened = false;

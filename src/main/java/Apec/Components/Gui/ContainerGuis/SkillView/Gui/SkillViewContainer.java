@@ -3,11 +3,14 @@ package Apec.Components.Gui.ContainerGuis.SkillView.Gui;
 import Apec.Utils.ApecUtils;
 import Apec.Components.Gui.ContainerGuis.ApecContainerGui;
 import Apec.Components.Gui.ContainerGuis.SkillView.SkillViewComponent;
+import com.mojang.realmsclient.gui.ChatFormatting;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.Container;
+import net.minecraft.inventory.ContainerChest;
+import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
 import org.lwjgl.input.Mouse;
 
@@ -45,10 +48,25 @@ public abstract class SkillViewContainer extends ApecContainerGui {
         this.buttonList.add(new SkillViewButton(0,sr.getScaledWidth()-30,0,15,15, SkillViewComponent.Actions.BACK));
         this.buttonList.add(new SkillViewButton(0,sr.getScaledWidth()-15,0,15,15, SkillViewComponent.Actions.CLOSE));
         this.buttonList.add(new SkillViewButton(0,0,sr.getScaledHeight()-30,120,30, SkillViewComponent.Actions.PAGE_CHANGE));
-        this.buttonList.add(new SkillViewButton(0,sr.getScaledWidth() - 120,sr.getScaledHeight()-30,120,30, SkillViewComponent.Actions.OPEN_INFO));
+
+        if(getGuiName().contains("Combat Skill")){
+            this.buttonList.add(new SkillViewButton(0,sr.getScaledWidth() - 120,sr.getScaledHeight()-30,120,30, SkillViewComponent.Actions.BESTIARY));
+            this.buttonList.add(new SkillViewButton(0,sr.getScaledWidth() - 120,sr.getScaledHeight()-60,120,30, SkillViewComponent.Actions.SLAYER));
+        }else {
+            this.buttonList.add(new SkillViewButton(0,sr.getScaledWidth() - 120,sr.getScaledHeight()-30,120,30, SkillViewComponent.Actions.OPEN_INFO));
+        }
 
         disableItemRendering();
         disableSlotClickLogic();
+    }
+
+    public String getGuiName(){
+        if (this.inventorySlots instanceof ContainerChest) {
+            ContainerChest cc = (ContainerChest) this.inventorySlots;
+            IInventory inv = cc.getLowerChestInventory();
+            return inv.getDisplayName().getUnformattedText();
+        }
+        return "";
     }
 
     public void executeAction(SkillViewComponent.Actions action) {
@@ -69,6 +87,12 @@ public abstract class SkillViewContainer extends ApecContainerGui {
                 break;
             case OPEN_INFO:
                 handleMouseClick(this.inventorySlots.inventorySlots.get(40),48,0,0);
+                break;
+            case BESTIARY:
+                handleMouseClick(this.inventorySlots.inventorySlots.get(39),48,0,0);
+                break;
+            case SLAYER:
+                handleMouseClick(this.inventorySlots.inventorySlots.get(41),48,0,0);
                 break;
         }
     }
@@ -106,6 +130,48 @@ public abstract class SkillViewContainer extends ApecContainerGui {
         try {
             if (this.inventorySlots.inventorySlots.get(51).inventory.getStackInSlot(51).getItem() != Item.getItemFromBlock(Blocks.glass_pane)) {
                 final List<String> allText = this.inventorySlots.inventorySlots.get(51).inventory.getStackInSlot(51).getTooltip(mc.thePlayer, false);
+                return allText;
+            }
+        } catch (Exception err) {
+            err.printStackTrace();
+        }
+        return new ArrayList<String>();
+    }
+
+    public List<String> getBestiaryText() {
+        try {
+            if (this.inventorySlots.inventorySlots.get(39).inventory.getStackInSlot(39).getItem() != Item.getItemFromBlock(Blocks.glass_pane)) {
+                final List<String> allText = this.inventorySlots.inventorySlots.get(39).inventory.getStackInSlot(39).getTooltip(mc.thePlayer, false);
+                return new ArrayList<String>() {{
+                    add(allText.get(0));
+                    add(allText.get(allText.size()-1));
+                }};
+            }
+        } catch (Exception err) {
+            err.printStackTrace();
+        }
+        return new ArrayList<String>();
+    }
+
+    public List<String> getSlayerText() {
+        try {
+            if (this.inventorySlots.inventorySlots.get(41).inventory.getStackInSlot(41).getItem() != Item.getItemFromBlock(Blocks.glass_pane)) {
+                final List<String> allText = this.inventorySlots.inventorySlots.get(41).inventory.getStackInSlot(41).getTooltip(mc.thePlayer, false);
+                return new ArrayList<String>() {{
+                    add(allText.get(0));
+                    add(ChatFormatting.YELLOW + "Click to view!");
+                }};
+            }
+        } catch (Exception err) {
+            err.printStackTrace();
+        }
+        return new ArrayList<String>();
+    }
+
+    public List<String> getFarmingBuffs(){
+        try {
+            if (this.inventorySlots.inventorySlots.get(45).inventory.getStackInSlot(45).getItem() != Item.getItemFromBlock(Blocks.glass_pane)) {
+                final List<String> allText = this.inventorySlots.inventorySlots.get(45).inventory.getStackInSlot(45).getTooltip(mc.thePlayer, false);
                 return allText;
             }
         } catch (Exception err) {
@@ -177,12 +243,23 @@ public abstract class SkillViewContainer extends ApecContainerGui {
                 }
 
                 List<String> linesForIntroduction = this.inventorySlots.inventorySlots.get(skillXpContainerSlot[0]).inventory.getStackInSlot(skillXpContainerSlot[0]).getTooltip(mc.thePlayer, false);
-                for (int k = 0; k < linesForIntroduction.size(); k++) {
-                    fontRendererObj.drawString(linesForIntroduction.get(k), 1, 1 + 10 * k, 0xffffff);
+                if(linesForIntroduction.size() > 0) {
+                    for (int k = 0; k < linesForIntroduction.size(); k++) {
+                        fontRendererObj.drawString(linesForIntroduction.get(k), 1, 1 + 10 * k, 0xffffff);
+                    }
                 }
                 List<String> petMileStones = getPetMilestones();
-                for (int k = 0;k < petMileStones.size();k++) {
-                    fontRendererObj.drawString(petMileStones.get(k), sr.getScaledWidth() - 1 - fontRendererObj.getStringWidth(petMileStones.get(k)), 16 + 10 * k, 0xffffff);
+                if(petMileStones.size() > 0) {
+                    for (int k = 0;k < petMileStones.size();k++) {
+                        fontRendererObj.drawString(petMileStones.get(k), sr.getScaledWidth() - 1 - fontRendererObj.getStringWidth(petMileStones.get(k)), 16 + 10 * k, 0xffffff);
+                    }
+                }
+
+                List<String> farmingBuffs = getFarmingBuffs();
+                if(farmingBuffs.size() > 0) {
+                    for (int k = 0;k < farmingBuffs.size();k++) {
+                        fontRendererObj.drawString(farmingBuffs.get(k), sr.getScaledWidth() - 1 - fontRendererObj.getStringWidth(farmingBuffs.get(k)), 16 + 10 * k, 0xffffff);
+                    }
                 }
             }
         } catch (Exception e) {

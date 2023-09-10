@@ -47,6 +47,18 @@ public class SkillViewButton extends GuiButton {
                         fontrenderer.drawString(otherInfoLines.get(i), xPosition + width - 5 - mc.fontRendererObj.getStringWidth(otherInfoLines.get(i)), yPosition + 5 + i * 10, 0xffffff);
                     }
                     break;
+                case BESTIARY:
+                    List<String> bestiaryText = ((SkillViewGui) mc.currentScreen).getBestiaryText();
+                    for (int i = 0; i < bestiaryText.size(); i++) {
+                        fontrenderer.drawString(bestiaryText.get(i), xPosition + width - 5 - mc.fontRendererObj.getStringWidth(bestiaryText.get(i)), yPosition + 5 + i * 10, 0xffffff);
+                    }
+                    break;
+                case SLAYER:
+                    List<String> slayerText = ((SkillViewGui) mc.currentScreen).getSlayerText();
+                    for (int i = 0; i < slayerText.size(); i++) {
+                        fontrenderer.drawString(slayerText.get(i), xPosition + width - 5 - mc.fontRendererObj.getStringWidth(slayerText.get(i)), yPosition + 5 + i * 10, 0xffffff);
+                    }
+                    break;
             }
 
             if (this.hovered) drawRect(this.xPosition,this.yPosition,this.xPosition+this.width,this.yPosition+this.height,0x1adddddd);
