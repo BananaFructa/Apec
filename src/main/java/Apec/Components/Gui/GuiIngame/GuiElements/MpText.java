@@ -36,7 +36,7 @@ public class MpText extends TextComponent {
             if (ps.Op != 0) {
                 if (showOp) {
                     String OPString = ps.Op + "/" + ps.BaseOp + " OP";
-                    mainMccs.setString(new String[]{OPString + " ", MPString + " MP"}, new int[]{ 0x1966AD, 0x1139bd });
+                    mainMccs.setString(new String[]{OPString + " ", MPString}, new int[]{ 0x1966AD, 0x1139bd });
                 } else {
                     int totalMp = ps.Op + ps.Mp;
                     mainMccs.setString(new String[]{Integer.toString(totalMp),"/" + ps.BaseMp}, new int[]{ 0x1966AD, 0x1139bd });
