@@ -88,12 +88,15 @@ processResources
 }
 
 tasks.build.doLast {
-    task copyJar(type: Copy) {
-        copy {
-            from jar
-            into 'D:\\Spiele\\MultiMC\\instances\\Apec Only\\.minecraft\\mods'
+    File apecTestingDir = System.getenv("APEC_TESTING_MODS_DIRECTORY")
+    if (apecTestingDir != null && apecTestingDir.exists()) {
+        task copyJar(type: Copy) {
+            copy {
+                from jar
+                into apecTestingDir
+            }
+            println '\u001B[0;31m\u001B[40mCopied jar from build directory into mods folder\u001B[0m'
         }
-        println '\u001B[0;31m\u001B[40mCopied jar from build directory into mods folder\u001B[0m'
     }
 }
 
