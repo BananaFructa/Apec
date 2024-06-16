@@ -49,49 +49,49 @@ public class CustomizationWidget extends Button implements MC {
         this.lockY = lockY;
     }
 
-    @Override
-    public void renderWidget(PoseStack poseStack, int i, int j, float f) {
-        Window window = mc.getWindow();
-        int scaledWidth = window.getGuiScaledWidth();
-        int scaledHeight = window.getGuiScaledHeight();
-        Vector2f sr = new Vector2f(scaledWidth, scaledHeight);
-
-        Vector2f v, rv;
-
-        v = this.element.getCurrentAnchorPoint();
-        rv = this.element.getCurrentBoundingPoint();
-
-        if (v.x < rv.x && v.y < rv.y) {
-            this.setX((int) v.x);
-            this.setY((int) v.y);
-            this.width = (int) (rv.x - v.x);
-            this.height = (int) (rv.y - v.y);
-        } else if (v.x > rv.x && v.y > rv.y) {
-            this.setX((int) rv.x);
-            this.setY((int) rv.y);
-            this.width = (int) (v.x - rv.x);
-            this.height = (int) (v.y - rv.y);
-        } else if (v.x > rv.x && v.y < rv.y) {
-            this.setX((int) rv.x);
-            this.setY((int) v.y);
-            this.width = (int) (v.x - rv.x);
-            this.height = (int) (rv.y - v.y);
-        } else if (v.x < rv.x && v.y > rv.y) {
-            this.setX((int) v.x);
-            this.setY((int) rv.y);
-            this.width = (int) (rv.x - v.x);
-            this.height = (int) (v.y - rv.y);
-        }
-
-        if (this.isHovered) {
-            fill(poseStack, this.getX(), this.getY(), this.getX() + this.width, this.getY() + this.height, 0x3adddddd);
-
-        } else {
-            fill(poseStack, this.getX(), this.getY(), this.getX() + this.width, this.getY() + this.height, 0x3a000000);
-        }
-
-
-    }
+//    @Override
+//    public void renderWidget(PoseStack poseStack, int i, int j, float f) {
+//        Window window = mc.getWindow();
+//        int scaledWidth = window.getGuiScaledWidth();
+//        int scaledHeight = window.getGuiScaledHeight();
+//        Vector2f sr = new Vector2f(scaledWidth, scaledHeight);
+//
+//        Vector2f v, rv;
+//
+//        v = this.element.getCurrentAnchorPoint();
+//        rv = this.element.getCurrentBoundingPoint();
+//
+//        if (v.x < rv.x && v.y < rv.y) {
+//            this.setX((int) v.x);
+//            this.setY((int) v.y);
+//            this.width = (int) (rv.x - v.x);
+//            this.height = (int) (rv.y - v.y);
+//        } else if (v.x > rv.x && v.y > rv.y) {
+//            this.setX((int) rv.x);
+//            this.setY((int) rv.y);
+//            this.width = (int) (v.x - rv.x);
+//            this.height = (int) (v.y - rv.y);
+//        } else if (v.x > rv.x && v.y < rv.y) {
+//            this.setX((int) rv.x);
+//            this.setY((int) v.y);
+//            this.width = (int) (v.x - rv.x);
+//            this.height = (int) (rv.y - v.y);
+//        } else if (v.x < rv.x && v.y > rv.y) {
+//            this.setX((int) v.x);
+//            this.setY((int) rv.y);
+//            this.width = (int) (rv.x - v.x);
+//            this.height = (int) (v.y - rv.y);
+//        }
+//
+//        if (this.isHovered) {
+//            fill(poseStack, this.getX(), this.getY(), this.getX() + this.width, this.getY() + this.height, 0x3adddddd);
+//
+//        } else {
+//            fill(poseStack, this.getX(), this.getY(), this.getX() + this.width, this.getY() + this.height, 0x3a000000);
+//        }
+//
+//
+//    }
 
     @Override
     public boolean mouseDragged(double d, double e, int i, double f, double g) {

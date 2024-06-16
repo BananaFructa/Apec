@@ -22,10 +22,10 @@ public class XPBar extends Element {
         RenderSystem.setShaderTexture(0, status_bar.getResourceLocation());
 
         // Empty Bar
-        Gui.blit(poseStack, width, 53, 0, 30, 182, 5, status_bar.getWidth(), status_bar.getHeight());
+        guiGraphics.blit(status_bar.getResourceLocation(), width, 53, 0, 30, 182, 5, status_bar.getWidth(), status_bar.getHeight());
 
         // Full Bar
-        Gui.blit(poseStack, width, 53, 0, 35, (int) (mc.player.experienceProgress * 182f), 5, status_bar.getWidth(), status_bar.getHeight());
+        guiGraphics.blit(status_bar.getResourceLocation(), width, 53, 0, 35, (int) (mc.player.experienceProgress * 182f), 5, status_bar.getWidth(), status_bar.getHeight());
         poseStack.popPose();
     }
 }

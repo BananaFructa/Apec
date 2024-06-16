@@ -1,7 +1,7 @@
 package org.apec.apec.module;
 
 import lombok.Data;
-import me.zero.alpine.listener.EventSubscriber;
+import me.zero.alpine.listener.Subscriber;
 import org.apec.apec.Apec;
 import org.apec.apec.MC;
 
@@ -11,7 +11,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 @Data
-public class Module implements MC, EventSubscriber {
+public class Module implements MC, Subscriber {
 
     private String name = getClass().getAnnotation(ModuleInfo.class).name();
     private String description = getClass().getAnnotation(ModuleInfo.class).description();

@@ -1,15 +1,12 @@
 package org.apec.apec.skyblock;
 
 import me.zero.alpine.event.EventPriority;
-import me.zero.alpine.listener.EventSubscriber;
 import me.zero.alpine.listener.Listener;
 import me.zero.alpine.listener.Subscribe;
+import me.zero.alpine.listener.Subscriber;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Tuple;
-import net.minecraft.world.scores.Objective;
-import net.minecraft.world.scores.PlayerTeam;
-import net.minecraft.world.scores.Score;
-import net.minecraft.world.scores.Scoreboard;
+import net.minecraft.world.scores.*;
 import org.apec.apec.MC;
 import org.apec.apec.api.SBAPI;
 import org.apec.apec.events.ChatMessage;
@@ -21,7 +18,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public class SkyBlockInfo implements SBAPI, EventSubscriber, MC {
+public class SkyBlockInfo implements SBAPI, Subscriber, MC {
 
     private static final SkyBlockInfo INSTANCE = new SkyBlockInfo();
 
@@ -286,7 +283,7 @@ public class SkyBlockInfo implements SBAPI, EventSubscriber, MC {
     private Component getClientScoreboardTitle() {
         try {
             Scoreboard scoreboard = mc.level.getScoreboard();
-            Objective displayObjective = scoreboard.getDisplayObjective(1);
+            Objective displayObjective = scoreboard.getDisplayObjective(DisplaySlot.SIDEBAR);
             return displayObjective.getDisplayName();
         } catch (Exception e) {
             return Component.empty();
@@ -298,20 +295,20 @@ public class SkyBlockInfo implements SBAPI, EventSubscriber, MC {
         Scoreboard scoreboard = mc.level.getScoreboard();
         if (scoreboard == null) return lines;
 
-        Objective displayObjective = scoreboard.getDisplayObjective(1);
+        Objective displayObjective = scoreboard.getDisplayObjective(DisplaySlot.SIDEBAR);
         if (displayObjective == null) return lines;
 
-        Collection<Score> playerScores = scoreboard.getPlayerScores(displayObjective);
-        List<Score> scores = new ArrayList<>(playerScores);
+        Collection<PlayerScoreEntry> playerScores = scoreboard.listPlayerScores(displayObjective);
+        List<PlayerScoreEntry> scores = new ArrayList<>(playerScores);
 
         scores.sort((o1, o2) -> {
-            if (o1.getScore() > o2.getScore()) return -1;
-            if (o1.getScore() < o2.getScore()) return 1;
+            if (o1.value() > o2.value()) return -1;
+            if (o1.value() < o2.value()) return 1;
             return 0;
         });
 
-        for (Score score : scores) {
-            PlayerTeam playerTeam = scoreboard.getPlayersTeam(score.getOwner());
+        for (PlayerScoreEntry score : scores) {
+            PlayerTeam playerTeam = scoreboard.getPlayersTeam(score.owner());
             if (playerTeam != null) {
 
                 Component component = PlayerTeam.formatNameForTeam(playerTeam, Component.empty());

@@ -13,7 +13,7 @@ public enum ApecTextures {
     private final int height;
 
     ApecTextures(String path, int width, int height) {
-        this.resourceLocation = new ResourceLocation("apec", "textures/" + path + ".png");
+        this.resourceLocation = ResourceLocation.fromNamespaceAndPath("apec", "textures/" + path + ".png");
         this.width = width;
         this.height = height;
     }

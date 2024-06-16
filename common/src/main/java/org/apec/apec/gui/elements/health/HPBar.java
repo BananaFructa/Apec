@@ -33,19 +33,19 @@ public class HPBar extends Element {
         boolean showAPBar = false;
         if (showAPBar) {
             // Empty Bar
-            Gui.blit(poseStack, width, 15, 0, 60, 182, 5, status_bar.getWidth(), status_bar.getHeight());
+            guiGraphics.blit(status_bar.getResourceLocation(), width, 15, 0, 60, 182, 5, status_bar.getWidth(), status_bar.getHeight());
 
             // AP Bar
-            Gui.blit(poseStack, width, 15, 0, 65, (int) (((float) ap / (float) base_ap) * 49f), 5, status_bar.getWidth(), status_bar.getHeight());
+            guiGraphics.blit(status_bar.getResourceLocation(), width, 15, 0, 65, (int) (((float) ap / (float) base_ap) * 49f), 5, status_bar.getWidth(), status_bar.getHeight());
 
             // HP Bar
-            Gui.blit(poseStack, width + 51, 15, 51, 65, (int) (hpFactor * 131f), 5, status_bar.getWidth(), status_bar.getHeight());
+            guiGraphics.blit(status_bar.getResourceLocation(), width + 51, 15, 51, 65, (int) (hpFactor * 131f), 5, status_bar.getWidth(), status_bar.getHeight());
         } else {
             // Empty Bar
-            Gui.blit(poseStack, width, 15, 0, 0, 182, 5, status_bar.getWidth(), status_bar.getHeight());
+            guiGraphics.blit(status_bar.getResourceLocation(), width, 15, 0, 0, 182, 5, status_bar.getWidth(), status_bar.getHeight());
 
             // Full Bar
-            Gui.blit(poseStack, width, 15, 0, 5, (int) (hpFactor * 182f), 5, status_bar.getWidth(), status_bar.getHeight());
+            guiGraphics.blit(status_bar.getResourceLocation(), width, 15, 0, 5, (int) (hpFactor * 182f), 5, status_bar.getWidth(), status_bar.getHeight());
         }
 
         poseStack.popPose();

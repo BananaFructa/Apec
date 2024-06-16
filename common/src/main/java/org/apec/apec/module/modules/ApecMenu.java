@@ -28,6 +28,7 @@ import java.util.List;
 public class ApecMenu extends Module {
 
     public List<Element> guiElements = new ArrayList<Element>() {
+
         {
             addAll(List.of(
                     new HPBar(),
@@ -48,6 +49,7 @@ public class ApecMenu extends Module {
 
     @Override
     public void postInit() {
+
         guiElements.forEach(element -> element.init(this));
     }
 
@@ -66,23 +68,23 @@ public class ApecMenu extends Module {
         }
         Vector2f scaledResolution = new Vector2f(event.width(), event.height());
         guiElements.forEach(element -> {
-            event.poseStack().pushPose();
-            element.drawText(event.poseStack(), scaledResolution);
-            event.poseStack().popPose();
+            event.guiGraphics().pose().pushPose();
+            element.drawText(event.guiGraphics().pose(), scaledResolution);
+            event.guiGraphics().pose().popPose();
         });
         guiElements.forEach(element -> {
-            event.poseStack().pushPose();
-            element.render(event.poseStack(), event.delta());
-            event.poseStack().popPose();
+            event.guiGraphics().pose().pushPose();
+            element.render(event.guiGraphics().pose(), event.deltaTracker().getGameTimeDeltaTicks());
+            event.guiGraphics().pose().popPose();
         });
     });
 
     public Vector2f applyGlobalChanges(Element element, Vector2f anchorPoint) {
+
         boolean isbbUp = false; //todo: Add Settings for bbup
         if (isbbUp && element.getDeltaPosition().length() == 0)
             anchorPoint = ApecUtils.addVec(anchorPoint, new Vector2f(0, 20));
         return anchorPoint;
     }
-
 
 }

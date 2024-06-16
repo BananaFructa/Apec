@@ -2,7 +2,9 @@ package org.apec.apec.utils;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.FormattedText;
+import org.apec.apec.MC;
 import org.joml.Vector2f;
 
 public class ApecUtils {
@@ -137,20 +139,22 @@ public class ApecUtils {
 
     public static void drawOutlineText(Minecraft mc, PoseStack poseStack, String text, int x, int y, int colour) {
         String noColorText = removeAllColourCodes(text);
-        mc.font.draw(poseStack, noColorText, x + 1, y, (colour >> 24) << 24);
-        mc.font.draw(poseStack, noColorText, x - 1, y, (colour >> 24) << 24);
-        mc.font.draw(poseStack, noColorText, x, y + 1, (colour >> 24) << 24);
-        mc.font.draw(poseStack, noColorText, x, y - 1, (colour >> 24) << 24);
-        mc.font.draw(poseStack, text, x, y, colour);
+        GuiGraphics guigraphics = new GuiGraphics(MC.mc, MC.mc.renderBuffers().bufferSource());
+        guigraphics.drawString(MC.mc.font, noColorText, x + 1, y, (colour >> 24) << 24);
+        guigraphics.drawString(MC.mc.font, noColorText, x - 1, y, (colour >> 24) << 24);
+        guigraphics.drawString(MC.mc.font, noColorText, x, y + 1, (colour >> 24) << 24);
+        guigraphics.drawString(MC.mc.font, noColorText, x, y - 1, (colour >> 24) << 24);
+        guigraphics.drawString(MC.mc.font, text, x, y, colour);
     }
 
     public static void drawOutlineWrappedText(Minecraft mc, PoseStack poseStack, String text, int x, int y, int wordWrap, int colour) {
         FormattedText formattedText = FormattedText.of(text);
-        mc.font.drawWordWrap(poseStack, formattedText, x + 1, y, wordWrap, (colour >> 24) << 24);
-        mc.font.drawWordWrap(poseStack, formattedText, x - 1, y, wordWrap, (colour >> 24) << 24);
-        mc.font.drawWordWrap(poseStack, formattedText, x, y + 1, wordWrap, (colour >> 24) << 24);
-        mc.font.drawWordWrap(poseStack, formattedText, x, y - 1, wordWrap, (colour >> 24) << 24);
-        mc.font.drawWordWrap(poseStack, formattedText, x, y, wordWrap, colour);
+        GuiGraphics guigraphics = new GuiGraphics(MC.mc, MC.mc.renderBuffers().bufferSource());
+        guigraphics.drawWordWrap(MC.mc.font, formattedText, x + 1, y, wordWrap, (colour >> 24) << 24);
+        guigraphics.drawWordWrap(MC.mc.font, formattedText, x - 1, y, wordWrap, (colour >> 24) << 24);
+        guigraphics.drawWordWrap(MC.mc.font, formattedText, x, y + 1, wordWrap, (colour >> 24) << 24);
+        guigraphics.drawWordWrap(MC.mc.font, formattedText, x, y - 1, wordWrap, (colour >> 24) << 24);
+        guigraphics.drawWordWrap(MC.mc.font, formattedText, x, y, wordWrap, colour);
     }
 
 }

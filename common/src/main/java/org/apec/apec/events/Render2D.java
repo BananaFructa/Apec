@@ -1,6 +1,7 @@
 package org.apec.apec.events;
 
-import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.DeltaTracker;
+import net.minecraft.client.gui.GuiGraphics;
 
-public record Render2D(int width, int height, PoseStack poseStack, float delta) {
+public record Render2D(int width, int height, GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
 }

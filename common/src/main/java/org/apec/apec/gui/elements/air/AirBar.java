@@ -35,10 +35,10 @@ public class AirBar extends Element {
             Vector2f airBar = ApecUtils.scalarMultiply(this.getCurrentAnchorPoint(), 1f / scale);
 
             // Empty Bar
-            Gui.blit(poseStack, (int) airBar.x, (int) airBar.y, 0, 40, 182, 5, status_bar.getWidth(), status_bar.getHeight());
+            guiGraphics.blit(status_bar.getResourceLocation(), (int) airBar.x, (int) airBar.y, 0, 40, 182, 5, status_bar.getWidth(), status_bar.getHeight());
 
             // Full Bar
-            Gui.blit(poseStack, (int) airBar.x, (int) airBar.y, 0, 45, (int) (air * 182f), 5, status_bar.getWidth(), status_bar.getHeight());
+            guiGraphics.blit(status_bar.getResourceLocation(), (int) airBar.x, (int) airBar.y, 0, 45, (int) (air * 182f), 5, status_bar.getWidth(), status_bar.getHeight());
             poseStack.popPose();
         }
     }

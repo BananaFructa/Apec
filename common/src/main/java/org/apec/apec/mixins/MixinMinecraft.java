@@ -1,16 +1,10 @@
 package org.apec.apec.mixins;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Gui;
 import net.minecraft.client.main.GameConfig;
-import net.minecraft.client.renderer.entity.ItemRenderer;
 import org.apec.apec.Apec;
 import org.apec.apec.events.ClientTick;
-import org.apec.apec.gui.GuiApec;
-import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Mutable;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;

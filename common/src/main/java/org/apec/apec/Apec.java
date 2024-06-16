@@ -4,6 +4,7 @@ import lombok.Data;
 import me.zero.alpine.bus.EventBus;
 import me.zero.alpine.bus.EventManager;
 import me.zero.alpine.listener.Listener;
+import net.minecraft.client.gui.GuiGraphics;
 import org.apache.commons.lang3.time.StopWatch;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -34,7 +35,10 @@ public class Apec {
         StopWatch stopWatch = StopWatch.createStarted();
         moduleManager.initialize();
         eventBus.subscribe(SkyBlockInfo.getInstance());
-        eventBus.subscribe(new Listener<Render2D>(render2D -> MC.mc.gui.getFont().drawShadow(render2D.poseStack(), "Apec", 2, 2, -1)));
+        eventBus.subscribe(new Listener<Render2D>(render2D -> {
+            GuiGraphics guigraphics = new GuiGraphics(MC.mc, MC.mc.renderBuffers().bufferSource());
+            guigraphics.drawString(MC.mc.font,"Apec", 2, 2, -1, true);
+        }));
 
         LogHelper.section("Initialized Apec (" + stopWatch.getTime() + "ms)");
     }

@@ -36,19 +36,19 @@ public class MPBar extends Element {
             float opFactor = overflow > base_overflow ? 1 : (float) overflow / (float) base_overflow;
 
             // Empty Bar
-            Gui.blit(poseStack, width, 34, 0, 70, 182, 5, status_bar.getWidth(), status_bar.getHeight());
+            guiGraphics.blit(status_bar.getResourceLocation(), width, 34, 0, 70, 182, 5, status_bar.getWidth(), status_bar.getHeight());
 
             // Overflow Bar
-            Gui.blit(poseStack, width, 34, 0, 75, (int) (opFactor * 49f), 5, status_bar.getWidth(), status_bar.getHeight());
+            guiGraphics.blit(status_bar.getResourceLocation(), width, 34, 0, 75, (int) (opFactor * 49f), 5, status_bar.getWidth(), status_bar.getHeight());
 
             // MP Bar
-            Gui.blit(poseStack, width + 51, 34, 51, 75, (int) (mpFactor * 131f), 5, status_bar.getWidth(), status_bar.getHeight());
+            guiGraphics.blit(status_bar.getResourceLocation(), width + 51, 34, 51, 75, (int) (mpFactor * 131f), 5, status_bar.getWidth(), status_bar.getHeight());
         } else {
             // Empty Bar
-            Gui.blit(poseStack, width, 34, 0, 10, 182, 5, status_bar.getWidth(), status_bar.getHeight());
+            guiGraphics.blit(status_bar.getResourceLocation(), width, 34, 0, 10, 182, 5, status_bar.getWidth(), status_bar.getHeight());
 
             // Full Bar
-            Gui.blit(poseStack, width, 34, 0, 15, (int) (mpFactor * 182f), 5, status_bar.getWidth(), status_bar.getHeight());
+            guiGraphics.blit(status_bar.getResourceLocation(), width, 34, 0, 15, (int) (mpFactor * 182f), 5, status_bar.getWidth(), status_bar.getHeight());
         }
 
         poseStack.popPose();

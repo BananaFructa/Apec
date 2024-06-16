@@ -2,7 +2,8 @@ package org.apec.apec.gui;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import lombok.Data;
-import me.zero.alpine.listener.EventSubscriber;
+import me.zero.alpine.listener.Subscriber;
+import net.minecraft.client.gui.GuiGraphics;
 import org.apec.apec.Apec;
 import org.apec.apec.MC;
 import org.apec.apec.module.modules.ApecMenu;
@@ -14,7 +15,7 @@ import java.util.List;
 import java.util.stream.IntStream;
 
 @Data
-public class Element implements MC, EventSubscriber {
+public class Element implements MC, Subscriber {
 
     protected ApecMenu manager;
 
@@ -29,6 +30,7 @@ public class Element implements MC, EventSubscriber {
     protected Vector2f scaledResolution; // NOTE: X = width, Y = height
 
     protected ElementType elementType;
+    protected GuiGraphics guiGraphics;
 
     public Element(ElementType elementType) {
         this.elementType = elementType;
@@ -43,6 +45,7 @@ public class Element implements MC, EventSubscriber {
     public void init(ApecMenu apecMenu) {
         this.manager = apecMenu;
         this.scaledResolution = new Vector2f(mc.getWindow().getGuiScaledWidth(), mc.getWindow().getGuiScaledHeight());
+        this.guiGraphics = new GuiGraphics(mc, mc.renderBuffers().bufferSource());
     }
 
 
