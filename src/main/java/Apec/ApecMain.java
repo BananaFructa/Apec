@@ -1,6 +1,7 @@
 package Apec;
 
 import Apec.Commands.ApecComponentTogglerCommand;
+import Apec.Commands.ApecDisabledCommand;
 import Apec.Components.Gui.ContainerGuis.TrasparentEffects.ActiveEffectsTransparentComponent;
 import Apec.Components.Gui.ContainerGuis.AuctionHouse.AuctionHouseComponent;
 import Apec.Components.Gui.ContainerGuis.SkillView.SkillViewComponent;
@@ -12,13 +13,23 @@ import Apec.DataInterpretation.ComponentSaveManager;
 import Apec.DataInterpretation.ContainerGuiManager;
 import Apec.DataInterpretation.DataExtractor;
 import Apec.DataInterpretation.InventorySubtractor;
+import Apec.Oneconfig.OneConfig;
 import Apec.Settings.SettingsManager;
 import Apec.Utils.VersionChecker;
+import cc.polyfrost.oneconfig.events.event.InitializationEvent;
+import cc.polyfrost.oneconfig.libs.eventbus.Subscribe;
+import cc.polyfrost.oneconfig.libs.universal.ChatColor;
 import net.minecraft.client.settings.KeyBinding;
+import net.minecraft.command.CommandBase;
+import net.minecraft.command.CommandException;
+import net.minecraft.command.ICommandSender;
+import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.IChatComponent;
 import net.minecraftforge.client.ClientCommandHandler;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.FMLLog;
+import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -44,9 +55,9 @@ public class ApecMain
 
     public static Logger logger = FMLLog.getLogger();
 
-    public static final String modId = "apec"; 
-    public static final String name = "Apec";
-    public static final String version = "1.11.6";
+    public static final String modId = "@ID@";
+    public static final String name =  "@NAME@";
+    public static final String version = "@VER@";
 
     public static ApecMain Instance;
 
@@ -81,17 +92,27 @@ public class ApecMain
     /** Manages the saving and loading of component save data */
     public ComponentSaveManager componentSaveManager = new ComponentSaveManager(components);
 
+    /** OneConfig instance */
+    public static OneConfig oneConfig;
+
     @EventHandler
     public void preInit(FMLPreInitializationEvent event) {
-        ClientCommandHandler.instance.registerCommand(new ApecComponentTogglerCommand(ComponentId.SETTINGS_MENU,"apec",true));
-        ClientCommandHandler.instance.registerCommand(new ApecComponentTogglerCommand(ComponentId.GUI_MODIFIER,"apectoggle",false));
-        ClientCommandHandler.instance.registerCommand(new ApecComponentTogglerCommand(ComponentId.TEXTURE_PACK_REGISTRY_VIEWER,"apectpr",true));
+        if(!Loader.isModLoaded("oneconfig")) {
+            ClientCommandHandler.instance.registerCommand(new ApecComponentTogglerCommand(ComponentId.SETTINGS_MENU,"apec",true));
+            ClientCommandHandler.instance.registerCommand(new ApecComponentTogglerCommand(ComponentId.GUI_MODIFIER,"apectoggle",false));
+        }else {
+            ClientCommandHandler.instance.registerCommand(new ApecDisabledCommand());
+        }
+        ClientCommandHandler.instance.registerCommand(new ApecComponentTogglerCommand(ComponentId.TEXTURE_PACK_REGISTRY_VIEWER, "apectpr", true));
     }
 
     @EventHandler
     public void init(FMLInitializationEvent event)
     {
         Instance = this;
+        if(Loader.isModLoaded("oneconfig")) {
+            oneConfig = new OneConfig();
+        }
         MinecraftForge.EVENT_BUS.register(this);
         MinecraftForge.EVENT_BUS.register(inventorySubtractor);
         MinecraftForge.EVENT_BUS.register(dataExtractor);
@@ -122,7 +143,9 @@ public class ApecMain
     @SubscribeEvent
     public void onKeyInput(InputEvent.KeyInputEvent event) {
         if (guiKey.isPressed()) {
-            getComponent(ComponentId.GUI_MODIFIER).Toggle();
+            if(!Loader.isModLoaded("oneconfig")) {
+                getComponent(ComponentId.GUI_MODIFIER).Toggle();
+            }
         } else if (menuKey.isPressed()) {
             getComponent(ComponentId.SETTINGS_MENU).Toggle();
         }

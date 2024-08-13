@@ -1,9 +1,11 @@
 package Apec.Settings;
 
+import Apec.ApecMain;
 import Apec.Events.ApecSettingChangedState;
 import Apec.Utils.ApecUtils;
 import net.minecraft.util.Tuple;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.common.Loader;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -117,6 +119,9 @@ public class SettingsManager {
      * @return Returns the enable state of the setting
      */
     public boolean getSettingState(SettingID settingID){
+        if (Loader.isModLoaded("oneconfig")) {
+            return ApecMain.oneConfig.getSettingState(settingID);
+        }
         synchronized (stateCache) {
             Boolean state = stateCache.get(settingID);
             if (state != null) return state;
@@ -136,6 +141,10 @@ public class SettingsManager {
      * @param state = The new state of the setting
      */
     public void setSettingState(SettingID settingID,boolean state) {
+        if (Loader.isModLoaded("oneconfig")) {
+            ApecMain.oneConfig.setSettingState(settingID,state);
+            return;
+        }
         stateCache.clear();
         for (Setting s : settings) {
             if (s.settingID == settingID) {
