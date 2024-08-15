@@ -1,12 +1,11 @@
 package Apec.Commands;
 
-import cc.polyfrost.oneconfig.libs.universal.ChatColor;
+import Apec.ApecMain;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
-import net.minecraft.util.ChatComponentText;
 
-public class ApecDisabledCommand extends CommandBase {
+public class ApecOneConfigCommand extends CommandBase {
     @Override
     public String getCommandName() {
         return "apec";
@@ -19,7 +18,7 @@ public class ApecDisabledCommand extends CommandBase {
 
     @Override
     public void processCommand(ICommandSender sender, String[] args) throws CommandException {
-        sender.addChatMessage(new ChatComponentText(ChatColor.RED + "/apec is disabled when OneConfig is loaded"));
+        ApecMain.oneConfig.openGui();
     }
 
     @Override

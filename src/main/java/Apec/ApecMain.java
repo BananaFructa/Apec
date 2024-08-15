@@ -1,7 +1,7 @@
 package Apec;
 
 import Apec.Commands.ApecComponentTogglerCommand;
-import Apec.Commands.ApecDisabledCommand;
+import Apec.Commands.ApecOneConfigCommand;
 import Apec.Components.Gui.ContainerGuis.TrasparentEffects.ActiveEffectsTransparentComponent;
 import Apec.Components.Gui.ContainerGuis.AuctionHouse.AuctionHouseComponent;
 import Apec.Components.Gui.ContainerGuis.SkillView.SkillViewComponent;
@@ -16,15 +16,7 @@ import Apec.DataInterpretation.InventorySubtractor;
 import Apec.Oneconfig.OneConfig;
 import Apec.Settings.SettingsManager;
 import Apec.Utils.VersionChecker;
-import cc.polyfrost.oneconfig.events.event.InitializationEvent;
-import cc.polyfrost.oneconfig.libs.eventbus.Subscribe;
-import cc.polyfrost.oneconfig.libs.universal.ChatColor;
 import net.minecraft.client.settings.KeyBinding;
-import net.minecraft.command.CommandBase;
-import net.minecraft.command.CommandException;
-import net.minecraft.command.ICommandSender;
-import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.IChatComponent;
 import net.minecraftforge.client.ClientCommandHandler;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
@@ -34,11 +26,9 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent;
 import org.apache.logging.log4j.Logger;
-import org.lwjgl.Sys;
 import org.lwjgl.input.Keyboard;
 
 import java.util.ArrayList;
@@ -101,7 +91,7 @@ public class ApecMain
             ClientCommandHandler.instance.registerCommand(new ApecComponentTogglerCommand(ComponentId.SETTINGS_MENU,"apec",true));
             ClientCommandHandler.instance.registerCommand(new ApecComponentTogglerCommand(ComponentId.GUI_MODIFIER,"apectoggle",false));
         }else {
-            ClientCommandHandler.instance.registerCommand(new ApecDisabledCommand());
+            ClientCommandHandler.instance.registerCommand(new ApecOneConfigCommand());
         }
         ClientCommandHandler.instance.registerCommand(new ApecComponentTogglerCommand(ComponentId.TEXTURE_PACK_REGISTRY_VIEWER, "apectpr", true));
     }
@@ -117,8 +107,11 @@ public class ApecMain
         MinecraftForge.EVENT_BUS.register(inventorySubtractor);
         MinecraftForge.EVENT_BUS.register(dataExtractor);
         MinecraftForge.EVENT_BUS.register(containerGuiManager);
-        ClientRegistry.registerKeyBinding(guiKey);
-        ClientRegistry.registerKeyBinding(menuKey);
+        // Register the key bindings if oneconfig is not loaded (oneconfig has its own keybinding system)
+        if(!Loader.isModLoaded("oneconfig")) {
+            ClientRegistry.registerKeyBinding(guiKey);
+            ClientRegistry.registerKeyBinding(menuKey);
+        }
 
         for (Component component : components) {
             MinecraftForge.EVENT_BUS.register(component);
@@ -142,10 +135,12 @@ public class ApecMain
 
     @SubscribeEvent
     public void onKeyInput(InputEvent.KeyInputEvent event) {
+        if(Loader.isModLoaded("oneconfig")) {
+            // handle key input in oneconfig
+            return;
+        }
         if (guiKey.isPressed()) {
-            if(!Loader.isModLoaded("oneconfig")) {
-                getComponent(ComponentId.GUI_MODIFIER).Toggle();
-            }
+            getComponent(ComponentId.GUI_MODIFIER).Toggle();
         } else if (menuKey.isPressed()) {
             getComponent(ComponentId.SETTINGS_MENU).Toggle();
         }
