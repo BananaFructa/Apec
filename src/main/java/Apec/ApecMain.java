@@ -52,9 +52,9 @@ public class ApecMain
     public static ApecMain Instance;
 
     /** Key for toggling the gui */
-    KeyBinding guiKey = new KeyBinding("Apec Gui", Keyboard.KEY_RCONTROL, "Apec");
+    KeyBinding guiKey;
     /** Key for toggling the menu*/
-    KeyBinding menuKey = new KeyBinding("Apec Settings Menu", Keyboard.KEY_M, "Apec");
+    KeyBinding menuKey;
 
     /** Data parser */
     public DataExtractor dataExtractor = new DataExtractor();
@@ -101,17 +101,19 @@ public class ApecMain
     {
         Instance = this;
         if(Loader.isModLoaded("oneconfig")) {
+            guiKey = new KeyBinding("Apec Gui", Keyboard.KEY_RCONTROL, "Apec (Not used) OneConfig Instead");
+            menuKey = new KeyBinding("Apec Settings Menu", Keyboard.KEY_M, "Apec (Not used) OneConfig Instead");
             oneConfig = new OneConfig();
+        }else {
+            guiKey = new KeyBinding("Apec Gui", Keyboard.KEY_RCONTROL, "Apec");
+            menuKey = new KeyBinding("Apec Settings Menu", Keyboard.KEY_M, "Apec");
         }
         MinecraftForge.EVENT_BUS.register(this);
         MinecraftForge.EVENT_BUS.register(inventorySubtractor);
         MinecraftForge.EVENT_BUS.register(dataExtractor);
         MinecraftForge.EVENT_BUS.register(containerGuiManager);
-        // Register the key bindings if oneconfig is not loaded (oneconfig has its own keybinding system)
-        if(!Loader.isModLoaded("oneconfig")) {
-            ClientRegistry.registerKeyBinding(guiKey);
-            ClientRegistry.registerKeyBinding(menuKey);
-        }
+        ClientRegistry.registerKeyBinding(guiKey);
+        ClientRegistry.registerKeyBinding(menuKey);
 
         for (Component component : components) {
             MinecraftForge.EVENT_BUS.register(component);
