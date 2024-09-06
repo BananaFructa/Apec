@@ -25,4 +25,5 @@ public enum GUIComponentID {
     DEBUG_TEXT,
     RIFT_TIMER,
     GAME_MODE_TEXT,
+    KUUDRA_SET_BONUS_TEXT,
 }

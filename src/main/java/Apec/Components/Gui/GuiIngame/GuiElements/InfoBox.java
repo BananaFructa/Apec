@@ -11,6 +11,7 @@ import net.minecraft.client.gui.GuiChat;
 import net.minecraft.client.gui.GuiIngame;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.util.vector.Vector2f;
 
@@ -27,7 +28,7 @@ public class InfoBox extends GUIComponent {
         super(GUIComponentID.INFO_BOX,6);
     }
 
-    public int PurseStringLength = 0,BitsLength = 0,ZoneStringLength = 0,DefenceStringLength = 0,TimeStringLength = 0, ModeStringLength = 0;
+    public int PurseStringLength = 0,BitsLength = 0,ZoneStringLength = 0,DefenceStringLength = 0,TimeStringLength = 0, ModeStringLength = 0, KuudraStringLength = 0;
 
     @Override
     public void drawTex(DataExtractor.PlayerStats ps, DataExtractor.ScoreBoardData sd, DataExtractor.OtherData od, ScaledResolution sr, boolean editingMode) {
@@ -113,6 +114,7 @@ public class InfoBox extends GUIComponent {
         String defenceText = (UseIcons ? "\u00a7a" + ps.Defence : "\u00a7a" + ps.Defence + " Defence");
         String bitText = (UseIcons ? ApecUtils.RemoveCharSequence("Bits: ",sd.Bits) : sd.Bits);
         String modeText = (UseIcons ? ApecUtils.RemoveCharSequence("Mode: ",sd.GameMode) : sd.GameMode);
+        String kuudraText = EnumChatFormatting.GOLD + ps.KuudraTieredBonus;
         boolean inTheCatacombs = ApecMain.Instance.dataExtractor.isInTheCatacombs;
         mc.fontRendererObj.drawString(
                 purseText,
@@ -152,12 +154,24 @@ public class InfoBox extends GUIComponent {
             );
         }
 
+        if (!ApecMain.Instance.settingsManager.getSettingState(SettingID.USE_KUUDRA_SET_BONUS_OUT_OF_BB) || editingMode) {
+            boolean showGameMode = modeText != "";
+            int xWithDefenceAndGameMode = (ApecMain.Instance.settingsManager.getSettingState(SettingID.USE_DEFENCE_OUT_OF_BB) ? 360 : 460) + (showGameMode ? (ApecMain.Instance.settingsManager.getSettingState(SettingID.USE_GAME_MODE_OUT_OF_BB) ?  0 : 100) : 0);
+            mc.fontRendererObj.drawString(
+                    kuudraText,
+                    (int) ((GuiPos.x + delta_position.x + subComponentDeltas.get(5).getX()) * oneOverScale + xWithDefenceAndGameMode),
+                    (int) ((GuiPos.y + delta_position.y + subComponentDeltas.get(5).getY()) * oneOverScale),
+                    0xffffff, false
+            );
+        }
+
         PurseStringLength = mc.fontRendererObj.getStringWidth(purseText);
         BitsLength = mc.fontRendererObj.getStringWidth(bitText);
         ZoneStringLength = mc.fontRendererObj.getStringWidth(zoneText);
         DefenceStringLength = mc.fontRendererObj.getStringWidth(defenceText);
         TimeStringLength = mc.fontRendererObj.getStringWidth(sd.Date + " " + sd.Hour);
         ModeStringLength = mc.fontRendererObj.getStringWidth(modeText);
+        KuudraStringLength = mc.fontRendererObj.getStringWidth(kuudraText);
 
         mc.fontRendererObj.drawString(
                 sd.Date + " " + sd.Hour,
@@ -190,6 +204,7 @@ public class InfoBox extends GUIComponent {
             add(new Vector2f(220*scale + 20 * scale, 6*scale));
             add(new Vector2f(360*scale + 20 * scale, 6*scale));
             add(new Vector2f(460*scale + 20 * scale, 6*scale));
+            add(new Vector2f(520*scale + 20 * scale, 6*scale));
             add(new Vector2f((g_sr.getScaledWidth() - 20), 6*scale));
         }};
     }
@@ -205,6 +220,7 @@ public class InfoBox extends GUIComponent {
             add(new Vector2f(ZoneStringLength + (UseIcons ? zoneAddX : 0)*scale, 10*scale));
             add(new Vector2f(DefenceStringLength + (UseIcons ? 10 : 0)*scale, 10*scale));
             add(new Vector2f(ModeStringLength + (getCurrentAnchorPoint().x)*scale, 10*scale));
+            add(new Vector2f(KuudraStringLength + (getCurrentAnchorPoint().x)*scale, 10*scale));
             add(new Vector2f(-TimeStringLength-(getCurrentAnchorPoint().x)*scale, 10*scale));
             // Since the x is relative to the side of the screen and not the parent's x position i removed it's relativity
             // I can do that since the bottom bar cannot be moved so no wack shit is going to happen

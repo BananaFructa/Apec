@@ -45,5 +45,6 @@ public enum SettingID {
     SHOW_OP_BAR,
     SHOW_RIFT_TIMER,
     USE_GAME_MODE_OUT_OF_BB,
+    USE_KUUDRA_SET_BONUS_OUT_OF_BB,
 
 }

@@ -77,6 +77,7 @@ public class GUIModifier extends Component {
         //add(new DebugText());// Dont ship this
         add(new RiftTimer());
         add(new GameModeText());
+        add(new KuudraSetBonusText());
     }};
 
     public GUIModifier() {

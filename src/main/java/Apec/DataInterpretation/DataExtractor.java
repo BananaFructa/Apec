@@ -18,6 +18,7 @@ import net.minecraft.scoreboard.Score;
 import net.minecraft.scoreboard.ScoreObjective;
 import net.minecraft.scoreboard.ScorePlayerTeam;
 import net.minecraft.scoreboard.Scoreboard;
+import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IChatComponent;
 import net.minecraft.util.Tuple;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
@@ -46,6 +47,12 @@ public class DataExtractor {
     private final char OverflowSymbol = '\u02ac';
     private final char RifTimeSymbol = '\u0444'; // ф
     private final char[] healDurationSymbols = new char[] { '\u2586', '\u2585', '\u2584', '\u2583', '\u2582', '\u2581' };
+
+    private final char Dominus = '\u1750';
+    private final char Arcane = '\u046A';
+    private final char Fervor = '\u0489';
+    private final char Spirit = '\u26B6';
+    private final char Hydra = '\u2051';
 
     private final String endRaceSymbol = "THE END RACE";
     private final String woodRacingSymbol = "WOODS RACING";
@@ -717,6 +724,55 @@ public class DataExtractor {
             err.printStackTrace();
         }
 
+        try {
+            // Dominus
+            {
+                String segmentedString = ApecUtils.segmentString(actionBarData, String.valueOf(Dominus), '\u00a7', Dominus, 1, 1);
+                if (segmentedString != null) {
+                    playerStats.KuudraTieredBonus = Dominus + " Dominus " + ApecUtils.removeAllCodes(segmentedString);
+                }
+            }
+
+            // Arcane
+            {
+                String segmentedString = ApecUtils.segmentString(actionBarData, String.valueOf(Arcane), '\u00a7', Arcane, 1, 1);
+                if (segmentedString != null) {
+                    playerStats.KuudraTieredBonus = Arcane + " Arcane " + ApecUtils.removeAllCodes(segmentedString);
+                }
+            }
+
+            // Fervor
+            {
+                String segmentedString = ApecUtils.segmentString(actionBarData, String.valueOf(Fervor), '\u00a7', Fervor, 1, 1);
+                if (segmentedString != null) {
+                    playerStats.KuudraTieredBonus = Fervor + " Fervor " + ApecUtils.removeAllCodes(segmentedString);
+                }
+            }
+
+            // Spirit
+            {
+                String segmentedString = ApecUtils.segmentString(actionBarData, String.valueOf(Spirit), '\u00a7', Spirit, 1, 1);
+                if (segmentedString != null) {
+                    playerStats.KuudraTieredBonus = Spirit + " Spirit " + ApecUtils.removeAllCodes(segmentedString);
+                }
+            }
+
+            // Hydra
+            {
+                String segmentedString = ApecUtils.segmentString(actionBarData, String.valueOf(Hydra), '\u00a7', Hydra, 1, 1);
+                if (segmentedString != null) {
+                    playerStats.KuudraTieredBonus = Hydra + " Hydra " + ApecUtils.removeAllCodes(segmentedString);
+                }
+            }
+
+            if (playerStats.KuudraTieredBonus == null) {
+                playerStats.KuudraTieredBonus = "";
+            }
+
+        } catch (Exception err) {
+            playerStats.KuudraTieredBonus = "";
+        }
+
         return playerStats;
     }
 
@@ -953,6 +1009,7 @@ public class DataExtractor {
         public String AbilityText = "\u00a7b-00 Mana (\u00a76Some Ability\u00a7b)";
         public String RiftTimer;
         public int RiftHealth;
+        public String KuudraTieredBonus;
 
         @Override
         public String toString() {
@@ -975,6 +1032,7 @@ public class DataExtractor {
                     ", AbilityText='" + AbilityText + '\'' +
                     ", RiftTimer='" + RiftTimer + '\'' +
                     ", RiftHealth=" + RiftHealth +
+                    ", KuudraTieredBonus='" + KuudraTieredBonus + '\'' +
                     '}';
         }
     }

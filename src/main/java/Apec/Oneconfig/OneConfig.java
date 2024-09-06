@@ -133,6 +133,9 @@ public class OneConfig extends Config {
     @Switch(name = "Game Mode outside bar", description = "Shows the gamemode outside the bottom bar", category = "GUI", subcategory = "Game Mode")
     public static boolean USE_GAME_MODE_OUT_OF_BB = false;
 
+    @Switch(name = "Kuudra set bonus outside bar", description = "Shows the kuudra set bonus outside the bottom bar", category = "GUI", subcategory = "Kuudra Set Bonus")
+    public static boolean USE_KUUDRA_SET_BONUS_OUT_OF_BB = false;
+
     @Button(name = "Open Customization GUI", text = "Open", description = "Opens the GUI customization menu", category = "General", subcategory = "Gui Customization")
     Runnable runnable = () -> {
         GuiUtils.displayScreen(new CustomizationGui());

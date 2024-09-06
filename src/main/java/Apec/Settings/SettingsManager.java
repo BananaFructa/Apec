@@ -63,6 +63,7 @@ public class SettingsManager {
         add(new Setting(SHOW_DEBUG_MESSAGES,false));
         add(new Setting(SHOW_RIFT_TIMER,true));
         add(new Setting(USE_GAME_MODE_OUT_OF_BB, false));
+        add(new Setting(SettingID.USE_KUUDRA_SET_BONUS_OUT_OF_BB, false));
     }};
 
     /** Hashmap that holds the titles and descriptions of each setting */
@@ -109,6 +110,7 @@ public class SettingsManager {
         put(CUSTOM_TOOL_TIP,new Tuple<String,String>("Custom tool tip","Shows extra icons above the item tool tip."));
         put(SHOW_RIFT_TIMER,new Tuple<String,String>("Show rift timer","Shows the rift timer"));
         put(USE_GAME_MODE_OUT_OF_BB, new Tuple<String, String>("Game Mode outside bar", "Shows the gamemode outside the bottom bar"));
+        put(USE_KUUDRA_SET_BONUS_OUT_OF_BB, new Tuple<String, String>("Kuudra set bonus outside bar", "Shows the Kuudra set bonus outside the bottom bar"));
     }};
 
     /** Cache for setting states */
