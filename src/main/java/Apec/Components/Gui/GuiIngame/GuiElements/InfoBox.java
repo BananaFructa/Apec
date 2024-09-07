@@ -25,7 +25,7 @@ public class InfoBox extends GUIComponent {
     float yDecremetor = 0;
 
     public InfoBox() {
-        super(GUIComponentID.INFO_BOX,6);
+        super(GUIComponentID.INFO_BOX,7);
     }
 
     public int PurseStringLength = 0,BitsLength = 0,ZoneStringLength = 0,DefenceStringLength = 0,TimeStringLength = 0, ModeStringLength = 0, KuudraStringLength = 0;
@@ -204,7 +204,7 @@ public class InfoBox extends GUIComponent {
             add(new Vector2f(220*scale + 20 * scale, 6*scale));
             add(new Vector2f(360*scale + 20 * scale, 6*scale));
             add(new Vector2f(460*scale + 20 * scale, 6*scale));
-            add(new Vector2f(520*scale + 20 * scale, 6*scale));
+            add(new Vector2f(600*scale + 20 * scale, 6*scale));
             add(new Vector2f((g_sr.getScaledWidth() - 20), 6*scale));
         }};
     }

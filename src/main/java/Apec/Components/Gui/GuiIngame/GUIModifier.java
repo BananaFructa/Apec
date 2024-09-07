@@ -287,8 +287,14 @@ public class GUIModifier extends Component {
                 }
             }
             scanner.close();
-        } catch (IOException e) {
+        } catch (Exception e) {
             ApecUtils.showMessage("[\u00A72Apec\u00A7f] There was an error reading GUI deltas!");
+            // Delete the file if it is corrupted
+            try {
+                new File("config/Apec/GuiDeltas.txt").delete();
+            } catch (Exception err) {
+                err.printStackTrace();
+            }
         }
     }
 
