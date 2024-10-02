@@ -1,6 +1,7 @@
 // For those who want the bleeding edge
 buildscript {
     repositories {
+        jcenter()
         maven {
             name = "forge"
             url = "http://files.minecraftforge.net/maven"
@@ -36,9 +37,7 @@ minecraft {
 }
 
 repositories {
-    maven {
-        url = "https://pkgs.dev.azure.com/djtheredstoner/DevAuth/_packaging/public/maven/v1"
-    }
+    maven { url = "https://pkgs.dev.azure.com/djtheredstoner/DevAuth/_packaging/public/maven/v1" }
 }
 
 dependencies {
@@ -84,19 +83,6 @@ processResources
     // copy everything else, thats not the mcmod.info
     from(sourceSets.main.resources.srcDirs) {
         exclude 'mcmod.info'
-    }
-}
-
-tasks.build.doLast {
-    File apecTestingDir = System.getenv("APEC_TESTING_MODS_DIRECTORY")
-    if (apecTestingDir != null && apecTestingDir.exists()) {
-        task copyJar(type: Copy) {
-            copy {
-                from jar
-                into apecTestingDir
-            }
-            println '\u001B[0;31m\u001B[40mCopied jar from build directory into mods folder\u001B[0m'
-        }
     }
 }
 
