@@ -410,7 +410,7 @@ public class ApecUtils {
     }
 
     public static String segmentString(String string,String symbol,char leftChar,char rightChar,int allowedInstancesL,int allowedInstancesR, SegmentationOptions... options) {
-        boolean totallyExclusive = false, totallyInclusive = false, allInstancesR = false,allInstancesL = false;
+        boolean totallyExclusive = false, totallyInclusive = false, allInstancesR = false, allInstancesL = false;
         for (SegmentationOptions option : options) {
             if (option == SegmentationOptions.TOTALLY_EXCLUSIVE) totallyExclusive = true;
             if (option == SegmentationOptions.TOTALLY_INCLUSIVE) totallyInclusive = true;
@@ -427,14 +427,14 @@ public class ApecUtils {
      * @param rightChar = It will copy all the character from the right of the pivot until it encounters this character
      * @param allowedInstancesL = How many times can it encounter the left char before it stops copying the characters
      * @param allowedInstancesR = How many times can it encounter the right char before it stops copying the characters
-     * @param totallyExclusive = Makes so that the substring wont include the character from the left index
+     * @param totallyExclusive = Makes so that the substring won't include the character from the left index
      * @return Returns the string that is defined by the bounds of leftChar and rightChar encountered allowedInstacesL  respectively allowedInctancesR - 1 within it
      *         allowedInsracesL only if totallyExclusive = false else allowedInstacesL - 1
      */
 
     public static String segmentString(String string,String symbol,char leftChar,char rightChar,int allowedInstancesL,int allowedInstancesR,boolean totallyExclusive,boolean totallyInclusive,boolean allInstancesR,boolean allInstancesL) {
 
-        int leftIdx = 0,rightIdx = 0;
+        int leftIdx = 0, rightIdx = 0;
 
         if (string.contains(symbol)) {
 
