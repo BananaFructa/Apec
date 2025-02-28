@@ -1,0 +1,16 @@
+{
+  "required": true,
+  "package": "uk.co.hexeption.apec.mixins",
+  "compatibilityLevel": "JAVA_21",
+  "minVersion": "0.8",
+  "client": [
+    "MixinGui",
+    "MixinKeyboardHandler",
+    "accessors.PlayerTabOverlayAccessor"
+  ],
+  "mixins": [
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
