@@ -254,7 +254,7 @@ public class SkyBlockInfo implements SBAPI, MC {
         {
             String segmentedString = ApecUtils.segmentString(actionBar, String.valueOf('❈'), '§', '❈', 2, 1);
             if (segmentedString != null) {
-                play_defence = Integer.parseInt(ApecUtils.removeAllColourCodes(segmentedString));
+                play_defence = Integer.parseInt(ApecUtils.removeAllColourCodes(segmentedString.replace(",", "")));
                 lastDefence = play_defence;
             } else {
                 play_defence = lastDefence;

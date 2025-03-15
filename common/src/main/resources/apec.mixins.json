@@ -6,7 +6,8 @@
   "client": [
     "MixinGui",
     "MixinKeyboardHandler",
-    "accessors.PlayerTabOverlayAccessor"
+    "accessors.PlayerTabOverlayAccessor",
+    "accessors.ScreenAccessor"
   ],
   "mixins": [
   ],

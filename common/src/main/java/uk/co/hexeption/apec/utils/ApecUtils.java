@@ -2,8 +2,13 @@ package uk.co.hexeption.apec.utils;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
 import org.joml.Vector2f;
+import uk.co.hexeption.apec.Apec;
+import uk.co.hexeption.apec.settings.SettingID;
+
+import java.util.List;
 
 public class ApecUtils {
 
@@ -63,10 +68,7 @@ public class ApecUtils {
 
     public enum SegmentationOptions {
 
-        TOTALLY_EXCLUSIVE,
-        TOTALLY_INCLUSIVE,
-        ALL_INSTANCES_RIGHT,
-        ALL_INSTANCES_LEFT
+        TOTALLY_EXCLUSIVE, TOTALLY_INCLUSIVE, ALL_INSTANCES_RIGHT, ALL_INSTANCES_LEFT
 
     }
 
@@ -152,5 +154,41 @@ public class ApecUtils {
         guiGraphics.drawWordWrap(mc.font, formattedText, x, y - 1, wordWrap, (colour >> 24) << 24);
         guiGraphics.drawWordWrap(mc.font, formattedText, x, y, wordWrap, colour);
     }
+
+    public static void drawWrappedText(GuiGraphics guiGraphics, String text, int x, int y, int wordWrap, int colour) {
+        FormattedText formattedText = FormattedText.of(text);
+        guiGraphics.drawWordWrap(Minecraft.getInstance().font, formattedText, x, y, wordWrap, colour);
+    }
+
+    /**
+     * @param string = Input message
+     * @brief Shown the specified message in the chat if debug messages are on
+     */
+
+    public static void showMessage(String string) {
+        if (Apec.INSTANCE.settingsManager.getSettingState(SettingID.SHOW_DEBUG_MESSAGES))
+            Minecraft.getInstance().player.displayClientMessage(Component.literal(string), false);
+    }
+
+    public static void showNonDebugMessage(String string) {
+        Minecraft.getInstance().player.displayClientMessage(Component.literal(string), false);
+    }
+
+    // A wise man once said bubble sort is good enough when there are not a lot of elements
+    public static <T> void bubbleSort(List<Integer> arr, List<T> s) {
+        int n = arr.size();
+        for (int i = 0; i < n - 1; i++)
+            for (int j = 0; j < n - i - 1; j++)
+                if (arr.get(j) < arr.get(j + 1)) {
+                    int temp = arr.get(j);
+                    arr.set(j, arr.get(j + 1));
+                    arr.set(j + 1, temp);
+
+                    T _temp = s.get(j);
+                    s.set(j, s.get(j + 1));
+                    s.set(j + 1, _temp);
+                }
+    }
+
 
 }
