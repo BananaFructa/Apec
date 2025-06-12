@@ -16,7 +16,6 @@ public class Element implements MC {
 
     protected float scale = 1;
     protected boolean scalable = true;
-    protected Vector2f scaledResolution; // NOTE: X = width, Y = height
 
     public Element(ElementType type) {
         this.type = type;
@@ -24,10 +23,9 @@ public class Element implements MC {
 
     public void init(ApecMenu menu) {
         this.menu = menu;
-        this.scaledResolution = new Vector2f(mc.getWindow().getGuiScaledWidth(), mc.getWindow().getGuiScaledHeight());
     }
 
-    public void drawText(GuiGraphics graphics, Vector2f scaledResolution, boolean editMode) {
+    public void drawText(GuiGraphics graphics, boolean editMode) {
 
     }
 

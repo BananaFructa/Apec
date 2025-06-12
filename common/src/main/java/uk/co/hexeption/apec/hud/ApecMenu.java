@@ -27,7 +27,7 @@ public class ApecMenu implements MC {
     public List<Element> guiElements = new ArrayList<>() {
         {
             addAll(List.of(
-                    new DebugText(),
+//                    new DebugText(),
                     new HPText(),
                     new HPBar(),
                     new MPText(),
@@ -45,29 +45,29 @@ public class ApecMenu implements MC {
 
         applyDeltas();
 
-        guiElements.forEach(element -> {
-
+        for (Element element : guiElements) {
             element.init(this);
-        });
+        }
 
         ClientTickEvent.CLIENT_PRE.register(client -> {
             if (!Apec.SKYBLOCK_INFO.isOnSkyblock()) {
                 return;
             }
-            guiElements.forEach(Element::tick);
+            for (Element element : guiElements) {
+                element.tick();
+            }
         });
 
         ClientGuiEvent.RENDER_HUD.register((guiGraphics, deltaTracker) -> {
             if (!Apec.SKYBLOCK_INFO.isOnSkyblock()) {
                 return;
             }
-            Vector2f scaledResolution = new Vector2f(Minecraft.getInstance().getWindow().getGuiScaledWidth(), Minecraft.getInstance().getWindow().getGuiScaledHeight());
-            guiElements.forEach(element -> {
+            for (Element element : guiElements) {
                 guiGraphics.pose().pushPose();
                 guiGraphics.pose().scale(element.scale, element.scale, element.scale);
-                element.drawText(guiGraphics, scaledResolution, mc.screen instanceof CustomizationScreen);
+                element.drawText(guiGraphics, mc.screen instanceof CustomizationScreen);
                 guiGraphics.pose().popPose();
-            });
+            }
         });
     }
 

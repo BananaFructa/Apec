@@ -16,7 +16,7 @@ public class MPBar extends Element {
     }
 
     @Override
-    public void drawText(GuiGraphics graphics, Vector2f scaledResolution, boolean editMode) {
+    public void drawText(GuiGraphics graphics, boolean editMode) {
 
         int mp = Apec.SKYBLOCK_INFO.getPlayerStats().mana();
         int base_mp = Apec.SKYBLOCK_INFO.getPlayerStats().base_mana();
@@ -54,7 +54,7 @@ public class MPBar extends Element {
 
     @Override
     public Vector2f getAnchorPointPosition() {
-        return this.menu.applyGlobalChanges(this,new Vector2f(scaledResolution.x - 190, 34));
+        return this.menu.applyGlobalChanges(this,new Vector2f(mc.getWindow().getGuiScaledWidth() - 190, 34));
     }
 
     @Override

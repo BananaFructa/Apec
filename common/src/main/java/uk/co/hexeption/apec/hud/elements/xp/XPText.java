@@ -15,7 +15,7 @@ public class XPText extends Element {
     }
 
     @Override
-    public void drawText(GuiGraphics graphics, Vector2f scaledResolution, boolean editMode) {
+    public void drawText(GuiGraphics graphics, boolean editMode) {
         String xpText = "Lvl " + mc.player.experienceLevel + " XP";
 
         Vector2f statBar = ApecUtils.scalarMultiply(getCurrentAnchorPoint(), 1f / scale);
@@ -28,7 +28,7 @@ public class XPText extends Element {
 
     @Override
     public Vector2f getAnchorPointPosition() {
-        return this.menu.applyGlobalChanges(this, new Vector2f(scaledResolution.x - 190 + 112 + 70, 53));
+        return this.menu.applyGlobalChanges(this, new Vector2f(mc.getWindow().getGuiScaledWidth() - 190 + 112 + 70, 53));
     }
 
     @Override

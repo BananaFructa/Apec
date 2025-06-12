@@ -17,7 +17,7 @@ public class HPText extends Element {
     }
 
     @Override
-    public void drawText(GuiGraphics graphics, Vector2f scaledResolution, boolean editMode) {
+    public void drawText(GuiGraphics graphics, boolean editMode) {
         boolean showAPBar = false;
 
         int hp = Apec.SKYBLOCK_INFO.getPlayerStats().hp();
@@ -43,7 +43,7 @@ public class HPText extends Element {
 
     @Override
     public Vector2f getAnchorPointPosition() {
-        return menu.applyGlobalChanges(this, new Vector2f(scaledResolution.x - 190 + 112 + 70, 15));
+        return menu.applyGlobalChanges(this, new Vector2f(mc.getWindow().getGuiScaledWidth() - 190 + 112 + 70, 15));
     }
 
     @Override

@@ -15,7 +15,7 @@ public class ExtraInfo extends Element {
     }
 
     @Override
-    public void drawText(GuiGraphics graphics, Vector2f scaledResolution, boolean editMode) {
+    public void drawText(GuiGraphics graphics, boolean editMode) {
         Vector2f ExtraScoreInfo = ApecUtils.scalarMultiply(getCurrentAnchorPoint(), 1f / scale);
 
         ArrayList<String> ei = new ArrayList<String>();

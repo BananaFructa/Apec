@@ -15,7 +15,7 @@ public class HPBar extends Element {
     }
 
     @Override
-    public void drawText(GuiGraphics graphics, Vector2f scaledResolution, boolean editMode) {
+    public void drawText(GuiGraphics graphics, boolean editMode) {
         int hp = Apec.SKYBLOCK_INFO.getPlayerStats().hp();
         int base_hp = Apec.SKYBLOCK_INFO.getPlayerStats().base_hp();
         int ap = Apec.SKYBLOCK_INFO.getPlayerStats().absorption();
@@ -50,7 +50,7 @@ public class HPBar extends Element {
 
     @Override
     public Vector2f getAnchorPointPosition() {
-        return menu.applyGlobalChanges(this, new Vector2f(scaledResolution.x - 190, 15));
+        return menu.applyGlobalChanges(this, new Vector2f(mc.getWindow().getGuiScaledWidth() - 190, 15));
     }
 
     @Override

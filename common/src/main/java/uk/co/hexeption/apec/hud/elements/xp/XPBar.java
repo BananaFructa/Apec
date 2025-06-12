@@ -15,7 +15,7 @@ public class XPBar extends Element {
     }
 
     @Override
-    public void drawText(GuiGraphics graphics, Vector2f scaledResolution, boolean editMode) {
+    public void drawText(GuiGraphics graphics, boolean editMode) {
 
         ApecTextures xpBarTexture = ApecTextures.STATUS_BAR;
 
@@ -32,7 +32,7 @@ public class XPBar extends Element {
 
     @Override
     public Vector2f getAnchorPointPosition() {
-        return this.menu.applyGlobalChanges(this, new Vector2f(scaledResolution.x - 190, 53));
+        return this.menu.applyGlobalChanges(this, new Vector2f(mc.getWindow().getGuiScaledWidth() - 190, 53));
     }
 
     @Override
