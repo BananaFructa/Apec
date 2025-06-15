@@ -1,11 +1,10 @@
 package uk.co.hexeption.apec.settings;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
-import net.minecraft.util.Tuple;
-import uk.co.hexeption.apec.utils.ApecUtils;
-
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -13,8 +12,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Scanner;
-
+import net.minecraft.util.Tuple;
 import static uk.co.hexeption.apec.settings.SettingID.*;
+import uk.co.hexeption.apec.utils.ApecUtils;
 
 public class SettingsManager {
 
@@ -192,7 +192,8 @@ public class SettingsManager {
             for (Setting setting : settings) {
                 json.addProperty(setting.settingID.name(), setting.enabled);
             }
-            fw.write(json.toString());
+            Gson gson = new GsonBuilder().setPrettyPrinting().create();
+            fw.write(gson.toJson(json));
             fw.close();
         } catch (IOException e) {
             ApecUtils.showMessage("[\u00A72Apec\u00A7f] There was an error saving settings!");

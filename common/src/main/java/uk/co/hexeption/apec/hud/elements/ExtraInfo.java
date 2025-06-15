@@ -1,13 +1,12 @@
 package uk.co.hexeption.apec.hud.elements;
 
+import java.util.ArrayList;
 import net.minecraft.client.gui.GuiGraphics;
 import org.joml.Vector2f;
 import uk.co.hexeption.apec.Apec;
 import uk.co.hexeption.apec.hud.Element;
 import uk.co.hexeption.apec.hud.ElementType;
 import uk.co.hexeption.apec.utils.ApecUtils;
-
-import java.util.ArrayList;
 
 public class ExtraInfo extends Element {
     public ExtraInfo() {
@@ -28,7 +27,7 @@ public class ExtraInfo extends Element {
 
         if (!ei.isEmpty()) {
             for (int i = 0;i < ei.size();i++) {
-                ApecUtils.drawOutlineText(mc, graphics, ei.get(i), (int)(ExtraScoreInfo.x), (int) (ExtraScoreInfo.y + i * 11), 0x0ffffff);
+                ApecUtils.drawOutlineText(mc, graphics, ei.get(i), (int)(ExtraScoreInfo.x), (int) (ExtraScoreInfo.y + i * 7), 0x0ffffff);
             }
         }
     }

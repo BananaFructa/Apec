@@ -1,5 +1,6 @@
 package uk.co.hexeption.apec.utils;
 
+import java.util.List;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
@@ -7,8 +8,6 @@ import net.minecraft.network.chat.FormattedText;
 import org.joml.Vector2f;
 import uk.co.hexeption.apec.Apec;
 import uk.co.hexeption.apec.settings.SettingID;
-
-import java.util.List;
 
 public class ApecUtils {
 
@@ -58,8 +57,39 @@ public class ApecUtils {
         return s.substring(i);
     }
 
+    /**
+     * @param Seq = The sequence of characters
+     * @param s = The string
+     * @return Returns a string with the char sequence removed
+     */
+    public static String removeCharSequence (String Seq,String s) {
+        char[] csq = Seq.toCharArray();
+        String result = "";
+        int CurrentInSequence = 0;
+        boolean SequenceEnded = false;
+        for (int i = 0;i < s.length();i++) {
+            if (!SequenceEnded) {
+                if (csq[CurrentInSequence] == s.charAt(i)) {
+                    CurrentInSequence++;
+                    if (CurrentInSequence == csq.length) SequenceEnded = true;
+                    continue;
+                }
+            }
+            result += String.valueOf(s.charAt(i));
+        }
+        return result;
+    }
+
     public static Vector2f addVec(Vector2f a, Vector2f b) {
         return new Vector2f(a.x + b.x, a.y + b.y);
+    }
+
+    public static List<Vector2f> addVecListToList(List<Vector2f> vl1,List<Vector2f> vl2) {
+        assert (vl1.size() < vl2.size());
+        for (int i = 0;i < vl1.size();i++) {
+            vl1.set(i,addVec(vl1.get(i), vl2.get(i)));
+        }
+        return vl1;
     }
 
     public static Vector2f scalarMultiply(Vector2f v, float s) {

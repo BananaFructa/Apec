@@ -1,13 +1,20 @@
 package uk.co.hexeption.apec.hud;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import dev.architectury.event.events.client.ClientGuiEvent;
 import dev.architectury.event.events.client.ClientTickEvent;
-import net.minecraft.client.Minecraft;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import org.joml.Vector2f;
 import uk.co.hexeption.apec.Apec;
 import uk.co.hexeption.apec.MC;
 import uk.co.hexeption.apec.hud.customization.CustomizationScreen;
-import uk.co.hexeption.apec.hud.elements.DebugText;
+import uk.co.hexeption.apec.hud.elements.BottomBar;
 import uk.co.hexeption.apec.hud.elements.ExtraInfo;
 import uk.co.hexeption.apec.hud.elements.health.HPBar;
 import uk.co.hexeption.apec.hud.elements.health.HPText;
@@ -16,11 +23,6 @@ import uk.co.hexeption.apec.hud.elements.mana.MPText;
 import uk.co.hexeption.apec.hud.elements.xp.XPBar;
 import uk.co.hexeption.apec.hud.elements.xp.XPText;
 import uk.co.hexeption.apec.utils.ApecUtils;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
 
 public class ApecMenu implements MC {
 
@@ -34,7 +36,8 @@ public class ApecMenu implements MC {
                     new MPBar(),
                     new XPText(),
                     new XPBar(),
-                    new ExtraInfo()
+                    new ExtraInfo(),
+                    new BottomBar()
             ));
         }
     };
@@ -80,37 +83,36 @@ public class ApecMenu implements MC {
 
     private void applyDeltas() {
         try {
-            Scanner scanner = new Scanner(new File("config/Apec/GuiDeltas.txt"));
-            while (scanner.hasNextLine()) {
-                String s = scanner.nextLine();
-                String[] tempSplit = s.split("#");
-                int subComponent = -1;
-                int idx = 0;
-                if (tempSplit[0].contains("!")) {
-                    String[] tempSplit_ = tempSplit[0].split("!");
-                    idx = Integer.parseInt(tempSplit_[0]);
-                    subComponent = Integer.parseInt(tempSplit_[1]);
-                } else {
-                    idx = Integer.parseInt(tempSplit[0]);
-                }
-                Vector2f delta = new Vector2f(Float.parseFloat(tempSplit[1].split("@")[0]), Float.parseFloat(tempSplit[1].split("@")[1]));
-                float scale = 1f;
-                if (tempSplit[1].split("@").length == 3) {
-                    scale = Float.parseFloat(tempSplit[1].split("@")[2]);
-                }
-                if (subComponent == -1) {
-                    getGuiComponent(ElementType.values()[idx]).setDeltaPosition(delta);
-                    getGuiComponent(ElementType.values()[idx]).setScale(scale);
-                } else {
-                    //getGuiComponent(ElementType.values()[idx]).setSubElementDeltaPosition(delta, subComponent);
+            File file = new File("config/Apec/GuiDeltas.json");
+            if (!file.exists()) return;
+            Gson gson = new Gson();
+            String jsonContent = new String(java.nio.file.Files.readAllBytes(file.toPath()));
+            JsonArray jsonArray = JsonParser.parseString(jsonContent).getAsJsonArray();
+            for (JsonElement el : jsonArray) {
+                JsonObject obj = el.getAsJsonObject();
+                String typeName = obj.get("type").getAsString();
+                ElementType elementType = ElementType.valueOf(typeName);
+                Element element = getGuiComponent(elementType);
+                float deltaX = obj.get("deltaX").getAsFloat();
+                float deltaY = obj.get("deltaY").getAsFloat();
+                float scale = obj.get("scale").getAsFloat();
+                element.setDeltaPosition(new org.joml.Vector2f(deltaX, deltaY));
+                element.setScale(scale);
+                if (obj.has("subComponents")) {
+                    JsonArray subArray = obj.getAsJsonArray("subComponents");
+                    for (JsonElement subEl : subArray) {
+                        JsonObject subObj = subEl.getAsJsonObject();
+                        int subIdx = subObj.get("index").getAsInt();
+                        float subDeltaX = subObj.get("deltaX").getAsFloat();
+                        float subDeltaY = subObj.get("deltaY").getAsFloat();
+                        element.setSubElementDeltaPosition(subIdx, new org.joml.Vector2f(subDeltaX, subDeltaY));
+                    }
                 }
             }
-            scanner.close();
         } catch (Exception e) {
             //ApecUtils.showMessage("[\u00A72Apec\u00A7f] There was an error reading GUI deltas!");
-            // Delete the file if it is corrupted
             try {
-                new File("config/Apec/GuiDeltas.txt").delete();
+                new File("config/Apec/GuiDeltas.json").delete();
             } catch (Exception err) {
                 err.printStackTrace();
             }

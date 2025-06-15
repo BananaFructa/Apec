@@ -1,6 +1,8 @@
 package uk.co.hexeption.apec.hud.customization;
 
 import com.mojang.blaze3d.platform.Window;
+import java.util.ArrayList;
+import java.util.List;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.Component;
@@ -8,9 +10,7 @@ import org.joml.Vector2f;
 import uk.co.hexeption.apec.Apec;
 import uk.co.hexeption.apec.MC;
 import uk.co.hexeption.apec.hud.Element;
-
-import java.util.ArrayList;
-import java.util.List;
+import uk.co.hexeption.apec.utils.ApecUtils;
 
 public class CustomizationWidget extends Button implements MC {
 
@@ -60,8 +60,13 @@ public class CustomizationWidget extends Button implements MC {
 
         Vector2f v, rv;
 
-        v = this.element.getCurrentAnchorPoint();
-        rv = this.element.getCurrentBoundingPoint();
+        if (subElementIndex == -1) {
+            v = this.element.getCurrentAnchorPoint();
+            rv = this.element.getCurrentBoundingPoint();
+        } else {
+            v = ApecUtils.addVec(this.element.getCurrentAnchorPoint(),this.element.getSubElementsCurrentAnchorPoints().get(subElementIndex));
+            rv = ApecUtils.addVec(this.element.getCurrentAnchorPoint(),this.element.getSubElementsBoundingPoints().get(subElementIndex));
+        }
 
         if (v.x < rv.x && v.y < rv.y) {
             this.setX((int) v.x);

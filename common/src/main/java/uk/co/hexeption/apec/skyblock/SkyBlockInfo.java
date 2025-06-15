@@ -1,22 +1,27 @@
 package uk.co.hexeption.apec.skyblock;
 
-
 import dev.architectury.event.CompoundEventResult;
+import dev.architectury.event.events.client.ClientChatEvent;
 import dev.architectury.event.events.client.ClientSystemMessageEvent;
 import dev.architectury.event.events.client.ClientTickEvent;
+import dev.architectury.platform.Platform;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import net.minecraft.client.Minecraft;
+import net.minecraft.network.chat.ChatType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Tuple;
-import net.minecraft.world.scores.*;
+import net.minecraft.world.scores.DisplaySlot;
+import net.minecraft.world.scores.Objective;
+import net.minecraft.world.scores.PlayerScoreEntry;
+import net.minecraft.world.scores.PlayerTeam;
+import net.minecraft.world.scores.Scoreboard;
 import uk.co.hexeption.apec.EventIDs;
 import uk.co.hexeption.apec.MC;
 import uk.co.hexeption.apec.api.SBAPI;
 import uk.co.hexeption.apec.mixins.accessors.PlayerTabOverlayAccessor;
 import uk.co.hexeption.apec.utils.ApecUtils;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 
 public class SkyBlockInfo implements SBAPI, MC {
 
@@ -55,10 +60,16 @@ public class SkyBlockInfo implements SBAPI, MC {
 
     public void init() {
         ClientTickEvent.CLIENT_PRE.register(this::clientTick);
-        ClientSystemMessageEvent.RECEIVED.register(this::clientChatMessage);
+        // Stupid hack as ClientSystemMessageEvent not working on NeoForge
+        if(Platform.isFabric()){
+            ClientSystemMessageEvent.RECEIVED.register((message) -> clientChatMessage(null, message));
+        }
+        if(Platform.isNeoForge()) {
+            ClientChatEvent.RECEIVED.register(this::clientChatMessage);
+        }
     }
 
-    private CompoundEventResult<Component> clientChatMessage(Component component) {
+    private CompoundEventResult<Component> clientChatMessage(ChatType.Bound bound, Component component) {
         if (component.getString().contains("❤") || component.getString().contains("✎") || component.getString().contains("Revive") || component.getString().contains("CHICKEN RACING") || component.getString().contains("Armadillo")){
             this.clientOverlay = component;
         }
@@ -93,6 +104,7 @@ public class SkyBlockInfo implements SBAPI, MC {
         String purse = "";
         String bits = "";
         String gameType = "";
+        ArrayList <String> extra = new ArrayList<>();
 
         for (String e : this.scoreboardLines) {
             // IRL Date and Server Shard
@@ -100,47 +112,55 @@ public class SkyBlockInfo implements SBAPI, MC {
                 irl_date = ApecUtils.removeFirstSpaces(e).split(" ")[0];     // "05/04/23"
                 serverShard = ApecUtils.removeFirstSpaces(e).split(" ")[1];  // "m80DE"
             }
+            // Game Type (Ironman, Stranded, Bingo)
+            else if (ApecUtils.containedByCharSequence(e, "♲") || ApecUtils.containedByCharSequence(e, "☀ Stranded") || ApecUtils.containedByCharSequence(e, "Ⓑ")) {
+                gameType = ApecUtils.removeFirstSpaces(e); // "♲ Ironman"
+            }
 
             // Date
-            if (isDate(e)) {
+            else if (isDate(e)) {
                 date = ApecUtils.removeFirstSpaces(e); // "Late Summer 8th"
             }
 
             // Time
-            if (isTime(e)) {
+            else if (isTime(e)) {
                 hour = ApecUtils.removeFirstSpaces(e); // "11:30pm ☽"
             }
 
             // Zone
-            if (ApecUtils.containedByCharSequence(e, "⏣")) {
+            else if (ApecUtils.containedByCharSequence(e, "⏣")) {
                 zone = ApecUtils.removeFirstSpaces(e); // "⏣ Auction House"
             }
 
-            if (ApecUtils.containedByCharSequence(e, "Purse: ")) {
+            else if (ApecUtils.containedByCharSequence(e, "Purse: ")) {
                 purse = ApecUtils.removeFirstSpaces(e); // "Purse: 0.0"
                 this.usesPiggyBank = false;
             }
 
-            if (ApecUtils.containedByCharSequence(e, "Piggy: ")) {
+            else if (ApecUtils.containedByCharSequence(e, "Piggy: ")) {
                 purse = ApecUtils.removeFirstSpaces(e); // "Piggy: 0.0"
                 this.usesPiggyBank = true;
             }
 
-            if (ApecUtils.containedByCharSequence(e, "Bits: ")) {
+            else if (ApecUtils.containedByCharSequence(e, "Bits: ")) {
                 bits = ApecUtils.removeFirstSpaces(e); // "Bits: 0.0"
             }
 
-            // Game Type (Ironman, Stranded, Bingo)
-            if (ApecUtils.containedByCharSequence(e, "♲") || ApecUtils.containedByCharSequence(e, "☀ Stranded") || ApecUtils.containedByCharSequence(e, "Ⓑ")) {
-                gameType = ApecUtils.removeFirstSpaces(e); // "♲ Ironman"
+            else if(!e.contains("www")) {
+                if (e.replaceAll("[^a-zA-Z0-9]", "").length() != 0) {
+                    if (ShouldHaveSpaceBefore(e)) extra.add(" ");
+                    extra.add(ApecUtils.removeFirstSpaces(e));
+                    if (ShouldHaveSpaceAfter(e)) extra.add(" ");
+                }
             }
+
         }
 
         this.scoreboard = new SBScoreBoard(
                 serverShard,
                 purse,
                 bits,
-                new ArrayList<>(),
+                extra,
                 zone,
                 date,
                 hour,
@@ -398,13 +418,44 @@ public class SkyBlockInfo implements SBAPI, MC {
             PlayerTeam playerTeam = scoreboard.getPlayersTeam(score.owner());
             if (playerTeam != null) {
 
-                Component component = PlayerTeam.formatNameForTeam(playerTeam, Component.empty());
+                Component component = PlayerTeam.formatNameForTeam(playerTeam, score.ownerName());
 
                 lines.add(component.getString());
             }
         }
         return lines;
     }
+
+    /**
+     * @param s = Input string
+     * @return Return true if the specific text should have an empty line before in the left side display
+     */
+
+    public boolean ShouldHaveSpaceBefore(String s) {
+        return ApecUtils.containedByCharSequence(s,"Objective") || //Objectives
+                ApecUtils.containedByCharSequence(s,"Contest") || // Jacob's contest
+                ApecUtils.containedByCharSequence(s,"Year") || // New year and the vote thing
+                ApecUtils.containedByCharSequence(s,"Zoo") || // Traveling Zoo
+                ApecUtils.containedByCharSequence(s,"Festival") || // Spooky Festival
+                ApecUtils.containedByCharSequence(s,"Season") || // Jerry season
+                ApecUtils.containedByCharSequence(s,"Election") || // Idk at this point im just putting some things from the wiki
+                ApecUtils.containedByCharSequence(s,"Slayer") || // Slayer quest
+                ApecUtils.containedByCharSequence(s,"Keys") || // Keys in dungeons
+                ApecUtils.containedByCharSequence(s,"Time Elapsed") || // time elapsed dungeons
+                ApecUtils.containedByCharSequence(s,"Starting in:") ||
+                ApecUtils.containedByCharSequence(s,"Wave") ||
+                ApecUtils.containedByCharSequence(s,"Festival");
+    }
+
+    /**
+     * @param s = Input string
+     * @return Return true if the specific text should have an empty line after in the left side display
+     */
+
+    public boolean ShouldHaveSpaceAfter(String s) {
+        return ApecUtils.containedByCharSequence(s,"Dungeon Cleared"); // Dungeon cleared in dungeons
+    }
+
 
     @Override
     public boolean isOnSkyblock() {
