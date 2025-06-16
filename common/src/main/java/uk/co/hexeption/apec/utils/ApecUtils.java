@@ -44,6 +44,22 @@ public class ApecUtils {
         return false;
     }
 
+    public static boolean containedByCharSequence(Component c, String substr) {
+        if (substr.length() > c.getString().length()) {
+            return false;
+        }
+        int j = 0;
+        for (char ch : c.getString().toCharArray()) {
+            if (ch == substr.charAt(j)) {
+                j++;
+                if (j == substr.length()) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     public static String removeFirstSpaces(String s) {
         if (s == null || s.isEmpty()) {
             return s;
@@ -78,6 +94,25 @@ public class ApecUtils {
             result += String.valueOf(s.charAt(i));
         }
         return result;
+    }
+
+    // Keep style of the Component
+    public static Component removeCharSequence(Component Seq, Component s) {
+        String csq = Seq.getString();
+        String result = "";
+        int CurrentInSequence = 0;
+        boolean SequenceEnded = false;
+        for (int i = 0; i < s.getString().length(); i++) {
+            if (!SequenceEnded) {
+                if (csq.charAt(CurrentInSequence) == s.getString().charAt(i)) {
+                    CurrentInSequence++;
+                    if (CurrentInSequence == csq.length()) SequenceEnded = true;
+                    continue;
+                }
+            }
+            result += String.valueOf(s.getString().charAt(i));
+        }
+        return Component.literal(result).withStyle(s.getStyle());
     }
 
     public static Vector2f addVec(Vector2f a, Vector2f b) {
@@ -176,6 +211,15 @@ public class ApecUtils {
         guiGraphics.drawString(mc.font, text, x, y, colour);
     }
 
+    public static void drawOutlineText(Minecraft mc, GuiGraphics guiGraphics, Component text, int x, int y, int colour) {
+        String noColorText = text.getString();
+        guiGraphics.drawString(mc.font, noColorText, x + 1, y, (colour >> 24) << 24);
+        guiGraphics.drawString(mc.font, noColorText, x - 1, y, (colour >> 24) << 24);
+        guiGraphics.drawString(mc.font, noColorText, x, y + 1, (colour >> 24) << 24);
+        guiGraphics.drawString(mc.font, noColorText, x, y - 1, (colour >> 24) << 24);
+        guiGraphics.drawString(mc.font, text, x, y, colour);
+    }
+
     public static void drawOutlineWrappedText(Minecraft mc, GuiGraphics guiGraphics, String text, int x, int y, int wordWrap, int colour) {
         FormattedText formattedText = FormattedText.of(text);
         guiGraphics.drawWordWrap(mc.font, formattedText, x + 1, y, wordWrap, (colour >> 24) << 24);
@@ -218,6 +262,26 @@ public class ApecUtils {
                     s.set(j, s.get(j + 1));
                     s.set(j + 1, _temp);
                 }
+    }
+
+    /**
+     * Recursively removes all components (and their siblings) whose getString() contains the given substring.
+     * Returns a new component with the same structure, minus the removed parts.
+     */
+    public static Component removeComponentContaining(Component s, String substring) {
+        if (s.getString().contains(substring) && s.getSiblings().isEmpty()) {
+            return null;
+        }
+        if (s instanceof net.minecraft.network.chat.MutableComponent mutable) {
+            net.minecraft.network.chat.MutableComponent copy = mutable.copy();
+            copy.getSiblings().clear();
+            for (Component sib : mutable.getSiblings()) {
+                Component cleaned = removeComponentContaining(sib, substring);
+                if (cleaned != null) copy.append(cleaned);
+            }
+            return copy;
+        }
+        return s;
     }
 
 

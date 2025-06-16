@@ -5,17 +5,17 @@ import dev.architectury.event.events.client.ClientChatEvent;
 import dev.architectury.event.events.client.ClientSystemMessageEvent;
 import dev.architectury.event.events.client.ClientTickEvent;
 import dev.architectury.platform.Platform;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.Collections;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.ChatType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.scores.DisplaySlot;
 import net.minecraft.world.scores.Objective;
-import net.minecraft.world.scores.PlayerScoreEntry;
 import net.minecraft.world.scores.PlayerTeam;
+import net.minecraft.world.scores.ScoreHolder;
 import net.minecraft.world.scores.Scoreboard;
 import uk.co.hexeption.apec.EventIDs;
 import uk.co.hexeption.apec.MC;
@@ -27,8 +27,11 @@ public class SkyBlockInfo implements SBAPI, MC {
 
     private SBScoreBoard scoreboard = SBScoreBoard.EMPTY;
     private boolean onSkyblock;
-    private List<String> scoreboardLines = new ArrayList<>();
+
     private boolean usesPiggyBank;
+
+    private ObjectArrayList<String> stringScoreboard = new ObjectArrayList<>();
+    private ObjectArrayList<Component> componenetScoreboard = new ObjectArrayList<>();
 
     private PlayerStats playerStats = PlayerStats.EMPTY;
     private Component clientOverlay = Component.empty();
@@ -59,29 +62,32 @@ public class SkyBlockInfo implements SBAPI, MC {
     private OtherData otherData;
 
     public void init() {
+
         ClientTickEvent.CLIENT_PRE.register(this::clientTick);
         // Stupid hack as ClientSystemMessageEvent not working on NeoForge
-        if(Platform.isFabric()){
+        if (Platform.isFabric()) {
             ClientSystemMessageEvent.RECEIVED.register((message) -> clientChatMessage(null, message));
         }
-        if(Platform.isNeoForge()) {
+        if (Platform.isNeoForge()) {
             ClientChatEvent.RECEIVED.register(this::clientChatMessage);
         }
     }
 
     private CompoundEventResult<Component> clientChatMessage(ChatType.Bound bound, Component component) {
-        if (component.getString().contains("❤") || component.getString().contains("✎") || component.getString().contains("Revive") || component.getString().contains("CHICKEN RACING") || component.getString().contains("Armadillo")){
+
+        if (component.getString().contains("❤") || component.getString().contains("✎") || component.getString().contains("Revive") || component.getString().contains("CHICKEN RACING") || component.getString().contains("Armadillo")) {
             this.clientOverlay = component;
         }
         return CompoundEventResult.pass();
     }
 
     private void clientTick(Minecraft minecraft) {
+
         Component clientScoreboardTitle = getClientScoreboardTitle();
         if (!clientScoreboardTitle.getString().isEmpty()) {
             this.onSkyblock = clientScoreboardTitle.getString().contains("SKYBLOCK");
 
-            this.scoreboardLines = getScoreboardLines();
+            getScoreboardLines();
 
             parseScoreboardData();
 
@@ -93,67 +99,42 @@ public class SkyBlockInfo implements SBAPI, MC {
         }
     }
 
-
     private void parseScoreboardData() {
 
         String irl_date = "";
         String serverShard = "";
         String date = "";
         String hour = "";
-        String zone = "";
-        String purse = "";
-        String bits = "";
-        String gameType = "";
-        ArrayList <String> extra = new ArrayList<>();
+        Component zone = Component.empty();
+        Component purse = Component.empty();
+        Component bits = Component.empty();
+        Component gameType = Component.empty();
+        ArrayList<Component> extra = new ArrayList<>();
 
-        for (String e : this.scoreboardLines) {
-            // IRL Date and Server Shard
-            if (ApecUtils.isContainedIn(e, "//")) {
-                irl_date = ApecUtils.removeFirstSpaces(e).split(" ")[0];     // "05/04/23"
-                serverShard = ApecUtils.removeFirstSpaces(e).split(" ")[1];  // "m80DE"
-            }
-            // Game Type (Ironman, Stranded, Bingo)
-            else if (ApecUtils.containedByCharSequence(e, "♲") || ApecUtils.containedByCharSequence(e, "☀ Stranded") || ApecUtils.containedByCharSequence(e, "Ⓑ")) {
-                gameType = ApecUtils.removeFirstSpaces(e); // "♲ Ironman"
-            }
-
-            // Date
-            else if (isDate(e)) {
-                date = ApecUtils.removeFirstSpaces(e); // "Late Summer 8th"
-            }
-
-            // Time
-            else if (isTime(e)) {
-                hour = ApecUtils.removeFirstSpaces(e); // "11:30pm ☽"
-            }
-
-            // Zone
-            else if (ApecUtils.containedByCharSequence(e, "⏣")) {
-                zone = ApecUtils.removeFirstSpaces(e); // "⏣ Auction House"
-            }
-
-            else if (ApecUtils.containedByCharSequence(e, "Purse: ")) {
-                purse = ApecUtils.removeFirstSpaces(e); // "Purse: 0.0"
+        for (Component component : this.componenetScoreboard) {
+            String line = component.getString();
+            if (ApecUtils.isContainedIn(line, "//")) {
+                irl_date = ApecUtils.removeFirstSpaces(line).split(" ")[0];
+                serverShard = ApecUtils.removeFirstSpaces(line).split(" ")[1];
+            } else if (ApecUtils.containedByCharSequence(line, "♲") || ApecUtils.containedByCharSequence(line, "☀ Stranded") || ApecUtils.containedByCharSequence(line, "Ⓑ")) {
+                gameType = component;
+            } else if (isDate(line)) {
+                date = ApecUtils.removeFirstSpaces(line);
+            } else if (isTime(line)) {
+                hour = ApecUtils.removeFirstSpaces(line);
+            } else if (ApecUtils.containedByCharSequence(line, "⏣")) {
+                zone = component;
+            } else if (ApecUtils.containedByCharSequence(line, "Purse: ")) {
+                purse = component;
                 this.usesPiggyBank = false;
-            }
-
-            else if (ApecUtils.containedByCharSequence(e, "Piggy: ")) {
-                purse = ApecUtils.removeFirstSpaces(e); // "Piggy: 0.0"
+            } else if (ApecUtils.containedByCharSequence(line, "Piggy: ")) {
+                purse = component;
                 this.usesPiggyBank = true;
+            } else if (ApecUtils.containedByCharSequence(line, "Bits: ")) {
+                bits = component;
+            } else if (!line.isEmpty() && !line.contains("www")) {
+                extra.add(component);
             }
-
-            else if (ApecUtils.containedByCharSequence(e, "Bits: ")) {
-                bits = ApecUtils.removeFirstSpaces(e); // "Bits: 0.0"
-            }
-
-            else if(!e.contains("www")) {
-                if (e.replaceAll("[^a-zA-Z0-9]", "").length() != 0) {
-                    if (ShouldHaveSpaceBefore(e)) extra.add(" ");
-                    extra.add(ApecUtils.removeFirstSpaces(e));
-                    if (ShouldHaveSpaceAfter(e)) extra.add(" ");
-                }
-            }
-
         }
 
         this.scoreboard = new SBScoreBoard(
@@ -169,7 +150,6 @@ public class SkyBlockInfo implements SBAPI, MC {
                 gameType);
 
     }
-
 
     private void parsePlayerStats() {
 
@@ -223,7 +203,7 @@ public class SkyBlockInfo implements SBAPI, MC {
 
         // Heal Duration
         {
-            char[] healDurationSymbols = new char[]{'▆', '▅', '▄', '▃', '▂', '▁'};
+            char[] healDurationSymbols = new char[] { '▆', '▅', '▄', '▃', '▂', '▁' };
             String segmentedSrtring = null;
             char ticker = '\0';
             for (char _c : healDurationSymbols) {
@@ -282,7 +262,6 @@ public class SkyBlockInfo implements SBAPI, MC {
 
         }
 
-
         this.playerStats = new PlayerStats(
                 play_hp,
                 play_base_hp,
@@ -302,6 +281,7 @@ public class SkyBlockInfo implements SBAPI, MC {
     }
 
     private OtherData ProcessOtherData(SBScoreBoard sd) {
+
         OtherData otherData = new OtherData();
         String actionBar = this.clientOverlay.getString();
         if (actionBar == null ? true : isFromChat(actionBar)) return otherData;
@@ -367,27 +347,31 @@ public class SkyBlockInfo implements SBAPI, MC {
 
     }
 
-
     public Tuple<Integer, Integer> formatStringFractI(String s) {
+
         String[] tempSplit = s.replace(",", "").split("/");
         return new Tuple<>(Integer.parseInt(tempSplit[0]), Integer.parseInt(tempSplit[1]));
     }
 
     private boolean isDate(String s) {
+
         return (ApecUtils.containedByCharSequence(s, "Autumn") || ApecUtils.containedByCharSequence(s, "Winter") || ApecUtils.containedByCharSequence(s, "Spring") || ApecUtils.containedByCharSequence(s, "Summer")) && (ApecUtils.containedByCharSequence(s, "st") || ApecUtils.containedByCharSequence(s, "nd") || ApecUtils.containedByCharSequence(s, "rd") || ApecUtils.containedByCharSequence(s, "th"));
     }
 
     private boolean isTime(String s) {
+
         return (ApecUtils.containedByCharSequence(s, "am") || ApecUtils.containedByCharSequence(s, "pm")) &&
                 (ApecUtils.containedByCharSequence(s, ":")) &&
                 (ApecUtils.containedByCharSequence(s, "☽") || ApecUtils.containedByCharSequence(s, "☀"));
     }
 
     public boolean isFromChat(String s) {
+
         return (s.contains("[") && s.contains("]")) || (s.startsWith("\u00a77") && s.contains(": "));
     }
 
     private Component getClientScoreboardTitle() {
+
         try {
             Scoreboard scoreboard = mc.level.getScoreboard();
             Objective displayObjective = scoreboard.getDisplayObjective(DisplaySlot.SIDEBAR);
@@ -397,33 +381,43 @@ public class SkyBlockInfo implements SBAPI, MC {
         }
     }
 
-    private List<String> getScoreboardLines() {
-        List<String> lines = new ArrayList<>();
-        Scoreboard scoreboard = mc.level.getScoreboard();
-        if (scoreboard == null) return lines;
+    private void getScoreboardLines() {
 
+        this.stringScoreboard.clear();
+        this.componenetScoreboard.clear();
+
+        var player = mc.player;
+        if (player == null) {
+            return;
+        }
+
+        Scoreboard scoreboard = player.getScoreboard();
         Objective displayObjective = scoreboard.getDisplayObjective(DisplaySlot.SIDEBAR);
-        if (displayObjective == null) return lines;
+        ObjectArrayList<Component> componentLine = new ObjectArrayList<>();
+        ObjectArrayList<String> stringLine = new ObjectArrayList<>();
 
-        Collection<PlayerScoreEntry> playerScores = scoreboard.listPlayerScores(displayObjective);
-        ArrayList<PlayerScoreEntry> scores = new ArrayList<>(playerScores);
+        for (ScoreHolder scoreHolder : scoreboard.getTrackedPlayers()) {
+            if (scoreboard.listPlayerScores(scoreHolder).containsKey(displayObjective)) {
+                PlayerTeam team = scoreboard.getPlayersTeam(scoreHolder.getScoreboardName());
 
-        scores.sort((o1, o2) -> {
-            if (o1.value() > o2.value()) return -1;
-            if (o1.value() < o2.value()) return 1;
-            return 0;
-        });
-
-        for (PlayerScoreEntry score : scores) {
-            PlayerTeam playerTeam = scoreboard.getPlayersTeam(score.owner());
-            if (playerTeam != null) {
-
-                Component component = PlayerTeam.formatNameForTeam(playerTeam, score.ownerName());
-
-                lines.add(component.getString());
+                if (team != null) {
+                    Component component = Component.empty().append(team.getPlayerPrefix().copy()).append(team.getPlayerSuffix().copy());
+                    String string = team.getPlayerPrefix().getString() + team.getPlayerSuffix().getString();
+                    if (!string.trim().isEmpty()) {
+                        componentLine.add(component);
+                        stringLine.add(string);
+                    }
+                }
             }
         }
-        return lines;
+
+        if (displayObjective != null) {
+            Collections.reverse(stringLine);
+            Collections.reverse(componentLine);
+        }
+
+        this.stringScoreboard.addAll(stringLine);
+        this.componenetScoreboard.addAll(componentLine);
     }
 
     /**
@@ -432,19 +426,20 @@ public class SkyBlockInfo implements SBAPI, MC {
      */
 
     public boolean ShouldHaveSpaceBefore(String s) {
-        return ApecUtils.containedByCharSequence(s,"Objective") || //Objectives
-                ApecUtils.containedByCharSequence(s,"Contest") || // Jacob's contest
-                ApecUtils.containedByCharSequence(s,"Year") || // New year and the vote thing
-                ApecUtils.containedByCharSequence(s,"Zoo") || // Traveling Zoo
-                ApecUtils.containedByCharSequence(s,"Festival") || // Spooky Festival
-                ApecUtils.containedByCharSequence(s,"Season") || // Jerry season
-                ApecUtils.containedByCharSequence(s,"Election") || // Idk at this point im just putting some things from the wiki
-                ApecUtils.containedByCharSequence(s,"Slayer") || // Slayer quest
-                ApecUtils.containedByCharSequence(s,"Keys") || // Keys in dungeons
-                ApecUtils.containedByCharSequence(s,"Time Elapsed") || // time elapsed dungeons
-                ApecUtils.containedByCharSequence(s,"Starting in:") ||
-                ApecUtils.containedByCharSequence(s,"Wave") ||
-                ApecUtils.containedByCharSequence(s,"Festival");
+
+        return ApecUtils.containedByCharSequence(s, "Objective") || //Objectives
+                ApecUtils.containedByCharSequence(s, "Contest") || // Jacob's contest
+                ApecUtils.containedByCharSequence(s, "Year") || // New year and the vote thing
+                ApecUtils.containedByCharSequence(s, "Zoo") || // Traveling Zoo
+                ApecUtils.containedByCharSequence(s, "Festival") || // Spooky Festival
+                ApecUtils.containedByCharSequence(s, "Season") || // Jerry season
+                ApecUtils.containedByCharSequence(s, "Election") || // Idk at this point im just putting some things from the wiki
+                ApecUtils.containedByCharSequence(s, "Slayer") || // Slayer quest
+                ApecUtils.containedByCharSequence(s, "Keys") || // Keys in dungeons
+                ApecUtils.containedByCharSequence(s, "Time Elapsed") || // time elapsed dungeons
+                ApecUtils.containedByCharSequence(s, "Starting in:") ||
+                ApecUtils.containedByCharSequence(s, "Wave") ||
+                ApecUtils.containedByCharSequence(s, "Festival");
     }
 
     /**
@@ -453,38 +448,43 @@ public class SkyBlockInfo implements SBAPI, MC {
      */
 
     public boolean ShouldHaveSpaceAfter(String s) {
-        return ApecUtils.containedByCharSequence(s,"Dungeon Cleared"); // Dungeon cleared in dungeons
-    }
 
+        return ApecUtils.containedByCharSequence(s, "Dungeon Cleared"); // Dungeon cleared in dungeons
+    }
 
     @Override
     public boolean isOnSkyblock() {
+
         return onSkyblock;
     }
 
     @Override
     public SBScoreBoard getScoreboard() {
+
         return scoreboard;
     }
 
     @Override
     public boolean usesPiggyBank() {
+
         return usesPiggyBank;
     }
 
     @Override
     public PlayerStats getPlayerStats() {
+
         return playerStats;
     }
 
     @Override
     public Component getTabListFooter() {
+
         return clientTabFooter;
     }
 
     public class OtherData {
 
-        public ArrayList<String> ExtraInfo  = new ArrayList<String>();
+        public ArrayList<String> ExtraInfo = new ArrayList<String>();
         public ArrayList<EventIDs> currentEvents = new ArrayList<EventIDs>();
         public float ArmadilloEnergy;
         public float ArmadilloBaseEnergy;
@@ -492,6 +492,8 @@ public class SkyBlockInfo implements SBAPI, MC {
     }
 
     public OtherData getOtherData() {
+
         return otherData;
     }
+
 }

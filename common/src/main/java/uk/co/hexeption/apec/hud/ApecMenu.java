@@ -5,11 +5,11 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import dev.architectury.event.events.client.ClientGuiEvent;
 import dev.architectury.event.events.client.ClientTickEvent;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import net.minecraft.client.gui.GuiGraphics;
 import org.joml.Vector2f;
 import uk.co.hexeption.apec.Apec;
 import uk.co.hexeption.apec.MC;
@@ -22,6 +22,7 @@ import uk.co.hexeption.apec.hud.elements.mana.MPBar;
 import uk.co.hexeption.apec.hud.elements.mana.MPText;
 import uk.co.hexeption.apec.hud.elements.xp.XPBar;
 import uk.co.hexeption.apec.hud.elements.xp.XPText;
+import uk.co.hexeption.apec.settings.SettingID;
 import uk.co.hexeption.apec.utils.ApecUtils;
 
 public class ApecMenu implements MC {
@@ -61,21 +62,22 @@ public class ApecMenu implements MC {
             }
         });
 
-        ClientGuiEvent.RENDER_HUD.register((guiGraphics, deltaTracker) -> {
-            if (!Apec.SKYBLOCK_INFO.isOnSkyblock()) {
-                return;
-            }
-            for (Element element : guiElements) {
-                guiGraphics.pose().pushPose();
-                guiGraphics.pose().scale(element.scale, element.scale, element.scale);
-                element.drawText(guiGraphics, mc.screen instanceof CustomizationScreen);
-                guiGraphics.pose().popPose();
-            }
-        });
+    }
+
+    public void render(GuiGraphics guiGraphics) {
+        if (!Apec.SKYBLOCK_INFO.isOnSkyblock()) {
+            return;
+        }
+        for (Element element : guiElements) {
+            guiGraphics.pose().pushPose();
+            guiGraphics.pose().scale(element.scale, element.scale, element.scale);
+            element.drawText(guiGraphics, mc.screen instanceof CustomizationScreen);
+            guiGraphics.pose().popPose();
+        }
     }
 
     public Vector2f applyGlobalChanges(Element element, Vector2f anchorPoint) {
-        boolean isbbUp = false; //todo: Add Settings for bbup
+        boolean isbbUp = Apec.INSTANCE.settingsManager.getSettingState(SettingID.BB_ON_TOP);
         if (isbbUp && element.getDeltaPosition().length() == 0)
             anchorPoint = ApecUtils.addVec(anchorPoint, new Vector2f(0, 20));
         return anchorPoint;

@@ -6,6 +6,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.ChatScreen;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.network.chat.Component;
 import org.joml.Vector2f;
 import uk.co.hexeption.apec.Apec;
 import uk.co.hexeption.apec.api.SBAPI;
@@ -27,6 +28,7 @@ public class BottomBar extends Element {
 
     @Override
     public void drawText(GuiGraphics graphics, boolean editMode) {
+
         Vector2f GuiPos = getCurrentAnchorPoint();
 
         boolean isInChat = Minecraft.getInstance().screen instanceof ChatScreen;
@@ -41,25 +43,24 @@ public class BottomBar extends Element {
         if (yDecremetor < 0) yDecremetor = 0;
         if (yDecremetor > 40) yDecremetor = 40;
 
-        GuiPos.y += yDecremetor + 6*scale;
+        GuiPos.y += yDecremetor + 6 * scale;
 
         ApecTextures bottomBarTexture = ApecTextures.BOTTOM_BAR;
-        int drawCount = (int)(mc.getWindow().getGuiScaledWidth()/256) + 1;
+        int drawCount = (int) (mc.getWindow().getGuiScaledWidth() / 256) + 1;
         for (int i = 0; i < drawCount; i++) {
-            graphics.blit(RenderType::guiTextured, bottomBarTexture.getResourceLocation(), (int) (GuiPos.x + i * 256), (int) (GuiPos.y + yDecremetor - 4), 0, 0, 256, 20, bottomBarTexture.getWidth(), bottomBarTexture.getHeight());
+            graphics.blit(RenderType::guiTextured, bottomBarTexture.getResourceLocation(), (int) (GuiPos.x + i * 256), (int) (GuiPos.y + yDecremetor - (!Apec.INSTANCE.settingsManager.getSettingState(SettingID.BB_ON_TOP) ? 5 : 7)), 0, 0, 256, 20, bottomBarTexture.getWidth(), bottomBarTexture.getHeight());
         }
-
 
         SBAPI.PlayerStats ps = Apec.SKYBLOCK_INFO.getPlayerStats();
         SBAPI.SBScoreBoard sd = Apec.SKYBLOCK_INFO.getScoreboard();
 
         boolean UseIcons = Apec.INSTANCE.settingsManager.getSettingState(SettingID.INFO_BOX_ICONS);
 
-        String purseText = (UseIcons ? RemovePurseText(sd.purse()) : sd.purse());
-        String zoneText = (UseIcons ? RemoveZoneText(sd.zone()) : sd.zone());
-        String defenceText = (UseIcons ? "\u00a7a" + ps.defense() : "\u00a7a" + ps.defense() + " Defense");
-        String bitText = (UseIcons ? ApecUtils.removeCharSequence("Bits: ", sd.bits()) : sd.bits());
-        String modeText = (UseIcons ? ApecUtils.removeCharSequence("Mode: ", sd.gameType()) : sd.gameType());
+        Component purseText = (UseIcons ? RemovePurseText(sd.purse()) : sd.purse());
+        Component zoneText = (UseIcons ? RemoveZoneText(sd.zone()) : sd.zone());
+        String defenceText = (UseIcons ? "§a" + ps.defense() : "§a❈ Defense: " + ps.defense());
+        Component bitText = (UseIcons ? ApecUtils.removeComponentContaining(sd.bits(), "Bits: ") : sd.bits());
+        Component modeText = (UseIcons ? ApecUtils.removeComponentContaining(sd.gameType(),"Mode: ") : sd.gameType());
 
 //        String kuudraText = ChatFormatting.GOLD + ps.KuudraTieredBonus;
         boolean inTheCatacombs = false;
@@ -140,7 +141,7 @@ public class BottomBar extends Element {
         float y = 0;
 
         // check setting for bottom bar position
-        if (true) {
+        if (!Apec.INSTANCE.settingsManager.getSettingState(SettingID.BB_ON_TOP)) {
             y = mc.getWindow().getGuiScaledHeight() - 20 * scale;
         }
 
@@ -163,41 +164,41 @@ public class BottomBar extends Element {
 
     @Override
     public List<Vector2f> getSubElementsBoundingPoints() {
+
         final boolean UseIcons = Apec.INSTANCE.settingsManager.getSettingState(SettingID.INFO_BOX_ICONS);
         boolean inTheCatacombs = false;
         final int zoneAddX = (inTheCatacombs ? 5 : 9);
         List<Vector2f> rel = new ArrayList<Vector2f>() {{
-            add(new Vector2f(PurseStringLength  + (UseIcons ? 9 : 0)*scale, 10*scale));
-            add(new Vector2f( BitsLength + (UseIcons ? 9 : 0)*scale, 10*scale));
-            add(new Vector2f(ZoneStringLength + (UseIcons ? zoneAddX : 0)*scale, 10*scale));
-            add(new Vector2f(DefenceStringLength + (UseIcons ? 10 : 0)*scale, 10*scale));
-            add(new Vector2f(ModeStringLength + (getCurrentAnchorPoint().x)*scale, 10*scale));
-            add(new Vector2f(KuudraStringLength + (getCurrentAnchorPoint().x)*scale, 10*scale));
-            add(new Vector2f(-TimeStringLength-(getCurrentAnchorPoint().x)*scale, 10*scale));
+            add(new Vector2f(PurseStringLength + (UseIcons ? 9 : 0) * scale, 10 * scale));
+            add(new Vector2f(BitsLength + (UseIcons ? 9 : 0) * scale, 10 * scale));
+            add(new Vector2f(ZoneStringLength + (UseIcons ? zoneAddX : 0) * scale, 10 * scale));
+            add(new Vector2f(DefenceStringLength + (UseIcons ? 10 : 0) * scale, 10 * scale));
+            add(new Vector2f(ModeStringLength + (getCurrentAnchorPoint().x) * scale, 10 * scale));
+            add(new Vector2f(KuudraStringLength + (getCurrentAnchorPoint().x) * scale, 10 * scale));
+            add(new Vector2f(-TimeStringLength - (getCurrentAnchorPoint().x) * scale, 10 * scale));
         }};
         return ApecUtils.addVecListToList(rel, getSubElementsCurrentAnchorPoints());
     }
 
-    private String RemovePurseText(String s) {
+    private Component RemovePurseText(Component s) {
 
         if (ApecUtils.containedByCharSequence(s, "Purse: ")) {
-            return ApecUtils.removeCharSequence("Purse: ", s);
+            return ApecUtils.removeComponentContaining(s, "Purse: ");
         } else if (ApecUtils.containedByCharSequence(s, "Piggy: ")) {
-            return ApecUtils.removeCharSequence("Piggy: ", s);
+            return ApecUtils.removeComponentContaining(s, "Piggy: ");
         } else if (ApecUtils.containedByCharSequence(s, "Motes: ")) {
-            return ApecUtils.removeCharSequence("Motes: ", s);
+            return ApecUtils.removeComponentContaining(s, "Motes: ");
         }
-        return "";
+        return Component.empty();
     }
 
-    public String RemoveZoneText(String s) {
+    public Component RemoveZoneText(Component s) {
 
         if (ApecUtils.containedByCharSequence(s, "\u23E3")) {
-            return ApecUtils.removeCharSequence("\u23E3", s);
+            return ApecUtils.removeComponentContaining(s, "\u23E3");
         } else if (ApecUtils.containedByCharSequence(s, "\u0444")) {
-            return ApecUtils.removeCharSequence("\u0444", s);
+            return ApecUtils.removeComponentContaining(s, "\u0444");
         }
-
         return s;
     }
 

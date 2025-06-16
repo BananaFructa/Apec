@@ -102,4 +102,15 @@ public class MixinGui implements MC {
         guiGraphics.pose().popPose();
     }
 
+    @Inject(method = "render", at = @At("RETURN"))
+    private void render(GuiGraphics guiGraphics, DeltaTracker deltaTracker, CallbackInfo ci) {
+
+        if (!Apec.SKYBLOCK_INFO.isOnSkyblock()) {
+            return;
+        }
+
+        Apec.apecMenu.render(guiGraphics);
+
+    }
+
 }

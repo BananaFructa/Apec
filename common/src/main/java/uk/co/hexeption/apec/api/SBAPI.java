@@ -1,28 +1,25 @@
 package uk.co.hexeption.apec.api;
 
-import net.minecraft.network.chat.Component;
-import uk.co.hexeption.apec.EventIDs;
-
-import java.util.ArrayList;
 import java.util.List;
+import net.minecraft.network.chat.Component;
 
 public interface SBAPI {
 
     boolean isOnSkyblock();
 
     record SBScoreBoard(String serverShard,
-                        String purse,
-                        String bits,
-                        List<String> extra,
-                        String zone,
+                        Component purse,
+                        Component bits,
+                        List<Component> extra,
+                        Component zone,
                         String date,
                         String Hour,
                         String IRL_Date,
                         String scoreboardTitle,
-                        String gameType
+                        Component gameType
     ) {
 
-        public static final SBScoreBoard EMPTY = new SBScoreBoard("", "", "", List.of(), "", "", "", "", "", "");
+        public static final SBScoreBoard EMPTY = new SBScoreBoard("", Component.empty(), Component.empty(), List.of(), Component.empty(), "", "", "", "", Component.empty());
     }
 
     SBScoreBoard getScoreboard();
