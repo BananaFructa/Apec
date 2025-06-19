@@ -5,16 +5,21 @@ import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.world.entity.player.Player;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import uk.co.hexeption.apec.Apec;
 import uk.co.hexeption.apec.MC;
 import uk.co.hexeption.apec.hud.ElementType;
+import uk.co.hexeption.apec.hud.customization.CustomizationScreen;
 import uk.co.hexeption.apec.hud.elements.ItemHotBar;
 
 @Mixin(Gui.class)
 public class MixinGui implements MC {
+
+    @Shadow private int toolHighlightTimer;
 
     @Inject(method = "renderEffects", at = @At("HEAD"), cancellable = true)
     private void renderEffects(GuiGraphics guiGraphics, DeltaTracker deltaTracker, CallbackInfo ci) {
@@ -119,4 +124,34 @@ public class MixinGui implements MC {
 
     }
 
+    @ModifyVariable(method = "renderSelectedItemName", at = @At(value = "STORE"), ordinal = 1)
+    private int modifyXPosition(int original, GuiGraphics guiGraphics) {
+        var toolTipText = (uk.co.hexeption.apec.hud.elements.ToolTipText) Apec.apecMenu.getGuiComponent(ElementType.TOOL_TIP_TEXT);
+
+        if (!Apec.SKYBLOCK_INFO.isOnSkyblock()) {
+            return original;
+        }
+        return toolTipText.getXOffset(guiGraphics);
+    }
+
+    @ModifyVariable(method = "renderSelectedItemName", at = @At(value = "STORE"), ordinal = 2)
+    private int modifyYPosition(int original, GuiGraphics guiGraphics) {
+        var toolTipText = (uk.co.hexeption.apec.hud.elements.ToolTipText) Apec.apecMenu.getGuiComponent(ElementType.TOOL_TIP_TEXT);
+
+        if (!Apec.SKYBLOCK_INFO.isOnSkyblock()) {
+            return original;
+        }
+        return toolTipText.getYOffset(guiGraphics);
+    }
+
+    @Inject(method = "tick", at = @At("HEAD"))
+    private void onTick(CallbackInfo ci) {
+        if (!Apec.SKYBLOCK_INFO.isOnSkyblock()) {
+          return;
+        }
+
+        if(mc.screen instanceof CustomizationScreen) {
+            this.toolHighlightTimer = 255;
+        }
+    }
 }

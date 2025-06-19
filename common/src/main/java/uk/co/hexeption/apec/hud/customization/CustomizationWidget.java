@@ -7,7 +7,6 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.Component;
 import org.joml.Vector2f;
-import uk.co.hexeption.apec.Apec;
 import uk.co.hexeption.apec.MC;
 import uk.co.hexeption.apec.hud.Element;
 import uk.co.hexeption.apec.utils.ApecUtils;
@@ -102,7 +101,6 @@ public class CustomizationWidget extends Button implements MC {
 
     @Override
     public boolean mouseDragged(double d, double e, int i, double f, double g) {
-        Apec.LOGGER.info("Mouse dragged" + d + " " + e + " " + i + " " + f + " " + g);
         if (isUserDragging) {
             Vector2f anchor;
             anchor = this.element.getAnchorPointPosition();

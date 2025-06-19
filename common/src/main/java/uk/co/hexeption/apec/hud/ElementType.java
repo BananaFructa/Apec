@@ -14,5 +14,6 @@ public enum ElementType {
     BOTTOM_BAR,
     EXTRA_INFO,
     ITEM_HOT_BAR,
+    TOOL_TIP_TEXT
 
 }
