@@ -31,7 +31,7 @@ public class ExtraInfo extends Element {
             }
         }
 
-        ApecUtils.drawOutlineText(mc, graphics, "6th Anniversar§iy 61:41:57", 10, 10, -1);
+
     }
 
     @Override

@@ -10,6 +10,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import uk.co.hexeption.apec.Apec;
 import uk.co.hexeption.apec.MC;
+import uk.co.hexeption.apec.hud.ElementType;
+import uk.co.hexeption.apec.hud.elements.ItemHotBar;
 
 @Mixin(Gui.class)
 public class MixinGui implements MC {
@@ -85,12 +87,16 @@ public class MixinGui implements MC {
             return;
         }
 
-        var width = mc.getWindow().getGuiScaledWidth();
+        var apecHotBar = ((ItemHotBar) Apec.apecMenu.getGuiComponent(ElementType.ITEM_HOT_BAR));
+        var pos = apecHotBar.getCurrentAnchorPoint();
+        var scale = apecHotBar.getScale();
 
-        var translationX = width / 2f - 90 - 5;
+        var translationX = (guiGraphics.guiWidth() / 2) - pos.x / scale - 91;
+        var translationY = (guiGraphics.guiHeight()) - pos.y / scale - 22;
 
         guiGraphics.pose().pushPose();
-        guiGraphics.pose().translate(translationX, -25, 100);
+        guiGraphics.pose().scale(scale, scale, scale);
+        guiGraphics.pose().translate(-translationX, -translationY, 100);
     }
 
     @Inject(method = "renderItemHotbar", at = @At("RETURN"))

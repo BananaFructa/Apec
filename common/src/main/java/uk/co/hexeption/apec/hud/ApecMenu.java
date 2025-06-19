@@ -16,6 +16,7 @@ import uk.co.hexeption.apec.MC;
 import uk.co.hexeption.apec.hud.customization.CustomizationScreen;
 import uk.co.hexeption.apec.hud.elements.BottomBar;
 import uk.co.hexeption.apec.hud.elements.ExtraInfo;
+import uk.co.hexeption.apec.hud.elements.ItemHotBar;
 import uk.co.hexeption.apec.hud.elements.health.HPBar;
 import uk.co.hexeption.apec.hud.elements.health.HPText;
 import uk.co.hexeption.apec.hud.elements.mana.MPBar;
@@ -38,12 +39,12 @@ public class ApecMenu implements MC {
                     new XPText(),
                     new XPBar(),
                     new ExtraInfo(),
-                    new BottomBar()
+                    new BottomBar(),
+                    new ItemHotBar()
             ));
         }
     };
 
-    public boolean isCustomizationScreenOpen = false;
 
     public void init() {
 
@@ -62,6 +63,12 @@ public class ApecMenu implements MC {
             }
         });
 
+    }
+
+    public void CustomizationMenuOpened() {
+        for (Element element : guiElements) {
+            element.editInit();
+        }
     }
 
     public void render(GuiGraphics guiGraphics) {

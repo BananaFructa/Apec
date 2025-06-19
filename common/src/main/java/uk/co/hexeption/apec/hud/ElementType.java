@@ -13,5 +13,6 @@ public enum ElementType {
     AIR_TEXT,
     BOTTOM_BAR,
     EXTRA_INFO,
+    ITEM_HOT_BAR,
 
 }

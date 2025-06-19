@@ -43,6 +43,12 @@ public class Element implements MC {
 
     }
 
+    /**
+     * Is called before the editing menu is opened
+     */
+    public void editInit() {
+
+    }
 
     public Vector2f getAnchorPointPosition() {
         return new Vector2f(0, 0);

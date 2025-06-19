@@ -31,7 +31,7 @@ public class CustomizationScreen extends Screen implements uk.co.hexeption.apec.
     @Override
     protected void init() {
 
-        Apec.apecMenu.isCustomizationScreenOpen = true;
+        Apec.apecMenu.CustomizationMenuOpened();
         super.init();
 
         refreshSnapPoints();
