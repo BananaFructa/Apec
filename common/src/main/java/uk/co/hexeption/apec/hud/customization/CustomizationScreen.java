@@ -58,6 +58,15 @@ public class CustomizationScreen extends Screen implements uk.co.hexeption.apec.
 
         });
 
+        addRenderableWidget(new CustomizationResetWidget(
+                mc.getWindow().getGuiScaledWidth() / 2 - 25, 0, 50, 15,
+                Component.literal("Reset All"),
+                button -> elements.forEach(element -> {
+                    element.resetDeltaPositions();
+                    element.setScale(1);
+                })
+        ));
+
     }
 
     @Override
@@ -124,6 +133,7 @@ public class CustomizationScreen extends Screen implements uk.co.hexeption.apec.
     }
 
     private void saveDeltas() {
+
         try {
             new File("config/Apec").mkdirs();
             File file = new File("config/Apec/GuiDeltas.json");

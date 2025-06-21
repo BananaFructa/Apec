@@ -30,6 +30,10 @@ public class SkyBlockInfo implements SBAPI, MC {
 
     private boolean usesPiggyBank;
 
+    // Cache for purse and bits components
+    private Component cachedPurse = Component.empty();
+    private Component cachedBits = Component.empty();
+
     private ObjectArrayList<String> stringScoreboard = new ObjectArrayList<>();
     private ObjectArrayList<Component> componenetScoreboard = new ObjectArrayList<>();
 
@@ -61,6 +65,11 @@ public class SkyBlockInfo implements SBAPI, MC {
     private final String treasureMetalDetectorSymbol = "TREASURE:";
     private OtherData otherData;
 
+    private boolean isInRift = false;
+    private boolean isInDungeon = false;
+
+    private final char riftSymbol = 'ф';
+
     public void init() {
 
         ClientTickEvent.CLIENT_PRE.register(this::clientTick);
@@ -78,6 +87,9 @@ public class SkyBlockInfo implements SBAPI, MC {
         if (component.getString().contains("❤") || component.getString().contains("✎") || component.getString().contains("Revive") || component.getString().contains("CHICKEN RACING") || component.getString().contains("Armadillo")) {
             this.clientOverlay = component;
         }
+
+        this.isInRift = component.getString().contains(String.valueOf(riftSymbol));
+
         return CompoundEventResult.pass();
     }
 
@@ -111,8 +123,15 @@ public class SkyBlockInfo implements SBAPI, MC {
         Component gameType = Component.empty();
         ArrayList<Component> extra = new ArrayList<>();
 
+        this.isInDungeon = false;
+
         for (Component component : this.componenetScoreboard) {
             String line = component.getString();
+
+            if(ApecUtils.isContainedIn(line, "The Catacombs")){
+                this.isInDungeon = true;
+            }
+
             if (ApecUtils.isContainedIn(line, "//")) {
                 irl_date = ApecUtils.removeFirstSpaces(line).split(" ")[0];
                 serverShard = ApecUtils.removeFirstSpaces(line).split(" ")[1];
@@ -126,15 +145,27 @@ public class SkyBlockInfo implements SBAPI, MC {
                 zone = component;
             } else if (ApecUtils.containedByCharSequence(line, "Purse: ")) {
                 purse = component;
+                this.cachedPurse = component; // Cache the purse component
                 this.usesPiggyBank = false;
             } else if (ApecUtils.containedByCharSequence(line, "Piggy: ")) {
                 purse = component;
+                this.cachedPurse = component; // Cache the purse component
                 this.usesPiggyBank = true;
             } else if (ApecUtils.containedByCharSequence(line, "Bits: ")) {
                 bits = component;
+                this.cachedBits = component; // Cache the bits component
             } else if (!line.isEmpty() && !line.contains("www")) {
                 extra.add(component);
             }
+        }
+
+        // Use cached values if none were found in the current scoreboard
+        if (purse.equals(Component.empty()) && !this.cachedPurse.equals(Component.empty())) {
+            purse = this.cachedPurse;
+        }
+
+        if (bits.equals(Component.empty()) && !this.cachedBits.equals(Component.empty())) {
+            bits = this.cachedBits;
         }
 
         this.scoreboard = new SBScoreBoard(
@@ -456,6 +487,18 @@ public class SkyBlockInfo implements SBAPI, MC {
     public boolean isOnSkyblock() {
 
         return onSkyblock;
+    }
+
+    @Override
+    public boolean isInRift() {
+
+        return isInRift;
+    }
+
+    @Override
+    public boolean isInDungeon() {
+
+        return isInDungeon;
     }
 
     @Override

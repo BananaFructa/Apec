@@ -51,6 +51,36 @@ public class BottomBar extends Element {
             graphics.blit(RenderType::guiTextured, bottomBarTexture.getResourceLocation(), (int) (GuiPos.x + i * 256), (int) (GuiPos.y + yDecremetor - (!Apec.INSTANCE.settingsManager.getSettingState(SettingID.BB_ON_TOP) ? 5 : 7)), 0, 0, 256, 20, bottomBarTexture.getWidth(), bottomBarTexture.getHeight());
         }
 
+        var useIcons = Apec.INSTANCE.settingsManager.getSettingState(SettingID.INFO_BOX_ICONS);
+        var inRift = Apec.SKYBLOCK_INFO.isInRift();
+        var inTheCatacombs = Apec.SKYBLOCK_INFO.isInDungeon();
+
+        if (useIcons) {
+            // Money Icon
+            if (inRift) {
+                graphics.blit(RenderType::guiTextured, ApecTextures.ICONS.getResourceLocation(), (int) (GuiPos.x + 20 + (subElementDeltaPositions.get(0).x()) * 1 / scale), (int) ((GuiPos.y + subElementDeltaPositions.get(0).y()) * 1 / scale), 1,206,6,9, ApecTextures.ICONS.getWidth(), ApecTextures.ICONS.getHeight());
+            }else {
+                graphics.blit(RenderType::guiTextured, ApecTextures.ICONS.getResourceLocation(), (int) (GuiPos.x + 20 + (subElementDeltaPositions.get(0).x()) * 1 / scale), (int) ((GuiPos.y + subElementDeltaPositions.get(0).y()) * 1 / scale), 1, 216, 6, 9, ApecTextures.ICONS.getWidth(), ApecTextures.ICONS.getHeight());
+            }
+
+            // Bits Icon
+            graphics.blit(RenderType::guiTextured, ApecTextures.ICONS.getResourceLocation(), (int) (GuiPos.x + 20 + (subElementDeltaPositions.get(1).x() + 120) * 1 / scale), (int) ((GuiPos.y + subElementDeltaPositions.get(1).y()) * 1 / scale), 8, 216, 5, 9, ApecTextures.ICONS.getWidth(), ApecTextures.ICONS.getHeight());
+
+
+            // Zone Icon
+            if( inTheCatacombs) {
+                graphics.blit(RenderType::guiTextured, ApecTextures.ICONS.getResourceLocation(), (int) (GuiPos.x + 20 + (subElementDeltaPositions.get(2).x() + 220 - 1) * 1 / scale), (int) ((GuiPos.y + subElementDeltaPositions.get(2).y()) * 1 / scale), 24, 217, 7, 8, ApecTextures.ICONS.getWidth(), ApecTextures.ICONS.getHeight());
+            } else {
+                graphics.blit(RenderType::guiTextured, ApecTextures.ICONS.getResourceLocation(), (int) (GuiPos.x + 20 + (subElementDeltaPositions.get(2).x() + 220) * 1 / scale), (int) ((GuiPos.y + subElementDeltaPositions.get(2).y()) * 1 / scale), 14, 216, 9, 9, ApecTextures.ICONS.getWidth(), ApecTextures.ICONS.getHeight());
+            }
+
+            // Defence Icon
+            if (!Apec.INSTANCE.settingsManager.getSettingState(SettingID.USE_DEFENCE_OUT_OF_BB) || editMode) {
+                graphics.blit(RenderType::guiTextured, ApecTextures.ICONS.getResourceLocation(), (int) (GuiPos.x + 20 + (subElementDeltaPositions.get(3).x() + 360) * 1 / scale), (int) ((GuiPos.y + subElementDeltaPositions.get(2).y()) * 1 / scale), 32, 215, 7, 10, ApecTextures.ICONS.getWidth(), ApecTextures.ICONS.getHeight());
+            }
+
+        }
+
         SBAPI.PlayerStats ps = Apec.SKYBLOCK_INFO.getPlayerStats();
         SBAPI.SBScoreBoard sd = Apec.SKYBLOCK_INFO.getScoreboard();
 
@@ -60,10 +90,9 @@ public class BottomBar extends Element {
         Component zoneText = (UseIcons ? RemoveZoneText(sd.zone()) : sd.zone());
         String defenceText = (UseIcons ? "§a" + ps.defense() : "§a❈ Defense: " + ps.defense());
         Component bitText = (UseIcons ? ApecUtils.removeComponentContaining(sd.bits(), "Bits: ") : sd.bits());
-        Component modeText = (UseIcons ? ApecUtils.removeComponentContaining(sd.gameType(),"Mode: ") : sd.gameType());
+        Component modeText = (UseIcons ? ApecUtils.removeComponentContaining(sd.gameType(), "Mode: ") : sd.gameType());
 
 //        String kuudraText = ChatFormatting.GOLD + ps.KuudraTieredBonus;
-        boolean inTheCatacombs = false;
 
         graphics.drawString(
                 mc.font,
@@ -102,7 +131,7 @@ public class BottomBar extends Element {
             graphics.drawString(
                     mc.font,
                     modeText,
-                    (int) ((GuiPos.x + deltaPosition.x + subElementDeltaPositions.get(4).x()) * (1 / scale) + (Apec.INSTANCE.settingsManager.getSettingState(SettingID.USE_DEFENCE_OUT_OF_BB) ? 360 : 460)),
+                    (int) ((GuiPos.x + deltaPosition.x + subElementDeltaPositions.get(4).x()) * (1 / scale) + (Apec.INSTANCE.settingsManager.getSettingState(SettingID.USE_GAME_MODE_OUT_OF_BB) ? 100 : 480)),
                     (int) ((GuiPos.y + deltaPosition.y + subElementDeltaPositions.get(4).y()) * (1 / scale)),
                     0xffffff, false
             );

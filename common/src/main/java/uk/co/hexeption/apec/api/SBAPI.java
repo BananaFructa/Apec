@@ -6,6 +6,8 @@ import net.minecraft.network.chat.Component;
 public interface SBAPI {
 
     boolean isOnSkyblock();
+    boolean isInRift();
+    boolean isInDungeon();
 
     record SBScoreBoard(String serverShard,
                         Component purse,
