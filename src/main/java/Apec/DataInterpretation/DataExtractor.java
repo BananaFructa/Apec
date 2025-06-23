@@ -22,16 +22,11 @@ import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IChatComponent;
 import net.minecraft.util.Tuple;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
-import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import org.apache.commons.lang3.reflect.FieldUtils;
-import org.lwjgl.Sys;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -627,7 +622,11 @@ public class DataExtractor {
 
         try {
             // Skill
-            String segmentString = ApecUtils.segmentString(actionBarData, ")", '+', ' ', 1, 1, ApecUtils.SegmentationOptions.ALL_INSTANCES_LEFT);
+            String segmentString = null;
+            try {
+                segmentString = ApecUtils.removeAllCodes(ApecUtils.segmentString(actionBarData, ")", '+', ' ', 1, 1, ApecUtils.SegmentationOptions.ALL_INSTANCES_LEFT));
+            } catch(Exception ignored) {}
+            // +3.5 Farming (1,529.2%)
 
             String inBetweenBrackets = null;
             float percentage = -1f;
@@ -637,7 +636,7 @@ public class DataExtractor {
             }
 
             if (inBetweenBrackets != null) {
-                percentage = praseSkillPercentage(inBetweenBrackets);
+                percentage = parseSkillPercentage(inBetweenBrackets);
             }
 
             if (percentage != -1f) {
@@ -648,19 +647,17 @@ public class DataExtractor {
                 playerStats.SkillInfo = wholeString;
                 playerStats.SkillExpPercentage = percentage;
 
+            } else if (ApecMain.Instance.settingsManager.getSettingState(SettingID.ALWAYS_SHOW_SKILL) && !lastSkillXp.equals("")) {
+                String wholeString = ApecUtils.removeAllCodes(lastSkillXp);
+                String segmentedString = ApecUtils.segmentString(lastSkillXp, "(", '(', ')', 1, 1, ApecUtils.SegmentationOptions.TOTALLY_EXCLUSIVE);
+                percentage = parseSkillPercentage(segmentedString);
+
+                playerStats.SkillIsShown = true;
+                playerStats.SkillInfo = wholeString;
+                playerStats.SkillExpPercentage = percentage;
             } else {
-                if (ApecMain.Instance.settingsManager.getSettingState(SettingID.ALWAYS_SHOW_SKILL) && !lastSkillXp.equals("")) {
-                    String wholeString = ApecUtils.removeAllCodes(lastSkillXp);
-                    percentage = praseSkillPercentage(ApecUtils.segmentString(lastSkillXp, "(", '(', ')', 1, 1, ApecUtils.SegmentationOptions.TOTALLY_EXCLUSIVE));
-
-                    playerStats.SkillIsShown = true;
-                    playerStats.SkillInfo = wholeString;
-                    playerStats.SkillExpPercentage = percentage;
-                } else {
-                    playerStats.SkillIsShown = false;
-                }
+                playerStats.SkillIsShown = false;
             }
-
         } catch (Exception err) {
             err.printStackTrace();
         }
@@ -778,12 +775,13 @@ public class DataExtractor {
 
     /**
      * @param skillInfo = The text between brackets of the skill xp string
-     * @return the precentege of completion until next skill level
+     * @return the percentage of completion until next skill level
      */
-    float praseSkillPercentage(String skillInfo) {
+    float parseSkillPercentage(String skillInfo) {
         if (skillInfo == null) return -1f;
         if (skillInfo.contains("%")) {
             skillInfo = skillInfo.replace("%","");
+            skillInfo = skillInfo.replace(",", ""); // To support values above a thousand: f.ex. 1,500.24%
             return Float.parseFloat(skillInfo) / 100f;
         } else if (skillInfo.contains("/")){
             String[] twoValues = skillInfo.split("/");
