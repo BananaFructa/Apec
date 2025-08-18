@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.ChatType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Tuple;
@@ -284,34 +285,43 @@ public class SkyBlockInfo implements SBAPI, MC {
 
         // Parse health
         try {
-            String segment = ApecUtils.segmentString(actionBar, String.valueOf(GameSymbols.HEALTH), '§', GameSymbols.HEALTH, 1, 1);
-            if (segment != null) {
-                Tuple<Integer, Integer> hpTuple = parseStringFraction(ApecUtils.removeAllColourCodes(segment));
-                hp = hpTuple.getA();
-                baseHp = hpTuple.getB();
+            if (!isInRift) {
+                String segment = ApecUtils.segmentString(actionBar, String.valueOf(GameSymbols.HEALTH), '§', GameSymbols.HEALTH, 1, 1);
+                if (segment != null) {
+                    Tuple<Integer, Integer> hpTuple = parseStringFraction(ApecUtils.removeAllColourCodes(segment));
+                    hp = hpTuple.getA();
+                    baseHp = hpTuple.getB();
 
-                if (hp > baseHp) {
-                    absorption = hp - baseHp;
-                    hp = baseHp;
+                    if (hp > baseHp) {
+                        absorption = hp - baseHp;
+                        hp = baseHp;
+                    } else {
+                        absorption = 0;
+                        this.baseAbsorption = 0;
+                    }
+                    if (absorption > this.baseAbsorption) {
+                        this.baseAbsorption = absorption;
+                    }
+                    baseAbsorption = this.baseAbsorption;
+
+                    lastAbsorption = absorption;
+                    lastBaseAbsorption = baseAbsorption;
+
+                    lastHp = hp;
+                    lastBaseHp = baseHp;
                 } else {
-                    absorption = 0;
-                    this.baseAbsorption = 0;
+                    hp = lastHp;
+                    baseHp = lastBaseHp;
+                    absorption = lastAbsorption;
+                    baseAbsorption = lastBaseAbsorption;
                 }
-                if (absorption > this.baseAbsorption) {
-                    this.baseAbsorption = absorption;
-                }
-                baseAbsorption = this.baseAbsorption;
-
-                lastAbsorption = absorption;
-                lastBaseAbsorption = baseAbsorption;
-
-                lastHp = hp;
-                lastBaseHp = baseHp;
             } else {
-                hp = lastHp;
-                baseHp = lastBaseHp;
-                absorption = lastAbsorption;
-                baseAbsorption = lastBaseAbsorption;
+                LocalPlayer player = mc.player;
+                assert player != null;
+
+                hp = lastHp = (int)player.getHealth();
+                baseHp = lastBaseHp = (int)player.getMaxHealth();
+                baseAbsorption = lastBaseAbsorption = absorption = lastAbsorption = (int)player.getAbsorptionAmount();
             }
         } catch (Exception err) {
             hp = lastHp;
